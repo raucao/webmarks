@@ -1,0 +1,55 @@
+{
+  "name": "app-kit",
+  "namespace": "appkit",
+  "version": "0.0.0",
+  "private": true,
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "grunt server",
+    "build": "grunt build:debug",
+    "test": "grunt test:ci",
+    "postinstall": "./node_modules/.bin/bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stefanpenner/app-kit.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "devDependencies": {
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt": "~0.4.1",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-es6-module-transpiler": "~0.4.1",
+    "glob": "~3.2.1",
+    "load-grunt-tasks": "~0.1.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.2",
+    "grunt-usemin": "~0.1.12",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-rev": "~0.1.0",
+    "grunt-ember-templates": "~0.4.15",
+    "karma": "~0.9.4",
+    "grunt-karma": "~0.5",
+    "karma-qunit": "~0.0.3",
+    "karma-coverage": "~0.0.3",
+    "karma-phantomjs-launcher": "~0.0.2",
+    "lockfile": "~>0.3.0",
+    "grunt-concat-sourcemap": "~0.3.0",
+    "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-concurrent": "~0.3.1",
+    "grunt-dom-munger": "~2.0.1",
+    "load-grunt-config": "~0.5.0",
+    "bower": "~1.2.7",
+    "grunt-contrib-compass": "~0.6.0"
+  },
+  "dependencies": {
+    "loom": "~2.0.0",
+    "loom-generators-ember": "0.0.1"
+  }
+}
