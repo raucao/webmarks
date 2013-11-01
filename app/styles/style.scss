@@ -104,6 +104,22 @@ a:hover {
   }
 }
 
+section {
+  &#bookmark-new {
+    .pure-control-group {
+      padding: 7px 0;
+      input[type=text] {
+        font-size: 16px;
+        font-family: "Open Sans", "Helvetica Neue", sans-serif;
+      }
+    }
+    h2 {
+      margin-left: 160px;
+    }
+  }
+}
+
+
 // .import-container {
 //   padding-top: 60px;
 //   padding-bottom: 100px;
