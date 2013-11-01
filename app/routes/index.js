@@ -1,11 +1,10 @@
 var IndexRoute = Ember.Route.extend({
-  model: function () {
-    return remoteStorage.bookmarks.archive.getAll();
-  },
 
   renderTemplate: function() {
     this.render('bookmarks/index');
+    // uses bookmarks/index controller
   }
+
 });
 
 export default IndexRoute;

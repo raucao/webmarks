@@ -1,5 +1,6 @@
 var Bookmark = Ember.Object.extend({
 
+  id: '',
   url: '',
   title: '',
   description: '',
