@@ -18,5 +18,15 @@ App.initializer({
   }
 });
 
+App.initializer({
+  name: "remoteStorage",
+  initialize: function(container, application) {
+    $(function(){
+      remoteStorage.access.claim('bookmarks', 'rw');
+      remoteStorage.caching.enable('/bookmarks/archive/');
+      remoteStorage.displayWidget('remotestorage-connect', { redirectUri: window.location.href });
+    });
+  }
+});
 
 export default App;

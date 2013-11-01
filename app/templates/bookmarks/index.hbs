@@ -1,0 +1,38 @@
+{{#if model}}
+  <ul class="bookmark-list">
+    {{#each item in model}}
+      <li class="bookmark pure-g-r">
+      <div class="pure-u-1-6">
+        <a class="screenshot" href="#">
+          <img class="media-object" alt="">
+        </a>
+      </div>
+      <div class="body pure-u-5-6">
+        <h4 class="heading">
+          <a {{bindAttr href="item.url"}}>{{item.title}}</a>
+        </h4>
+        <p class="meta">
+          <span class="domain">{{item.domain}}<span>
+          &middot;
+          <span class="date">{{item.createdAt}}<span>
+          &middot;
+          {{item.id}}
+          &middot;
+          {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
+          &middot;
+          <button {{action 'remove' item}}>delete</button>
+          {{#if item.tags}}
+            &middot; {{item.tags}}
+          {{/if}}
+        </p>
+        {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
+      </div>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <div class="no-bookmarks">
+    <p>You haven&#39;t stored any bookmarks yet.</p>
+    <p>{{#linkTo "bookmarks.new"}}Add the first one{{/linkTo}}</p>
+  </div>
+{{/if}}

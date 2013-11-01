@@ -1,0 +1,23 @@
+<h2>Edit bookmark</h2>
+
+<form {{action commit on="submit"}}>
+  <p>
+    <label for="url">URL</label><br>
+    {{view Ember.TextField valueBinding="url" id="url"}}
+  </p>
+  <p>
+    <label for="title">Title</label><br>
+    {{view Ember.TextField valueBinding="title" id="title"}}
+  </p>
+  <p>
+    <label for="description">Description</label><br>
+    {{view Ember.TextField valueBinding="description" id="description"}}
+  </p>
+  <p>
+    <label for="tags">Tags</label><br>
+    {{view Ember.TextField valueBinding="tags" id="tags"}}
+  </p>
+  <p>
+    <button type="submit" class="pure-button">Save</button>
+  </p>
+</form>

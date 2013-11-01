@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>App</title>
-  <link rel="stylesheet" href="/assets/app.css">
+  <title>Webmarks</title>
+  <link rel="stylesheet" href="/vendor/pure-min.css">
+  <link rel="stylesheet" href="/assets/style.css">
 
   <!-- for more details visit: https://github.com/yeoman/grunt-usemin -->
 
@@ -11,6 +12,8 @@
   <script src="/vendor/handlebars/handlebars.js"></script>
   <script src="/vendor/ember/ember.js"></script>
   <script src="/vendor/ember-data-shim/ember-data.js"></script>
+  <script src="/vendor/remotestorage/remotestorage.js"></script>
+  <script src="/vendor/remotestorage/remotestorage-bookmarks.js"></script>
   <script src="/vendor/almond.js"></script>
   <script src="/vendor/resolver.js"></script>
   <!-- endbuild -->
@@ -21,6 +24,7 @@
   <!-- endbuild -->
 </head>
 <body>
+  <div id="remotestorage-connect"></div>
   <script>
     window.App = require('appkit/app').create();
   </script>

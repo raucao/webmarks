@@ -1,3 +1,14 @@
-<h2 id='title'>Welcome to Ember.js</h2>
-
-{{outlet}}
+<div class="container pure-g-r">
+  <div class="header pure-u-1">
+    <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+        <a class="pure-menu-heading" href="/">webmarks</a>
+        <ul>
+          <li>{{#linkTo "bookmarks.new"}}Add{{/linkTo}}</li>
+          <li>{{#linkTo "import"}}Import{{/linkTo}}</li>
+        </ul>
+    </div>
+  </div>
+  <div id="content" class="pure-u-1">
+  {{outlet}}
+  <div>
+</div>

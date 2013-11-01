@@ -1,6 +1,10 @@
 var IndexRoute = Ember.Route.extend({
-  model: function() {
-    return ['red', 'yellow', 'blue'];
+  model: function () {
+    return remoteStorage.bookmarks.archive.getAll();
+  },
+
+  renderTemplate: function() {
+    this.render('bookmarks/index');
   }
 });
 
