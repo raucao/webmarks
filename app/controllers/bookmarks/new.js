@@ -10,15 +10,13 @@ var BookmarksNewController = Ember.ObjectController.extend({
 
       remoteStorage.bookmarks.archive.store(this.get('serialize')).then(
         function(bookmark) {
-          var item = Bookmark.create({
-            id: bookmark.id,
-            url: bookmark.url,
-            title: bookmark.title,
-            description: bookmark.description,
-            tags: bookmark.tags,
-            createdAt: bookmark.createdAt
-          });
-          self.archiveBookmarks.pushObject(item);
+          // Remove existing item from collection if exists
+          var oldItem = self.archiveBookmarks.findProperty('id', bookmark.id);
+          if (oldItem) { self.archiveBookmarks.removeObject(oldItem); }
+
+          // Add new item to collection
+          var newItem = Bookmark.create(bookmark);
+          self.archiveBookmarks.pushObject(newItem);
 
           self.transitionToRoute('index');
         },
