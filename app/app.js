@@ -52,16 +52,17 @@ App.initializer({
 
     archiveClient.on('change', function(event){
       if (event.origin !== 'remote') { return; }
+      var item;
 
       // New object coming in from remote
       if (!event.oldValue && event.newValue) {
-        var item = Bookmark.create(event.newValue);
+        item = Bookmark.create(event.newValue);
         application.archiveBookmarks.pushObject(item);
       }
 
       // Object deleted on remote
       if (event.oldValue && !event.newValue) {
-        var item = application.archiveBookmarks.findProperty('id', event.oldValue.id);
+        item = application.archiveBookmarks.findProperty('id', event.oldValue.id);
         application.archiveBookmarks.removeObject(item);
       }
 
