@@ -4,6 +4,9 @@ var BookmarksIndexController = Ember.ArrayController.extend({
 
   contentBinding: 'App.archiveBookmarks',
 
+  sortProperties: ['createdAt'],
+  sortAscending: false,
+
   init: function() {
     this._super();
     self = this;
