@@ -71,14 +71,12 @@ a:hover {
   }
   .screenshot {
     img {
+      display: block;
       background: #efefef;
       width: 100px;
       height: 80px;
       margin-right: 20px;
     }
-  }
-  .body {
-
   }
   h4.heading {
     font-size: 20px;
@@ -92,6 +90,11 @@ a:hover {
     p.meta {
       color: #888;
       font-size: 13px;
+      .tag {
+        background: #efefef;
+        @include border-radius(3px);
+        padding: 1px 4px 2px 4px;
+      }
     }
     p.description {
       margin-top: 13px;

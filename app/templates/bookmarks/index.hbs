@@ -16,13 +16,14 @@
           &middot;
           <span class="date">{{item.createdAt}}<span>
           &middot;
-          {{item.id}}
-          &middot;
           {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
           &middot;
           <button {{action 'remove' item}}>delete</button>
           {{#if item.tags}}
-            &middot; {{item.tags}}
+            &middot;
+            {{#each tag in item.tags}}
+            <span class="tag">{{tag}}</span>
+            {{/each}}
           {{/if}}
         </p>
         {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
