@@ -1,42 +1,52 @@
-{{#if model}}
-  <ul class="bookmark-list">
-    {{#each item in arrangedContent}}
-      <li class="bookmark pure-g-r">
-      <div class="pure-u-1-6">
-        <a class="screenshot" href="#">
-          <img class="media-object" alt="">
-        </a>
-      </div>
-      <div class="body pure-u-5-6">
-        <h4 class="heading">
-          <a {{bindAttr href="item.url"}}>{{item.title}}</a>
-        </h4>
-        <p class="meta">
-          <span class="domain">{{item.domain}}<span>
-          &middot;
-          <span class="date">{{item.createdAtTimeAgo}}<span>
-          {{#if item.updatedAt}}
-            (updated <span class="date">{{item.updatedAtTimeAgo}})<span>
-          {{/if}}
-          {{#if item.tags}}
-            &middot;
-            {{#each tag in item.tags}}
-            <span class="tag">{{tag}}</span>
-            {{/each}}
-          {{/if}}
-          &middot;
-          {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
-          &middot;
-          <a {{action 'remove' item}}>delete</a>
-        </p>
-        {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
-      </div>
-      </li>
-    {{/each}}
-  </ul>
-{{else}}
+{{#unless App.rsConnected}}
   <div class="no-bookmarks">
-    <p>You haven&#39;t stored any bookmarks yet.</p>
-    <p>{{#linkTo "bookmarks.new"}}Add the first one{{/linkTo}}</p>
+    <p>Welcome to the alpha version of Webmarks!</p>
+    <p>
+      Please connect your remote storage first. (This will not be necessary in
+      the final version of this app.)
+    </p>
   </div>
-{{/if}}
+{{else}}
+  {{#if model}}
+    <ul class="bookmark-list">
+      {{#each item in arrangedContent}}
+        <li class="bookmark pure-g-r">
+        <div class="pure-u-1-6">
+          <a class="screenshot" href="#">
+            <img class="media-object" alt="">
+          </a>
+        </div>
+        <div class="body pure-u-5-6">
+          <h4 class="heading">
+            <a {{bindAttr href="item.url"}}>{{item.title}}</a>
+          </h4>
+          <p class="meta">
+            <span class="domain">{{item.domain}}<span>
+            &middot;
+            <span class="date">{{item.createdAtTimeAgo}}<span>
+            {{#if item.updatedAt}}
+              (updated <span class="date">{{item.updatedAtTimeAgo}})<span>
+            {{/if}}
+            {{#if item.tags}}
+              &middot;
+              {{#each tag in item.tags}}
+              <span class="tag">{{tag}}</span>
+              {{/each}}
+            {{/if}}
+            &middot;
+            {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
+            &middot;
+            <a {{action 'remove' item}}>delete</a>
+          </p>
+          {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
+        </div>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="no-bookmarks">
+      <p>You haven&#39;t stored any bookmarks yet.</p>
+      <p>{{#linkTo "bookmarks.new"}}Add the first one{{/linkTo}}</p>
+    </div>
+  {{/if}}
+{{/unless}}
