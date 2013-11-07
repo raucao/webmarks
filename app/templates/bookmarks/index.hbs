@@ -15,6 +15,9 @@
           <span class="domain">{{item.domain}}<span>
           &middot;
           <span class="date">{{item.createdAtTimeAgo}}<span>
+          {{#if item.updatedAt}}
+            (updated <span class="date">{{item.updatedAtTimeAgo}})<span>
+          {{/if}}
           {{#if item.tags}}
             &middot;
             {{#each tag in item.tags}}
