@@ -26,6 +26,10 @@ var BookmarksNewController = Ember.ObjectController.extend({
           console.log(error);
         }
       );
+    },
+
+    cancel: function() {
+      window.history.back();
     }
   }
 
