@@ -15,7 +15,10 @@ var Bookmark = Ember.Object.extend({
   }.property('url'),
 
   serialize: function() {
-    return this.getProperties('url', 'title', 'description');
+    var serialized = this.getProperties('url', 'title', 'description');
+    var tags = this.get('tags');
+    serialized.tags = tags.split(',').map($.trim);
+    return serialized;
   }.property()
 
 });
