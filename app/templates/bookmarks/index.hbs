@@ -14,17 +14,17 @@
         <p class="meta">
           <span class="domain">{{item.domain}}<span>
           &middot;
-          <span class="date">{{item.createdAt}}<span>
-          &middot;
-          {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
-          &middot;
-          <button {{action 'remove' item}}>delete</button>
+          <span class="date">{{item.createdAtTimeAgo}}<span>
           {{#if item.tags}}
             &middot;
             {{#each tag in item.tags}}
             <span class="tag">{{tag}}</span>
             {{/each}}
           {{/if}}
+          &middot;
+          {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
+          &middot;
+          <a {{action 'remove' item}}>delete</a>
         </p>
         {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
       </div>

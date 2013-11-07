@@ -8,6 +8,10 @@ var Bookmark = Ember.Object.extend({
   createdAt: null,
   updatedAt: null,
 
+  createdAtTimeAgo: function() {
+    return moment(this.get('createdAt')).fromNow();
+  }.property('createdAt'),
+
   domain: function() {
     var a = document.createElement('a');
     a.href = this.get('url');
