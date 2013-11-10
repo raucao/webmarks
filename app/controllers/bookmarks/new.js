@@ -31,7 +31,7 @@ var BookmarksNewController = Ember.ObjectController.extend({
     },
 
     cancel: function() {
-      window.history.back();
+      this.transitionToRoute('index');
     }
   }
 
