@@ -62,15 +62,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "commit", {hash:{
     'on': ("submit")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(" class=\"pure-form pure-form-aligned\">\n    <fieldset>\n      <div class=\"pure-control-group\">\n        <label for=\"url\">URL</label>\n        ");
-  hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
-  hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
-    'valueBinding': ("url"),
-    'id': ("url"),
-    'class': ("pure-input-1-2")
-  },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"title\">Title</label>\n        ");
+  data.buffer.push(" class=\"pure-form pure-form-aligned\">\n    <fieldset>\n      <div class=\"pure-control-group\">\n        <label for=\"title\">Title</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -78,7 +70,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("title"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-control-group\">\n        <label for=\"description\">Description</label>\n        ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"url\">URL</label>\n        ");
+  hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
+  hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
+    'valueBinding': ("url"),
+    'id': ("url"),
+    'class': ("pure-input-1-2")
+  },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"description\">Description</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -86,7 +86,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("description"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-control-group\">\n        <label for=\"tags\">Tags</label>\n        ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"tags\">Tags</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -94,7 +94,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("tags"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-controls\">\n        <button type=\"submit\" class=\"pure-button pure-button-primary\">Save</button>\n        <button ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-controls\">\n        <button type=\"submit\" class=\"pure-button pure-button-primary\">Save</button>\n        <button ");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "cancel", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -265,8 +265,18 @@ function program16(depth0,data) {
 define('appkit/templates/bookmarks/new', [], function(){ return Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', hashContexts, hashTypes, escapeExpression=this.escapeExpression;
+  var buffer = '', stack1, hashContexts, hashTypes, escapeExpression=this.escapeExpression, self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = '', hashTypes, hashContexts;
+  data.buffer.push("\n<section id=\"bookmarklet\">\n  <h3>Use the bookmarklet</h3>\n  <p>Drag this to your bookmarks toolbar:</p>\n  <p>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "bookmarklet-link", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</p>\n</section>\n");
+  return buffer;
+  }
 
   data.buffer.push("<section id=\"bookmark-new\">\n  <h2>Add a new bookmark</h2>\n\n  <form ");
   hashContexts = {'on': depth0};
@@ -274,15 +284,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "commit", {hash:{
     'on': ("submit")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(" class=\"pure-form pure-form-aligned\">\n    <fieldset>\n      <div class=\"pure-control-group\">\n        <label for=\"url\">URL</label>\n        ");
-  hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
-  hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
-    'valueBinding': ("url"),
-    'id': ("url"),
-    'class': ("pure-input-1-2")
-  },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"title\">Title</label>\n        ");
+  data.buffer.push(" class=\"pure-form pure-form-aligned\">\n    <fieldset>\n      <div class=\"pure-control-group\">\n        <label for=\"title\">Title</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -290,7 +292,15 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("title"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-control-group\">\n        <label for=\"description\">Description</label>\n        ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"url\">URL</label>\n        ");
+  hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
+  hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
+    'valueBinding': ("url"),
+    'id': ("url"),
+    'class': ("pure-input-1-2")
+  },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"description\">Description</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -298,7 +308,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("description"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-control-group\">\n        <label for=\"tags\">Tags</label>\n        ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-control-group\">\n        <label for=\"tags\">Tags</label>\n        ");
   hashContexts = {'valueBinding': depth0,'id': depth0,'class': depth0};
   hashTypes = {'valueBinding': "STRING",'id': "STRING",'class': "STRING"};
   data.buffer.push(escapeExpression(helpers.view.call(depth0, "Ember.TextField", {hash:{
@@ -306,11 +316,16 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'id': ("tags"),
     'class': ("pure-input-1-2")
   },contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n      </div>\n\n      <div class=\"pure-controls\">\n        <button type=\"submit\" class=\"pure-button pure-button-primary\">Save</button>\n        <button ");
+  data.buffer.push("\n      </div>\n      <div class=\"pure-controls\">\n        <button type=\"submit\" class=\"pure-button pure-button-primary\">Save</button>\n        <button ");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "cancel", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(" class=\"pure-button back-button\">Cancel</button>\n      </div>\n    </p>\n  </form>\n</section>\n");
+  data.buffer.push(" class=\"pure-button back-button\">Cancel</button>\n      </div>\n    </p>\n  </form>\n</section>\n\n");
+  hashTypes = {};
+  hashContexts = {};
+  stack1 = helpers.unless.call(depth0, "bookmarkletUsed", {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
   return buffer;
   
 }); });

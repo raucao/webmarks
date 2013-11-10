@@ -125,12 +125,8 @@ section#bookmark-new .pure-control-group input[type=text] {
   font-size: 16px;
   font-family: "Open Sans", "Helvetica Neue", sans-serif;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/basti\/src\/webmarks\/app\/styles\/style\.scss}line{font-family:\00003119}}
-section#bookmark-new h2 {
-  margin-left: 160px;
-}
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/basti\/src\/webmarks\/app\/styles\/style\.scss}line{font-family:\00003131}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/basti\/src\/webmarks\/app\/styles\/style\.scss}line{font-family:\00003128}}
 #import-delicious-html {
   display: none;
 }

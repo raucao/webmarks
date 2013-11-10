@@ -8,14 +8,14 @@
   <script src="/assets/remotestorage/remotestorage.js"></script>
   <script src="/assets/remotestorage/remotestorage-bookmarks.js"></script>
 
-  <script src="/assets/3b591265.vendor.min.js"></script>
+  <script src="/assets/f9432727.vendor.min.js"></script>
 
-  <script src="/assets/39e8102c.app.min.js"></script>
+  <script src="/assets/25d1eed5.app.min.js"></script>
 </head>
 <body>
   <div id="remotestorage-connect"></div>
   <script>
-    /* ENV = {FEATURES: {'query-params': true}}; */
+    Ember.FEATURES["query-params"] = true;
     window.App = require('appkit/app').create();
   </script>
 </body>

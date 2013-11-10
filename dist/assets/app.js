@@ -174,6 +174,8 @@ define("appkit/controllers/bookmarks/new",
 
       archiveBookmarksBinding: 'App.archiveBookmarks',
 
+      bookmarkletUsed: false,
+
       actions: {
         commit: function() {
           self = this;
@@ -199,7 +201,7 @@ define("appkit/controllers/bookmarks/new",
         },
 
         cancel: function() {
-          window.history.back();
+          this.transitionToRoute('index');
         }
       }
 
@@ -218,6 +220,17 @@ define("appkit/controllers/index",
 
 
     return IndexController;
+  });
+define("appkit/helpers/bookmarklet-link",
+  [],
+  function() {
+    "use strict";
+    var bookmarkletLink = Ember.Handlebars.makeBoundHelper(function() {
+      return new Handlebars.SafeString("<a href=\"javascript:void(location.href='"+window.location.origin+"/bookmarks/new/?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title))\" class=\"pure-button\">Create Webmark</a>");
+    });
+
+
+    return bookmarkletLink;
   });
 define("appkit/helpers/reverse-word",
   [],
@@ -283,15 +296,15 @@ define("appkit/router",
   [],
   function() {
     "use strict";
-    var Router = Ember.Router.extend(); // ensure we don't share routes between all Router instances
+    var Router = Ember.Router.extend();
 
     Router.map(function() {
       this.route('component-test');
       this.route('helper-test');
 
       this.resource('bookmarks', { path: '/bookmarks' }, function() {
-        this.route('new');
-        this.route('edit', {path: 'edit/:bookmark_id'});
+        this.route('new', { queryParams: ['title', 'url'] });
+        this.route('edit', { path: 'edit/:bookmark_id' });
       });
       this.route('import', { path: "/import" });
     });
@@ -336,8 +349,14 @@ define("appkit/routes/bookmarks/new",
 
     var BookmarksNewRoute = Ember.Route.extend({
 
-      model: function() {
-        return Bookmark.create();
+      setupController: function(controller, context, queryParams) {
+        var bookmark = {};
+        if (queryParams.title && queryParams.url) {
+          bookmark.title = queryParams.title;
+          bookmark.url = queryParams.url;
+          controller.set('bookmarkletUsed', true);
+        }
+        controller.set('content', Bookmark.create(bookmark));
       }
 
     });
