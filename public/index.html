@@ -12,7 +12,7 @@
   <script src="/vendor/jquery/jquery.js"></script>
   <script src="/vendor/handlebars/handlebars.js"></script>
   <script src="/vendor/momentjs/min/moment.min.js"></script>
-  <script src="/vendor/ember/ember.js"></script>
+  <script src="/vendor/ember/ember.canary.js"></script>
   <script src="/vendor/ember-data-shim/ember-data.js"></script>
   <script src="/vendor/almond.js"></script>
   <script src="/vendor/resolver.js"></script>
@@ -26,7 +26,7 @@
 <body>
   <div id="remotestorage-connect"></div>
   <script>
-    /* ENV = {FEATURES: {'query-params': true}}; */
+    Ember.FEATURES["query-params"] = true;
     window.App = require('appkit/app').create();
   </script>
 </body>

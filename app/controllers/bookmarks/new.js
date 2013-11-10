@@ -4,6 +4,8 @@ var BookmarksNewController = Ember.ObjectController.extend({
 
   archiveBookmarksBinding: 'App.archiveBookmarks',
 
+  bookmarkletUsed: false,
+
   actions: {
     commit: function() {
       self = this;

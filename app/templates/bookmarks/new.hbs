@@ -4,24 +4,21 @@
   <form {{action commit on="submit"}} class="pure-form pure-form-aligned">
     <fieldset>
       <div class="pure-control-group">
+        <label for="title">Title</label>
+        {{view Ember.TextField valueBinding="title" id="title" class="pure-input-1-2"}}
+      </div>
+      <div class="pure-control-group">
         <label for="url">URL</label>
         {{view Ember.TextField valueBinding="url" id="url" class="pure-input-1-2"}}
       </div>
       <div class="pure-control-group">
-        <label for="title">Title</label>
-        {{view Ember.TextField valueBinding="title" id="title" class="pure-input-1-2"}}
-      </div>
-
-      <div class="pure-control-group">
         <label for="description">Description</label>
         {{view Ember.TextField valueBinding="description" id="description" class="pure-input-1-2"}}
       </div>
-
       <div class="pure-control-group">
         <label for="tags">Tags</label>
         {{view Ember.TextField valueBinding="tags" id="tags" class="pure-input-1-2"}}
       </div>
-
       <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary">Save</button>
         <button {{action 'cancel'}} class="pure-button back-button">Cancel</button>
@@ -29,3 +26,11 @@
     </p>
   </form>
 </section>
+
+{{#unless bookmarkletUsed}}
+<section id="bookmarklet">
+  <h3>Use the bookmarklet</h3>
+  <p>Drag this to your bookmarks toolbar:</p>
+  <p>{{bookmarklet-link}}</p>
+</section>
+{{/unless}}
