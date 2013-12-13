@@ -51,7 +51,7 @@ App.initializer({
     var archiveClient = remoteStorage.bookmarks.client.scope('archive/');
 
     archiveClient.on('change', function(event){
-      if (event.origin !== 'remote') { return; }
+      if (!event.origin.match(/remote|local/)) { return; }
       var item;
 
       // New object coming in from remote
