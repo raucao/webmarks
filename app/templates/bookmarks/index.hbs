@@ -18,7 +18,7 @@
         </div>
         <div class="body pure-u-5-6">
           <h4 class="heading">
-            <a {{bindAttr href="item.url"}}>{{item.title}}</a>
+            <a {{bind-attr href="item.url"}}>{{item.title}}</a>
           </h4>
           <p class="meta">
             <span class="domain">{{item.domain}}<span>
@@ -34,7 +34,7 @@
               {{/each}}
             {{/if}}
             &middot;
-            {{#linkTo "bookmarks.edit" item}}edit{{/linkTo}}
+            {{link-to "edit" "bookmarks.edit" item}}
             &middot;
             <a {{action 'remove' item}}>delete</a>
           </p>
@@ -46,7 +46,7 @@
   {{else}}
     <div class="no-bookmarks">
       <p>You haven&#39;t stored any bookmarks yet.</p>
-      <p>{{#linkTo "bookmarks.new"}}Add the first one{{/linkTo}}</p>
+      <p>{{#link-to "bookmarks.new"}}Add the first one{{/link-to}}</p>
     </div>
   {{/if}}
 {{/unless}}
