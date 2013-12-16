@@ -11,22 +11,22 @@ var BookmarksIndexController = Ember.ArrayController.extend({
     this._super();
     self = this;
 
-    // remoteStorage.bookmarks.archive.getAll().then(
-    //   function(bookmarks) {
-    //     bookmarks.forEach(function(bookmark){
-    //       var item = Bookmark.create({
-    //         id: bookmark.id,
-    //         url: bookmark.url,
-    //         title: bookmark.title,
-    //         description: bookmark.description,
-    //         tags: bookmark.tags,
-    //         createdAt: bookmark.createdAt
-    //       });
+    remoteStorage.bookmarks.archive.getAll().then(
+      function(bookmarks) {
+        bookmarks.forEach(function(bookmark){
+          var item = Bookmark.create({
+            id: bookmark.id,
+            url: bookmark.url,
+            title: bookmark.title,
+            description: bookmark.description,
+            tags: bookmark.tags,
+            createdAt: bookmark.createdAt
+          });
 
-    //       self.pushObject(item);
-    //     });
-    //   }
-    // );
+          self.pushObject(item);
+        });
+      }
+    );
   },
 
   actions: {

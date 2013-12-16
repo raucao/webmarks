@@ -138,8 +138,11 @@
 
   var SyncedGetPutDelete = {
     get: function(path) {
+      var that = this;
       if (this.caching.cachePath(path)) {
-        return this.local.get(path);
+        return this.caching.waitForPath(path).then(function() {
+          return that.local.get(path);
+        });
       } else {
         return this.remote.get(path);
       }
@@ -1414,13 +1417,15 @@
         });
         RemoteStorage.log('got profile', profile, 'and link', link);
         if (link) {
-          var authURL = link.properties['auth-endpoint'] ||
-            link.properties['http://tools.ietf.org/html/rfc6749#section-4.2'];
-          cachedInfo[userAddress] = { href: link.href, type: link.type, authURL: authURL };
+          var authURL = link.properties['http://tools.ietf.org/html/rfc6749#section-4.2']
+                  || link.properties['auth-endpoint'],
+            storageType = link.properties['http://remotestorage.io/spec/version']
+                  || link.type;
+          cachedInfo[userAddress] = { href: link.href, type: storageType, authURL: authURL };
           if (hasLocalStorage) {
             localStorage[SETTINGS_KEY] = JSON.stringify({ cache: cachedInfo });
           }
-          callback(link.href, link.type, authURL);
+          callback(link.href, storageType, authURL);
         } else {
           tryOne();
         }
@@ -3916,10 +3921,15 @@ Math.uuid = function (len, radix) {
      *
      * Enable caching for the given path.
      *
+     * here, `data` is true if both folder listings and
+     * documents in the subtree should be cached,
+     * and false to indicate that only folder listings,
+     * not documents in the subtree should be cached.
+     *
      * Parameters:
      *   path - Absolute path to a directory.
      */
-    enable: function(path) { this.set(path, { data: true }); },
+    enable: function(path) { this.set(path, { data: true, ready: false }); },
     /**
      * Method: disable
      *
@@ -3940,6 +3950,9 @@ Math.uuid = function (len, radix) {
     },
 
     set: function(path, settings) {
+      if((typeof(settings) === 'object') && (settings.ready)) {
+        this.resolveQueue(path);
+      }
       this._validateDirPath(path);
       if(typeof(settings) !== 'object') {
         throw new Error("settings is required");
@@ -3965,28 +3978,104 @@ Math.uuid = function (len, radix) {
     },
 
     /**
+     ** queue methods
+     **/
+
+    /**
+     * Method: waitForPath
+     *
+     * Queues a promise and fulfills it when the local cache is ready
+     *
+     * path: the path for which we want to be notified when it's ready in local
+     *
+     * Returns: a promise
+     */
+    waitForPath: function(path) {
+      var promise = promising();
+      if(this.cachePathReady(path)) {
+        promise.fulfill();
+      } else {
+        if(!this.readyPromises) {
+          this.readyPromises = {};
+        }
+        if(!this.readyPromises[path]) {
+          this.readyPromises[path] = [];
+        }
+        this.readyPromises[path].push(promise);
+      }
+      return promise;
+    },
+
+    /**
+     * Method: resolveQueue
+     *
+     * rootPath: the subtree for which to fulfill queued promises
+     *
+     * resolves promises that were waiting for a part of the local cache to be ready
+     *
+     */
+    resolveQueue: function(rootPath) {
+      var path, i;
+      if(!this.readyPromises) {
+        return;
+      }
+      for(path in this.readyPromises) {
+        if(path.substring(0, rootPath.length) === rootPath) {
+          for(i=0; i<this.readyPromises[path].length; i++) {
+            this.readyPromises[path][i].fulfill();
+          }
+          delete this.readyPromises[path];
+        }
+      }
+    },
+
+
+    /**
      ** query methods
      **/
 
-    // Method: descendIntoPath
-    //
-    // Checks if the given directory path should be followed.
-    //
-    // Returns: true or false
+    /**
+     * Method: descendIntoPath
+     *
+     * Checks if the given directory path should be followed.
+     *
+     * Returns: true or false
+     */
     descendIntoPath: function(path) {
       this._validateDirPath(path);
       return !! this._query(path);
     },
 
-    // Method: cachePath
-    //
-    // Checks if given path should be cached.
-    //
-    // Returns: true or false
+    /**
+     * Method: cachePath
+     *
+     * Checks if given path should be cached.
+     *
+     * Returns: true or false
+     */
     cachePath: function(path) {
       this._validatePath(path);
       var settings = this._query(path);
-      return settings && (isDir(path) || settings.data);
+      if(isDir(path)) {
+        return !!settings;
+      } else {
+        return !!settings && (settings.data === true);
+      }
+    },
+
+    /**
+     * Method: cachePathReady
+     *
+     * Checks if given path should be cached and is ready (i.e. sync has completed at least once).
+     *
+     * Returns: true or false
+     */
+    cachePathReady: function(path) {
+      if(!this.cachePath(path)) {
+        return false;
+      }
+      var settings = this._query(path);
+      return ((typeof(settings) === 'object') && (settings.ready));
     },
 
     /**
@@ -4390,8 +4479,13 @@ Math.uuid = function (len, radix) {
       var path;
       while((path = roots.shift())) {
         (function (path) {
-          RemoteStorage.Sync.sync(rs.remote, rs.local, path, rs.caching.get(path)).
+          var cachingState = rs.caching.get(path);
+          RemoteStorage.Sync.sync(rs.remote, rs.local, path, cachingState).
             then(function() {
+              if(!cachingState.ready) {
+                cachingState.ready = true;
+                rs.caching.set(path, cachingState);
+              }
               if (aborted) { return; }
               i++;
               if (n === i) {
@@ -4399,6 +4493,7 @@ Math.uuid = function (len, radix) {
                 promise.fulfill();
               }
             }, function(error) {
+              rs.caching.set(path, {data: true, ready: true});
               console.error('syncing', path, 'failed:', error);
               if (aborted) { return; }
               aborted = true;
