@@ -40,10 +40,10 @@ module.exports = function(grunt) {
     init: false
   });
   grunt.loadTasks('tasks');
+  grunt.loadNpmTasks('grunt-browser-sync');
 
   config.env = process.env;
 
-  
 
 
   // App Kit's Main Tasks
@@ -96,6 +96,7 @@ module.exports = function(grunt) {
                      'build:debug',
                      'karma:server',
                      'connect:server',
+                     'browser_sync',
                      'watch'
                      ]);
 
@@ -104,6 +105,7 @@ module.exports = function(grunt) {
   grunt.registerTask('server', "Run your server in development mode, auto-rebuilding when files change.", [
                      'build:debug',
                      'connect:server',
+                     'browser_sync',
                      'watch'
                      ]);
 
