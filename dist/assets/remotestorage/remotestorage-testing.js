@@ -4220,12 +4220,14 @@ Math.uuid = function (len, radix) {
   function allDifferentKeys(a, b) {
     var keyObject = {};
     for (var ak in a) {
-      if (a[ak] !== b[ak]) {
+      if (JSON.stringify(a[ak]) !== JSON.stringify(b[ak])) {
+        console.log(a[ak], 'is not ', b[ak]);
         keyObject[ak] = true;
       }
     }
     for (var bk in b) {
-      if (a[bk] !== b[bk]) {
+      if (JSON.stringify(a[bk]) !== JSON.stringify(b[bk])) {
+        console.log(a[bk], 'is not ', b[bk]);
         keyObject[bk] = true;
       }
     }
