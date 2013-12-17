@@ -12,11 +12,11 @@ define("appkit/app",
     "use strict";
 
     var App = Ember.Application.extend({
-      LOG_ACTIVE_GENERATION: true,
-      LOG_MODULE_RESOLVER: true,
-      LOG_TRANSITIONS: true,
-      LOG_TRANSITIONS_INTERNAL: true,
-      LOG_VIEW_LOOKUPS: true,
+      // LOG_ACTIVE_GENERATION: true,
+      // LOG_MODULE_RESOLVER: true,
+      // LOG_TRANSITIONS: true,
+      // LOG_TRANSITIONS_INTERNAL: true,
+      // LOG_VIEW_LOOKUPS: true,
       modulePrefix: 'appkit', // TODO: loaded via config
       Resolver: Resolver,
       archiveBookmarks: [],
@@ -60,7 +60,7 @@ define("appkit/app",
         var archiveClient = remoteStorage.bookmarks.client.scope('archive/');
 
         archiveClient.on('change', function(event){
-          if (event.origin !== 'remote') { return; }
+          if (!event.origin.match(/remote/)) { return; }
           var item;
 
           // New object coming in from remote
@@ -76,6 +76,12 @@ define("appkit/app",
           }
 
           //TODO Object updated on remote
+          if (event.oldValue && event.newValue) {
+            item = Bookmark.create(event.newValue);
+            var oldItem = application.archiveBookmarks.findProperty('id', item.id);
+            if (oldItem) { application.archiveBookmarks.removeObject(oldItem); }
+            application.archiveBookmarks.pushObject(item);
+          }
         });
       }
     });
@@ -121,25 +127,27 @@ define("appkit/controllers/bookmarks/index",
       sortAscending: false,
 
       init: function() {
+        console.log('init bookmarks');
         this._super();
         self = this;
 
-        // remoteStorage.bookmarks.archive.getAll().then(
-        //   function(bookmarks) {
-        //     bookmarks.forEach(function(bookmark){
-        //       var item = Bookmark.create({
-        //         id: bookmark.id,
-        //         url: bookmark.url,
-        //         title: bookmark.title,
-        //         description: bookmark.description,
-        //         tags: bookmark.tags,
-        //         createdAt: bookmark.createdAt
-        //       });
+        remoteStorage.bookmarks.archive.getAll().then(
+          function(bookmarks) {
+            bookmarks.forEach(function(bookmark){
+              var item = Bookmark.create({
+                id: bookmark.id,
+                url: bookmark.url,
+                title: bookmark.title,
+                description: bookmark.description,
+                tags: bookmark.tags,
+                createdAt: bookmark.createdAt
+              });
 
-        //       self.pushObject(item);
-        //     });
-        //   }
-        // );
+              var existingItem = self.findProperty('id', bookmark.id);
+              if (!existingItem) { self.pushObject(item); }
+            });
+          }
+        );
       },
 
       actions: {
@@ -334,9 +342,6 @@ define("appkit/routes/bookmarks/index",
   function() {
     "use strict";
     var BookmarksIndexRoute = Ember.Route.extend({
-      model: function () {
-        return remoteStorage.bookmarks.archive.getAll();
-      }
     });
 
 
@@ -394,10 +399,15 @@ define("appkit/routes/helper_test",
     return HelperTestRoute;
   });
 define("appkit/routes/index",
-  [],
-  function() {
+  ["appkit/models/bookmark"],
+  function(Bookmark) {
     "use strict";
+
     var IndexRoute = Ember.Route.extend({
+      // TODO Initialize objects from here
+      // model: function () {
+      //   return remoteStorage.bookmarks.archive.getAll();
+      // }
 
       renderTemplate: function() {
         this.render('bookmarks/index');

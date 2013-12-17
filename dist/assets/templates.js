@@ -9,38 +9,19 @@ function program1(depth0,data) {
   data.buffer.push("webmarks");
   }
 
-function program3(depth0,data) {
-  
-  
-  data.buffer.push("Add");
-  }
-
-function program5(depth0,data) {
-  
-  
-  data.buffer.push("Import");
-  }
-
   data.buffer.push("<div class=\"container pure-g-r\">\n  <div class=\"header pure-u-1\">\n    <div class=\"pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal\">\n        ");
   hashContexts = {'class': depth0};
   hashTypes = {'class': "STRING"};
   options = {hash:{
     'class': ("pure-menu-heading")
   },inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers.linkTo || depth0.linkTo),stack1 ? stack1.call(depth0, "index", options) : helperMissing.call(depth0, "linkTo", "index", options));
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "index", options) : helperMissing.call(depth0, "link-to", "index", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n        <ul>\n          <li>");
   hashTypes = {};
   hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers.linkTo || depth0.linkTo),stack1 ? stack1.call(depth0, "bookmarks.new", options) : helperMissing.call(depth0, "linkTo", "bookmarks.new", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("</li>\n          <li>");
-  hashTypes = {};
-  hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers.linkTo || depth0.linkTo),stack1 ? stack1.call(depth0, "import", options) : helperMissing.call(depth0, "linkTo", "import", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  options = {hash:{},contexts:[depth0,depth0],types:["STRING","STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "Add", "bookmarks.new", options) : helperMissing.call(depth0, "link-to", "Add", "bookmarks.new", options))));
   data.buffer.push("</li>\n        </ul>\n    </div>\n  </div>\n  <div id=\"content\" class=\"pure-u-1\">\n  ");
   hashTypes = {};
   hashContexts = {};
@@ -120,7 +101,7 @@ function program3(depth0,data) {
   data.buffer.push("\n  ");
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers['if'].call(depth0, "model", {hash:{},inverse:self.program(15, program15, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  stack1 = helpers['if'].call(depth0, "model", {hash:{},inverse:self.program(13, program13, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n");
   return buffer;
@@ -142,9 +123,10 @@ function program5(depth0,data) {
   data.buffer.push("\n        <li class=\"bookmark pure-g-r\">\n        <div class=\"pure-u-1-6\">\n          <a class=\"screenshot\" href=\"#\">\n            <img class=\"media-object\" alt=\"\">\n          </a>\n        </div>\n        <div class=\"body pure-u-5-6\">\n          <h4 class=\"heading\">\n            <a ");
   hashContexts = {'href': depth0};
   hashTypes = {'href': "STRING"};
-  data.buffer.push(escapeExpression(helpers.bindAttr.call(depth0, {hash:{
+  options = {hash:{
     'href': ("item.url")
-  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers['bind-attr'] || depth0['bind-attr']),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "bind-attr", options))));
   data.buffer.push(">");
   hashTypes = {};
   hashContexts = {};
@@ -160,19 +142,18 @@ function program5(depth0,data) {
   data.buffer.push("<span>\n            ");
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers['if'].call(depth0, "item.updatedAt", {hash:{},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack2 = helpers['if'].call(depth0, "item.updatedAt", {hash:{},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n            ");
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers['if'].call(depth0, "item.tags", {hash:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  stack2 = helpers['if'].call(depth0, "item.tags", {hash:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n            &middot;\n            ");
   hashTypes = {};
   hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers.linkTo || depth0.linkTo),stack1 ? stack1.call(depth0, "bookmarks.edit", "item", options) : helperMissing.call(depth0, "linkTo", "bookmarks.edit", "item", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  options = {hash:{},contexts:[depth0,depth0,depth0],types:["STRING","STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "edit", "bookmarks.edit", "item", options) : helperMissing.call(depth0, "link-to", "edit", "bookmarks.edit", "item", options))));
   data.buffer.push("\n            &middot;\n            <a ");
   hashTypes = {};
   hashContexts = {};
@@ -180,7 +161,7 @@ function program5(depth0,data) {
   data.buffer.push(">delete</a>\n          </p>\n          ");
   hashTypes = {};
   hashContexts = {};
-  stack2 = helpers['if'].call(depth0, "item.description", {hash:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  stack2 = helpers['if'].call(depth0, "item.description", {hash:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n        </div>\n        </li>\n      ");
   return buffer;
@@ -220,12 +201,6 @@ function program9(depth0,data) {
 
 function program11(depth0,data) {
   
-  
-  data.buffer.push("edit");
-  }
-
-function program13(depth0,data) {
-  
   var buffer = '', hashTypes, hashContexts;
   data.buffer.push("<p class=\"description\">");
   hashTypes = {};
@@ -235,19 +210,19 @@ function program13(depth0,data) {
   return buffer;
   }
 
-function program15(depth0,data) {
+function program13(depth0,data) {
   
   var buffer = '', stack1, stack2, hashTypes, hashContexts, options;
   data.buffer.push("\n    <div class=\"no-bookmarks\">\n      <p>You haven&#39;t stored any bookmarks yet.</p>\n      <p>");
   hashTypes = {};
   hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(16, program16, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers.linkTo || depth0.linkTo),stack1 ? stack1.call(depth0, "bookmarks.new", options) : helperMissing.call(depth0, "linkTo", "bookmarks.new", options));
+  options = {hash:{},inverse:self.noop,fn:self.program(14, program14, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "bookmarks.new", options) : helperMissing.call(depth0, "link-to", "bookmarks.new", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("</p>\n    </div>\n  ");
   return buffer;
   }
-function program16(depth0,data) {
+function program14(depth0,data) {
   
   
   data.buffer.push("Add the first one");

@@ -2,15 +2,14 @@
 <html>
 <head>
   <title>Webmarks</title>
-  <link rel="stylesheet" href="/vendor/pure-min.css">
   <link rel="stylesheet" href="/assets/style.css">
 
-  <script src="/assets/remotestorage/remotestorage.js"></script>
+  <script src="/assets/remotestorage/remotestorage-testing.js"></script>
   <script src="/assets/remotestorage/remotestorage-bookmarks.js"></script>
 
-  <script src="/assets/f9432727.vendor.min.js"></script>
+  <script src="/assets/e9b46166.vendor.min.js"></script>
 
-  <script src="/assets/25d1eed5.app.min.js"></script>
+  <script src="/assets/d566f3d4.app.min.js"></script>
 </head>
 <body>
   <div id="remotestorage-connect"></div>
@@ -18,5 +17,8 @@
     Ember.FEATURES["query-params"] = true;
     window.App = require('appkit/app').create();
   </script>
+
+  <!-- <script src='http://192.168.1.9:3000/socket.io/socket.io.js'></script> -->
+  <!-- <script src='http://192.168.1.9:3001/browser-sync-client.min.js'></script> -->
 </body>
 </html>
