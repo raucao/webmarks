@@ -8,6 +8,7 @@ var BookmarksIndexController = Ember.ArrayController.extend({
   sortAscending: false,
 
   init: function() {
+    console.log('init bookmarks');
     this._super();
     self = this;
 
@@ -23,7 +24,8 @@ var BookmarksIndexController = Ember.ArrayController.extend({
             createdAt: bookmark.createdAt
           });
 
-          self.pushObject(item);
+          var existingItem = self.findProperty('id', bookmark.id);
+          if (!existingItem) { self.pushObject(item); }
         });
       }
     );
