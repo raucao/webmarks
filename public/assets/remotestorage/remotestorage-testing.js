@@ -1,4 +1,4 @@
-/** remotestorage.js 0.9.0-pre, http://remotestorage.io, MIT-licensed **/
+/** remotestorage.js 0.9.0, http://remotestorage.io, MIT-licensed **/
 
 /** FILE: lib/promising.js **/
 (function(global) {
@@ -205,18 +205,18 @@
     /**
      * Event: disconnect
      *
-     * depricated use disconnected
+     * deprecated use disconnected
      **/
     /**
      * Event: conflict
      *
-     * fired when a conflict occures
+     * fired when a conflict occurs
      * TODO: arguments, how does this work
      **/
     /**
      * Event: error
      *
-     * fired when an error occures
+     * fired when an error occurs
      *
      * Arguments:
      * the error
@@ -229,7 +229,7 @@
     /**
      * Event: connecting
      *
-     * fired before webfinger lookpu
+     * fired before webfinger lookup
      **/
     /**
      * Event: authing
@@ -1205,6 +1205,10 @@
               }.bind(this));
             }
             return promising().fulfill(status, listing, contentType, revision);
+          }
+          // No directory listing received
+          else if (status === 404) {
+            return promising().fulfill(404);
           }
           // Cached directory listing received
           else if (status === 304) {
@@ -4221,13 +4225,11 @@ Math.uuid = function (len, radix) {
     var keyObject = {};
     for (var ak in a) {
       if (JSON.stringify(a[ak]) !== JSON.stringify(b[ak])) {
-        console.log(a[ak], 'is not ', b[ak]);
         keyObject[ak] = true;
       }
     }
     for (var bk in b) {
       if (JSON.stringify(a[bk]) !== JSON.stringify(b[bk])) {
-        console.log(a[bk], 'is not ', b[bk]);
         keyObject[bk] = true;
       }
     }
@@ -4294,7 +4296,9 @@ Math.uuid = function (len, radix) {
               promise.fulfill();
             } else {
               local.putDirectory(path, remoteBody, remoteRevision).then(function() {
-                descendInto(remote, local, path, allDifferentKeys(localBody, remoteBody), promise);
+                // TODO Factor in  `cached` items of directory cache node
+                var differentObjects = allDifferentKeys(localBody, remoteBody);
+                descendInto(remote, local, path, differentObjects, promise);
               });
             }
           } else {
@@ -6292,7 +6296,12 @@ Math.uuid = function (len, radix) {
         // id is not cached (or file doesn't exist).
         // load parent directory listing to propagate / update id cache.
         this._getDir(parentPath(path)).then(function() {
-          callback(null, this._fileIdCache.get(path));
+          var id = this._fileIdCache.get(path);
+          if (!id) {
+            callback('no file or directory found at the path: ' + path, null);
+            return;
+          }
+          callback(null, id);
         }.bind(this), callback);
       }
     },
@@ -6318,7 +6327,7 @@ Math.uuid = function (len, radix) {
       options.headers['Authorization'] = 'Bearer ' + this.token;
       RS.WireClient.request.call(this, method, url, options, function(err, xhr) {
         // google tokens expire from time to time...
-        if(xhr.status === 401) {
+        if(xhr && xhr.status === 401) {
           this.connect();
           return;
         }
