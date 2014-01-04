@@ -10,13 +10,7 @@
   {{#if model}}
     <ul class="bookmark-list">
       {{#each item in arrangedContent}}
-        <li class="bookmark pure-g-r">
-        <div class="pure-u-1-6">
-          <a class="screenshot" href="#">
-            <img class="media-object" alt="">
-          </a>
-        </div>
-        <div class="body pure-u-5-6">
+        <li class="bookmark">
           <h4 class="heading">
             <a {{bind-attr href="item.url"}}>{{item.title}}</a>
           </h4>
@@ -39,7 +33,6 @@
             <a {{action 'remove' item}}>delete</a>
           </p>
           {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
-        </div>
         </li>
       {{/each}}
     </ul>

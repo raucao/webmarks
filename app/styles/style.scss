@@ -1,17 +1,19 @@
-$baseFontFamily: 'Open Sans', sans-serif;
+$baseFontFamily: 'Fira Sans OT', sans-serif;
 $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
-$navbarBackground: #259C66;
-$navbarBackgroundHighlight: #259C66;
 
-// @import "bootstrap-sass/lib/bootstrap";
 @import "compass";
-@import "pure-min";
 
-body {
-  // background: #F1F9F6;
+* {
+  margin: 0;
+  padding: 0;
+  @include box-sizing('border-box');
+}
+
+html, body {
   background: #f4f4f4;
-  font-family: "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: $baseFontFamily;
+  font-size: 16px;
 }
 
 a {
@@ -22,13 +24,58 @@ a:hover {
   color: $linkColorHover;
 }
 
-#content {
-  margin: 0 auto;
-  padding-top: 60px;
-  width: 70%;
-  max-width: 840px;
+nav, main, aside {
+  display: block;
 }
 
+aside {
+  position: fixed;
+  height: auto;
+  width: 10rem;
+  top: 0px;
+  bottom: 0px;
+  z-index: 23;
+  background: #232323;
+}
+
+main {
+  width: 100%;
+  padding-left: 10rem;
+}
+
+ul.bookmark-list {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+li.bookmark {
+  background: #fff;
+  border-bottom: 1px solid #efefef;
+  padding: 1rem 2rem;
+  h4 {
+    font-size: 1.4rem;
+  }
+  .meta {
+    color: #888;
+    font-size: 0.8rem;
+    .tag {
+      padding: 0 6px;
+      background: #efefef;
+      @include border-radius(3px);
+    }
+  }
+  .description {
+    margin-top: 0.4rem;
+  }
+}
+
+// IMPORT
+
+#import-delicious-html {
+  display: none;
+}
+
+// REMOTESTORAGE WIDGET
 
 #remotestorage-connect {
   top: 0;
@@ -40,92 +87,4 @@ a:hover {
 #remotestorage-widget {
   top: 0 !important;
   right: 15px !important;
-}
-
-.pure-menu.pure-menu-open.pure-menu-fixed {
-  border: none;
-}
-
-.header .pure-menu.transparent {
-  opacity: 0.8;
-}
-
-.pure-menu li a {
-  padding: 8px 20px;
-}
-
-.no-bookmarks {
-  padding-top: 60px;
-  padding-bottom: 100px;
-}
-
-.bookmark-list {
-  list-style: none;
-  padding-top: 60px;
-  padding-bottom: 140px;
-  li.bookmark {
-    margin-top: 20px;
-    padding: 20px;
-    background: #fff;
-    // @include border-radius(3px);
-    @include box-shadow(rgba(0,0,0,0.4) 0 0 2px);
-  }
-  .screenshot {
-    img {
-      display: block;
-      background: #efefef;
-      width: 100px;
-      height: 80px;
-      margin-right: 20px;
-    }
-  }
-  h4.heading {
-    font-size: 20px;
-    line-height: 1.2em;
-    margin: 0 0 7px 0;
-  }
-  .body {
-    p {
-      margin: 0;
-    }
-    p.meta {
-      color: #888;
-      font-size: 13px;
-      .tag {
-        background: #efefef;
-        @include border-radius(3px);
-        padding: 1px 4px 2px 4px;
-      }
-    }
-    p.description {
-      margin-top: 13px;
-      font-size: 15px;
-      margin-bottom: 0;
-      &:empty {
-        margin: 0;
-      }
-    }
-  }
-}
-
-section {
-  &#bookmark-new {
-    .pure-control-group {
-      padding: 7px 0;
-      input[type=text] {
-        font-size: 16px;
-        font-family: "Open Sans", "Helvetica Neue", sans-serif;
-      }
-    }
-  }
-}
-
-
-// .import-container {
-//   padding-top: 60px;
-//   padding-bottom: 100px;
-// }
-// 
-#import-delicious-html {
-  display: none;
 }

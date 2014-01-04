@@ -1,13 +1,13 @@
-<div class="container pure-g-r">
-  <div class="header pure-u-1">
-    <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
-        {{#link-to "index" class="pure-menu-heading"}}webmarks{{/link-to}}
-        <ul>
-          <li>{{link-to "Add" "bookmarks.new"}}</li>
-        </ul>
-    </div>
-  </div>
-  <div id="content" class="pure-u-1">
+<div class="container">
+  <aside>
+    {{#link-to "index" class="pure-menu-heading"}}Webmarks{{/link-to}}
+    <nav class="main">
+      <ul>
+        <li>{{link-to "Add" "bookmarks.new"}}</li>
+      </ul>
+    </nav>
+  </aside>
+  <main>
   {{outlet}}
-  <div>
+  </main>
 </div>
