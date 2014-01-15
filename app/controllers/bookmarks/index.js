@@ -4,10 +4,13 @@ var BookmarksIndexController = Ember.ArrayController.extend({
 
   contentBinding: 'App.archiveBookmarks',
 
+  filterText: '',
+
   sortProperties: ['createdAt'],
   sortAscending: false,
 
   init: function() {
+    // TODO move to route
     console.log('init bookmarks');
     this._super();
     self = this;
@@ -30,6 +33,22 @@ var BookmarksIndexController = Ember.ArrayController.extend({
       }
     );
   },
+
+  filteredContent: function() {
+    var filterText = this.get('filterText').toLowerCase();
+    if (Ember.isEmpty(filterText) || filterText.length < 3) {
+      return this.get('arrangedContent');
+    } else {
+      return this.get('arrangedContent').filter(function(item) {
+        console.log(item.tags);
+        var match = ( item.description.toLowerCase().indexOf(filterText) !== -1 ||
+                      item.title.toLowerCase().indexOf(filterText) !== -1 ||
+                      item.url.toLowerCase().indexOf(filterText) !== -1 ||
+                      item.tags.indexOf(filterText) !== -1 );
+        return match;
+      });
+    }
+  }.property('filterText'),
 
   actions: {
     remove: function(item) {

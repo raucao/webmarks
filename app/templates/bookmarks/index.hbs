@@ -7,9 +7,15 @@
     </p>
   </div>
 {{else}}
+  <section id="search">
+    <div class="search-input">
+      {{input value=filterText placeholder="Search"}}
+    </div>
+  </section>
+
   {{#if model}}
     <ul class="bookmark-list">
-      {{#each item in arrangedContent}}
+      {{#each item in filteredContent}}
         <li class="bookmark">
           <h4 class="heading">
             <a {{bind-attr href="item.url"}}>{{item.title}}</a>

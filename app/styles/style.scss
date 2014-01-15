@@ -1,4 +1,5 @@
-$baseFontFamily: 'Fira Sans OT', sans-serif;
+// $baseFontFamily: 'Fira Sans OT', sans-serif;
+$baseFontFamily: 'Helvetica Neue', sans-serif;
 $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
 
@@ -14,6 +15,7 @@ html, body {
   background: #f4f4f4;
   font-family: $baseFontFamily;
   font-size: 16px;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -43,9 +45,26 @@ main {
   padding-left: 10rem;
 }
 
+section#search {
+  position: fixed;
+  background: #f4f4f4;
+  padding: 24px 32px;
+  width: 100%;
+  input[type=text] {
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: $baseFontFamily;
+    background: #fff;
+    padding: 6px;
+    width: 50%;
+  }
+}
+
 ul.bookmark-list {
   list-style: none;
   margin-bottom: 2rem;
+  padding-top: 80px;
 }
 
 li.bookmark {
@@ -54,6 +73,8 @@ li.bookmark {
   padding: 1rem 2rem;
   h4 {
     font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: 6px;
   }
   .meta {
     color: #888;
@@ -65,7 +86,7 @@ li.bookmark {
     }
   }
   .description {
-    margin-top: 0.4rem;
+    margin-top: 8px;
   }
 }
 
