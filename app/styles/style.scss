@@ -4,6 +4,7 @@ $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
 
 @import "compass";
+@import "iconfont";
 
 * {
   margin: 0;
@@ -38,6 +39,31 @@ aside {
   bottom: 0px;
   z-index: 23;
   background: #232323;
+  header {
+    h1 {
+      a {
+        display: block;
+        background: #333;
+        padding: 24px 0;
+        line-height: 32px;
+        text-align: center;
+        font-size: 1rem;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: #888;
+      }
+    }
+  }
+  nav.main {
+    margin-top: 0.25rem;
+    li {
+      a {
+        display: block;
+        padding: 1rem;
+        text-decoration: none;
+      }
+    }
+  }
 }
 
 main {
@@ -99,8 +125,8 @@ li.bookmark {
 // REMOTESTORAGE WIDGET
 
 #remotestorage-connect {
-  top: 0;
-  right: 0;
+  top: 1rem;
+  right: 0.5rem;
   position: fixed;
   z-index: 1000000;
 }

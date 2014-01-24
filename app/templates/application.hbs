@@ -1,9 +1,11 @@
 <div class="container">
   <aside>
-    {{#link-to "index" class="pure-menu-heading"}}Webmarks{{/link-to}}
+    <header>
+      <h1>{{#link-to "index" class="pure-menu-heading"}}Webmarks{{/link-to}}</h1>
+    </header>
     <nav class="main">
       <ul>
-        <li>{{link-to "Add" "bookmarks.new"}}</li>
+        <li>{{#link-to "bookmarks.new"}}<i class="icon-plus"></i> Add new{{/link-to}}</li>
       </ul>
     </nav>
   </aside>

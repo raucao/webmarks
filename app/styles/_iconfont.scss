@@ -1,0 +1,43 @@
+@font-face {
+	font-family: 'webmarks';
+	src:url('/assets/fonts/webmarks.eot');
+	src:url('/assets/fonts/webmarks.eot?#iefix') format('embedded-opentype'),
+		url('/assets/fonts/webmarks.woff') format('woff'),
+		url('/assets/fonts/webmarks.ttf') format('truetype'),
+		url('/assets/fonts/webmarks.svg#webmarks') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'webmarks';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-paperclip:before {
+	content: "\e600";
+}
+.icon-export:before {
+	content: "\e601";
+}
+.icon-link:before {
+	content: "\e602";
+}
+.icon-plus:before {
+	content: "\e603";
+}
+.icon-pencil:before {
+	content: "\e604";
+}
+.icon-trash:before {
+	content: "\e605";
+}
