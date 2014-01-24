@@ -44,9 +44,8 @@ aside {
       a {
         display: block;
         background: #333;
-        padding: 24px 0;
+        padding: 1.5rem;
         line-height: 32px;
-        text-align: center;
         font-size: 1rem;
         text-transform: uppercase;
         text-decoration: none;
@@ -59,8 +58,13 @@ aside {
     li {
       a {
         display: block;
-        padding: 1rem;
+        padding: 1rem 1.5rem;
         text-decoration: none;
+        color: #888;
+        &:hover {
+          background: #333;
+          color: $linkColorHover;
+        }
       }
     }
   }
@@ -97,8 +101,9 @@ li.bookmark {
   background: #fff;
   border-bottom: 1px solid #efefef;
   padding: 1rem 2rem;
+  position: relative;
   h4 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 500;
     margin-bottom: 6px;
   }
@@ -114,6 +119,23 @@ li.bookmark {
   .description {
     margin-top: 8px;
   }
+  .actions {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    a {
+      padding: 0.25rem 0.5rem;
+      color: #888;
+      line-height: 1.4rem;
+      text-decoration: none;
+      border: 1px solid #f4f4f4;
+      @include border-radius(0.25rem);
+      &:hover {
+        color: $linkColorHover;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 // IMPORT
@@ -126,7 +148,7 @@ li.bookmark {
 
 #remotestorage-connect {
   top: 1rem;
-  right: 0.5rem;
+  right: 1rem;
   position: fixed;
   z-index: 1000000;
 }

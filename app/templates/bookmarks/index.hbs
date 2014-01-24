@@ -33,11 +33,11 @@
               <span class="tag">{{tag}}</span>
               {{/each}}
             {{/if}}
-            &middot;
-            {{link-to "edit" "bookmarks.edit" item}}
-            &middot;
-            <a {{action 'remove' item}}>delete</a>
           </p>
+          <div class="actions">
+            {{#link-to "bookmarks.edit" item}}<i class="icon-pencil"></i>{{/link-to}}
+            <a {{action 'remove' item}}><i class="icon-trash"></i></a>
+          </div>
           {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
         </li>
       {{/each}}
