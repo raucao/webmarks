@@ -32,9 +32,14 @@ var Bookmark = Ember.Object.extend({
       serialized.createdAt = createdAt;
     }
 
-    if (tags.length > 0) {
-      serialized.tags = tags.split(',').map($.trim);
+    if (tags && tags.length > 0) {
+      if ((typeof tags) === 'string') {
+        serialized.tags = tags.split(',').map($.trim);
+      } else {
+        serialized.tags = tags;
+      }
     }
+
     return serialized;
   }.property()
 
