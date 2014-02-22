@@ -8,6 +8,7 @@
 /vendor/*
 !/vendor/almond.js
 !/vendor/resolver.js
+!/vendor/ember/ember.canary.js
 
 # misc
 /.sass-cache
