@@ -1,15 +1,15 @@
-// CoffeeScript compilation. This must be enabled by modification
+// EmberScript compilation. This must be enabled by modification
 // of Gruntfile.js.
 //
 // The `bare` option is used since this file will be transpiled
-// anyway. In CoffeeScript files, you need to escape out for
+// anyway. In EmberScript files, you need to escape out for
 // some ES6 features like import and export. For example:
 //
 // `import User from 'appkit/models/user'`
 //
-// Post = Em.Object.extend
+// class Post
 //   init: (userId) ->
-//     @set 'user', User.findById(userId)
+//     @user = User.findById(userId)
 //
 // `export default Post`
 //
@@ -22,7 +22,7 @@ module.exports = {
     files: [{
       expand: true,
       cwd: 'tests/',
-      src: '**/*.coffee',
+      src: '**/*.em',
       dest: 'tmp/javascript/tests',
       ext: '.js'
     }]
@@ -34,7 +34,7 @@ module.exports = {
     files: [{
       expand: true,
       cwd: 'app/',
-      src: '**/*.coffee',
+      src: '**/*.em',
       dest: 'tmp/javascript/app',
       ext: '.js'
     }]

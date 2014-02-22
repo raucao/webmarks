@@ -2,8 +2,8 @@ module.exports = {
   compile: {
     files: {
       src: [
-        'tmp/public/assets/*.css',
-        'tmp/public/assets/*.js'
+        'tmp/result/assets/*.css',
+        'tmp/result/assets/*.js'
       ]
     },
     options: {

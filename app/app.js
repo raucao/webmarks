@@ -1,5 +1,5 @@
 import Resolver from 'resolver';
-import registerComponents from 'appkit/utils/register_components';
+// import registerComponents from 'appkit/utils/register_components';
 import Bookmark from 'appkit/models/bookmark';
 
 var App = Ember.Application.extend({
@@ -9,18 +9,18 @@ var App = Ember.Application.extend({
   // LOG_TRANSITIONS_INTERNAL: true,
   // LOG_VIEW_LOOKUPS: true,
   modulePrefix: 'appkit', // TODO: loaded via config
-  Resolver: Resolver,
+  Resolver: Resolver['default'],
   archiveBookmarks: [],
   rsConnecting: false,
   rsConnected: false
 });
 
-App.initializer({
-  name: 'Register Components',
-  initialize: function(container, application) {
-    registerComponents(container);
-  }
-});
+// App.initializer({
+//   name: 'Register Components',
+//   initialize: function(container, application) {
+//     registerComponents(container);
+//   }
+// });
 
 App.initializer({
   name: "remoteStorage",

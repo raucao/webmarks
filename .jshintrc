@@ -1,6 +1,7 @@
 {
   "predef": [
     "document",
+    "__dirname",
     "window",
     "location",
     "setTimeout",

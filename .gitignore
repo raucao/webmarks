@@ -9,6 +9,8 @@
 !/vendor/almond.js
 !/vendor/resolver.js
 !/vendor/ember/ember.canary.js
+!/vendor/remotestorage/remotestorage-testing.js
+!/vendor/remotestorage/remotestorage-bookmarks.js
 
 # misc
 /.sass-cache

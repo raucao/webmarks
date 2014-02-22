@@ -1,48 +1,71 @@
 module.exports = {
-  // These copy tasks happen before transpile or hinting. They
-  // prepare the build pipeline by moving JavaScript files to
-  // tmp/javascript.
-  //
-  "prepare": {
+
+  // Note: These tasks are listed in the order in which they will run.
+
+  javascriptToTmp: {
     files: [{
       expand: true,
-      cwd: 'app/',
+      cwd: 'app',
       src: '**/*.js',
       dest: 'tmp/javascript/app'
     },
     {
       expand: true,
-      cwd: 'tests/',
-      src: ['**/*.js', '!test_helper.js', '!test_loader.js', '!vendor/**/*.js'],
+      cwd: 'tests',
+      src: ['**/*.js', '!test-helper.js', '!test-loader.js'],
       dest: 'tmp/javascript/tests/'
     }]
   },
-  // Stage moves files to their final destinations after the rest
-  // of the build cycle has run.
-  //
-  "stage": {
+
+  cssToResult: {
+    expand: true,
+    cwd: 'app/styles',
+    src: ['**/*.css'],
+    dest: 'tmp/result/assets'
+  },
+
+  // Assembles everything in `tmp/result`.
+  // The sole purpose of this task is to keep things neat. Gathering everything in one
+  // place (tmp/dist) enables the subtasks of dist to only look there. Note: However,
+  // for normal development this is done on the fly by the development server.
+  assemble: {
     files: [{
       expand: true,
-      cwd: 'tests/',
-      src: ['index.html', 'test_helper.js', 'test_loader.js', 'vendor/**/*'],
-      dest: 'tmp/public/tests/'
-    },
-    {
+      cwd: 'tests',
+      src: ['test-helper.js', 'test-loader.js'],
+      dest: 'tmp/result/tests/'
+    }, {
       expand: true,
-      cwd: 'public/',
+      cwd: 'public',
       src: ['**'],
-      dest: 'tmp/public/'
-    }]
+      dest: 'tmp/result/'
+    }, {
+      src: ['vendor/**/*.js', 'vendor/**/*.css'],
+      dest: 'tmp/result/'
+    }, {
+      src: ['config/environment.js', 'config/environments/production.js'],
+      dest: 'tmp/result/'
+    }
+
+    ]
   },
-  "vendor": {
-    src: ['vendor/**/*.js', 'vendor/**/*.css'],
-    dest: 'tmp/public/'
+
+  imageminFallback: {
+    files: '<%= imagemin.dist.files %>'
   },
-  "dist": {
+
+  dist: {
     files: [{
       expand: true,
-      cwd: 'tmp/public',
-      src: ['**', '!coverage'],
+      cwd: 'tmp/result',
+      src: [
+        '**',
+        '!**/*.{css,js}', // Already handled by concat
+        '!**/*.{png,gif,jpg,jpeg}', // Already handled by imagemin
+        '!tests/**/*', // No tests, please
+        '!**/*.map' // No source maps
+      ],
+      filter: 'isFile',
       dest: 'dist/'
     }]
   },
