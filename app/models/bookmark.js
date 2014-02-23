@@ -28,7 +28,6 @@ var Bookmark = Ember.Object.extend({
 
     var createdAt = this.get('createdAt');
     if (createdAt !== null) {
-      console.log(typeof createdAt);
       serialized.createdAt = createdAt;
     }
 
