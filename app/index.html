@@ -86,8 +86,19 @@
   </script>
   <!-- @endif -->
 
-  <script src='//localhost:3000/socket.io/socket.io.js'></script>
-  <script>var ___socket___ = io.connect('http://localhost:3000');</script>
-  <script src='//localhost:3001/client/browser-sync-client.0.6.0.js'></script>
+  <!-- @if dist=false -->
+  <script>
+    var script1 = document.createElement('script');
+    var script2 = document.createElement('script');
+    var body    = document.getElementsByTagName("body")[0];
+    script1.src = '//'+window.location.hostname+':3000/socket.io/socket.io.js';
+    script2.src = '//'+window.location.hostname+':3001/client/browser-sync-client.0.6.0.js';
+    script1.onload = function() {
+      window.___socket___ = io.connect('//'+window.location.hostname+':3000');
+      body.appendChild(script2);
+    };
+    body.appendChild(script1);
+  </script>
+  <!-- @endif -->
 </body>
 </html>
