@@ -47,7 +47,7 @@ nav, main, aside {
 aside {
   position: fixed;
   height: auto;
-  width: 10rem;
+  width: 4rem;
   top: 0px;
   bottom: 0px;
   z-index: 23;
@@ -55,28 +55,48 @@ aside {
   header {
     h1 {
       a {
-        display: block;
-        background: #333;
-        padding: 1.5rem;
-        line-height: 32px;
-        font-size: 1rem;
-        text-transform: uppercase;
         text-decoration: none;
-        color: #888;
+        display: block;
+        height: 5rem;
+        padding-top: 1.25rem;
+        text-align: center;
+        border-bottom: 1px solid lighten($darkGrey, 5%);
+        @include single-transition(all, 0.1s, linear);
+        &:hover {
+          background: lighten($darkGrey, 5%);
+          color: $bodyBgColor;
+          @include single-transition(all, 0.1s, linear);
+        }
+        img {
+          border: none;
+          width: 2.5rem;
+          height: 2.5rem;
+        }
       }
     }
   }
   nav.main {
-    margin-top: 0.25rem;
+    margin-top: 1.5rem;
     li {
       a {
         display: block;
-        padding: 1rem 1.5rem;
         text-decoration: none;
         color: #888;
+        white-space: nowrap;
+        overflow: hidden;
+        font-weight: normal;
+        i::before {
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          width: 2rem;
+          height: 2rem;
+          font-size: 2rem;
+        }
+        @include single-transition(all, 0.1s, linear);
         &:hover {
-          background: #333;
-          color: $linkColorHover;
+          background: lighten($darkGrey, 5%);
+          color: $bodyBgColor;
+          @include single-transition(all, 0.1s, linear);
         }
       }
     }
@@ -85,7 +105,7 @@ aside {
 
 main {
   width: 100%;
-  padding-left: 10rem;
+  padding-left: 4rem;
 }
 
 section#search {
