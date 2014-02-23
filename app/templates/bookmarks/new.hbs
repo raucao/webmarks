@@ -1,29 +1,31 @@
 <section id="bookmark-new">
-  <h2>Add a new bookmark</h2>
+  <header>
+    <h2>Add a new bookmark</h2>
+  </header>
 
-  <form {{action commit on="submit"}} class="pure-form pure-form-aligned">
+  <form {{action commit on="submit"}}>
     <fieldset>
-      <div class="pure-control-group">
+      <div class="control-group">
         <label for="title">Title</label>
-        {{view Ember.TextField valueBinding="title" id="title" class="pure-input-1-2"}}
+        {{view Ember.TextField valueBinding="title" id="title"}}
       </div>
-      <div class="pure-control-group">
+      <div class="control-group">
         <label for="url">URL</label>
-        {{view Ember.TextField valueBinding="url" id="url" class="pure-input-1-2"}}
+        {{view Ember.TextField valueBinding="url" id="url"}}
       </div>
-      <div class="pure-control-group">
+      <div class="control-group">
         <label for="description">Description</label>
-        {{view Ember.TextField valueBinding="description" id="description" class="pure-input-1-2"}}
+        {{view Ember.TextField valueBinding="description" id="description"}}
       </div>
-      <div class="pure-control-group">
+      <div class="control-group">
         <label for="tags">Tags</label>
-        {{view Ember.TextField valueBinding="tags" id="tags" class="pure-input-1-2"}}
+        {{view Ember.TextField valueBinding="tags" id="tags"}}
       </div>
-      <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary">Save</button>
-        <button {{action 'cancel'}} class="pure-button back-button">Cancel</button>
-      </div>
-    </p>
+    </fieldset>
+    <div class="controls">
+      <button type="submit" class="pure-button pure-button-primary">Save</button>
+      <button {{action 'cancel'}} class="pure-button back-button">Cancel</button>
+    </div>
   </form>
 </section>
 

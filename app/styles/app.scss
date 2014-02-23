@@ -1,4 +1,3 @@
-// $baseFontFamily: 'Fira Sans OT', sans-serif;
 $baseFontFamily: 'Helvetica Neue', sans-serif;
 $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
@@ -10,6 +9,14 @@ $linkColorHover: darken($linkColor, 5%);
   margin: 0;
   padding: 0;
   @include box-sizing('border-box');
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: transparent;
+}
+*:hover, *:active, *:focus {
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -136,6 +143,74 @@ li.bookmark {
         cursor: pointer;
       }
     }
+  }
+}
+
+#bookmark-new, #bookmark-edit {
+  header {
+    background: #f4f4f4;
+    padding: 1.5rem 2rem;
+    h2 {
+      line-height: 2rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+  }
+  form {
+    display: block;
+    background: #fff;
+    padding: 2rem 2rem;
+    fieldset {
+      border: none;
+    }
+    .control-group {
+      display: block;
+      position: relative;
+      margin-bottom: 1.5rem;
+      label {
+        display: block;
+        width: 7rem;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+        line-height: 1rem;
+        color: #888;
+        text-transform: uppercase;
+        // background: #ccc;
+      }
+      input[type=text] {
+        display: inline-block;
+        width: 50%;
+        padding: 0.3rem 0.5rem 0.3rem 7rem;
+        font-family: $baseFontFamily;
+        font-size: 1rem;
+        line-height: 1rem;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        @include border-radius(0.5rem);
+        &:focus {
+          border-color: $linkColor;
+          @include single-transition(border-color, 0.2s, linear);
+        }
+      }
+    }
+    .controls {
+      padding-top: 0.5rem;
+    }
+  }
+}
+
+section#bookmarklet {
+  padding: 1.5rem 2rem;
+  h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  p {
+    margin-bottom: 1rem;
   }
 }
 
