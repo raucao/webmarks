@@ -1,6 +1,9 @@
+$bodyBgColor: #f4f4f4;
+$bodyTextColor: #232323;
 $baseFontFamily: 'Helvetica Neue', sans-serif;
 $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
+$darkGrey: #232323;
 
 @import "compass";
 @import "iconfont";
@@ -9,21 +12,24 @@ $linkColorHover: darken($linkColor, 5%);
   margin: 0;
   padding: 0;
   @include box-sizing('border-box');
+  -moz-outline: none;
   outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
 }
 *:hover, *:active, *:focus {
+  -moz-outline: none;
   outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
-  background: #f4f4f4;
+  background: $bodyBgColor;
   font-family: $baseFontFamily;
   font-size: 16px;
   text-rendering: optimizeLegibility;
+  color: $bodyTextColor;
 }
 
 a {
@@ -45,7 +51,7 @@ aside {
   top: 0px;
   bottom: 0px;
   z-index: 23;
-  background: #232323;
+  background: $darkGrey;
   header {
     h1 {
       a {
@@ -152,7 +158,7 @@ li.bookmark {
     padding: 1.5rem 2rem;
     h2 {
       line-height: 2rem;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: bold;
     }
   }
@@ -205,12 +211,48 @@ li.bookmark {
 section#bookmarklet {
   padding: 1.5rem 2rem;
   h3 {
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 1rem;
   }
   p {
     margin-bottom: 1rem;
+  }
+}
+
+.button {
+  background: #ccc;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: $darkGrey;
+  color: #ccc;
+  font-size: 0.7rem;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  cursor: default;
+  @include border-radius(0.3rem);
+  &:hover, &:focus {
+    cursor: default;
+    color: #ccc;
+    background-color: lighten($darkGrey, 10%);
+    @include single-transition(background-color, 0.2s, linear);
+  }
+  &.button-primary {
+    background: $linkColor;
+    color: #fff;
+    &:hover, &:focus {
+      color: #fff;
+      background-color: lighten($linkColor, 10%);
+    }
+  }
+  &.button-secondary {
+    background: darken($bodyBgColor, 5%);
+    color: $bodyTextColor;
+    &:hover, &:focus {
+      background-color: darken($bodyBgColor, 15%);
+    }
   }
 }
 
