@@ -2,20 +2,20 @@ import Bookmark from 'appkit/models/bookmark';
 
 var BookmarksNewRoute = Ember.Route.extend({
 
-  // model: function(params, transition, queryParams) {
-  //   console.log('PARAMS', queryParams);
-    // return Bookmark.create();
-  // },
-
-  setupController: function(controller, context, queryParams) {
+  model: function(params) {
     var bookmark = {};
-    console.log('PARAMS', queryParams);
-    // if (queryParams && queryParams.title && queryParams.url) {
-    //   bookmark.title = queryParams.title;
-    //   bookmark.url = queryParams.url;
-    //   controller.set('bookmarkletUsed', true);
-    // }
-    controller.set('content', Bookmark.create(bookmark));
+    if (params.title && params.url) {
+      bookmark.title = params.title;
+      bookmark.url = params.url;
+    }
+    return Bookmark.create(bookmark);
+  },
+
+  setupController: function(controller, bookmark) {
+    if (bookmark.title.length > 0) {
+      controller.set('bookmarkletUsed', true);
+    }
+    this._super(controller, bookmark);
   }
 
 });

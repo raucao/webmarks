@@ -2,6 +2,8 @@ import Bookmark from 'appkit/models/bookmark';
 
 var BookmarksNewController = Ember.ObjectController.extend({
 
+  queryParams: ['title', 'url'],
+
   archiveBookmarksBinding: 'App.archiveBookmarks',
 
   bookmarkletUsed: false,
