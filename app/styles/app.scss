@@ -276,6 +276,26 @@ section#bookmarklet {
   }
 }
 
+// WELCOME
+
+section#welcome {
+  margin: 4rem;
+  h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  p {
+    font-size: 1.3rem;
+    font-weight: normal;
+    margin-bottom: 1rem;
+    &.hint {
+      font-size: 1rem;
+      color: #888;
+    }
+  }
+}
+
 // IMPORT
 
 #import-delicious-html {
