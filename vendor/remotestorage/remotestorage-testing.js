@@ -542,6 +542,7 @@
 
         if (this.remote) {
           this.remote.on('connected', function(){
+            console.log('rs testing: connected');
             fireReady();
             self._emit('connected');
           });
@@ -550,7 +551,9 @@
             self._emit('not-connected');
           });
           if (this.remote.connected) {
+            console.log('rs testing: already connected');
             fireReady();
+            self._emit('connected');
           }
         }
 

@@ -2,6 +2,13 @@ import Bookmark from 'appkit/models/bookmark';
 
 var BookmarksNewRoute = Ember.Route.extend({
 
+  beforeModel: function() {
+    var app = this.controllerFor('application');
+    if (!app.get('rsConnected')) {
+      this.transitionTo('welcome');
+    }
+  },
+
   model: function(params) {
     var bookmark = {};
     if (params.title && params.url) {
