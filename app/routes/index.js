@@ -6,6 +6,12 @@ var IndexRoute = Ember.Route.extend({
   //   return remoteStorage.bookmarks.archive.getAll();
   // }
 
+  redirect: function() {
+    if (!remoteStorage.connected) {
+      this.transitionTo('welcome');
+    }
+  },
+
   renderTemplate: function() {
     this.render('bookmarks/index');
     // uses bookmarks/index controller

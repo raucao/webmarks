@@ -3,16 +3,16 @@ import Resolver from 'resolver';
 import Bookmark from 'appkit/models/bookmark';
 
 var App = Ember.Application.extend({
-  // LOG_ACTIVE_GENERATION: true,
-  // LOG_MODULE_RESOLVER: true,
-  // LOG_TRANSITIONS: true,
-  // LOG_TRANSITIONS_INTERNAL: true,
+  LOG_ACTIVE_GENERATION: true,
+  LOG_MODULE_RESOLVER: true,
+  LOG_TRANSITIONS: true,
+  LOG_TRANSITIONS_INTERNAL: true,
   // LOG_VIEW_LOOKUPS: true,
   modulePrefix: 'appkit', // TODO: loaded via config
   Resolver: Resolver['default'],
   archiveBookmarks: [],
   rsConnecting: false,
-  rsConnected: false
+  rsConnected: remoteStorage.connected
 });
 
 // App.initializer({
@@ -43,22 +43,36 @@ App.initializer({
     // RemoteStorage.I18n.setDictionary(dictionary);
 
     remoteStorage.on('ready', function() {
+      console.log('rs.on ready');
+      // application.set('rsConnecting', false);
+      // application.set('rsConnected', false);
+    });
+    remoteStorage.on('connected', function() {
+      console.log('rs.on connected');
       application.set('rsConnecting', false);
-      application.set('rsConnected', true );
+      application.set('rsConnected', true);
+    });
+    remoteStorage.on('not-connected', function() {
+      console.log('rs.on not-connected');
+      application.set('rsConnecting', false);
+      application.set('rsConnected', false);
     });
     remoteStorage.on('disconnected', function() {
+      console.log('rs.on disconnected');
       application.set('rsConnecting', false);
-      application.set('rsConnected', false );
+      application.set('rsConnected', false);
 
       application.set('archiveBookmarks', []);
     });
     remoteStorage.on('connecting', function() {
+      console.log('rs.on connecting');
       application.set('rsConnecting', true);
-      application.set('rsConnected', false );
+      application.set('rsConnected', false);
     });
     remoteStorage.on('authing', function() {
+      console.log('rs.on authing');
       application.set('rsConnecting', true);
-      application.set('rsConnected', false );
+      application.set('rsConnected', false);
     });
 
     var archiveClient = remoteStorage.bookmarks.client.scope('archive/');

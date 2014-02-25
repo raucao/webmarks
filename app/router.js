@@ -4,6 +4,8 @@ Router.map(function() {
   this.route('component-test');
   this.route('helper-test');
 
+  this.route('welcome', { path: "/welcome" });
+
   this.resource('bookmarks', { path: '/bookmarks' }, function() {
     this.route('new', { queryParams: ['title', 'url'] });
     this.route('edit', { path: 'edit/:bookmark_id' });
