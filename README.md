@@ -8,7 +8,7 @@ Bookmark manager for your [remote storage](http://remotestorage.io).
 
 Install dependencies:
 
-    bundle install && npm install && bower install
+    bundle install && npm install
 
 Run development server:
 
