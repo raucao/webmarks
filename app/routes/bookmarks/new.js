@@ -3,8 +3,7 @@ import Bookmark from 'appkit/models/bookmark';
 var BookmarksNewRoute = Ember.Route.extend({
 
   beforeModel: function() {
-    var app = this.controllerFor('application');
-    if (!app.get('rsConnected')) {
+    if (!remoteStorage.connected) {
       this.transitionTo('welcome');
     }
   },
