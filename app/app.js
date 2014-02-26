@@ -1,4 +1,4 @@
-import Resolver from 'resolver';
+import Resolver from 'ember/resolver';
 // import registerComponents from 'appkit/utils/register_components';
 import Bookmark from 'appkit/models/bookmark';
 
