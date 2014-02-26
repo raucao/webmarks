@@ -6,6 +6,8 @@ Bookmark manager for your [remote storage](http://remotestorage.io).
 
 ## Development setup
 
+Prerequisites: [Bundler](http://bundler.io/), [node.js](http://nodejs.org/), [Bower](http://bower.io/).
+
 Install dependencies:
 
     bundle install && npm install
