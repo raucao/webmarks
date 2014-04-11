@@ -495,7 +495,7 @@
       }
 
       this._loadFeatures(function(features) {
-        this.log('all features loaded');
+        this.log('[RemoteStorage] All features loaded');
         this.local = features.local && new features.local();
         // this.remote set by WireClient._rs_init as lazy property on
         // RS.prototype
@@ -591,58 +591,74 @@
         }
       }
 
-      function featureInitializedCb(name) {
-        return function() {
-          self.log("[FEATURE "+name+"] initialized.");
-          features.push( {
-            name : name,
-            init :  RemoteStorage[name]._rs_init,
-            supported : true,
-            cleanup : RemoteStorage[name]._rs_cleanup
-          } );
-          featureDone();
-        };
+      function featureInitialized(name) {
+        self.log("[RemoteStorage] [FEATURE "+name+"] initialized.");
+        features.push({
+          name : name,
+          init :  RemoteStorage[name]._rs_init,
+          supported : true,
+          cleanup : RemoteStorage[name]._rs_cleanup
+        });
+        featureDone();
       }
 
-      function featureFailedCb(name) {
-        return function(err) {
-          self.log("[FEATURE "+name+"] initialization failed ( "+err+")");
-          featureDone();
-        };
+      function featureFailed(name, err) {
+        self.log("[RemoteStorage] [FEATURE "+name+"] initialization failed ( "+err+")");
+        featureDone();
       }
 
-      function featureSupportedCb(name) {
-        return function(success) {
-          self.log("[FEATURE "+name+"]" + success ? "":" not"+" supported");
-          if (!success) {
-            featureDone();
-          }
-        };
+      function featureSupported(name, success) {
+        self.log("[RemoteStorage] [FEATURE "+name+"]" + success ? "":" not"+" supported");
+        if (!success) {
+          featureDone();
+        }
+      }
+
+      function initFeature(name) {
+        var initResult;
+        try {
+          initResult = RemoteStorage[name]._rs_init(self);
+        } catch(e) {
+          featureFailed(name, e);
+          return;
+        }
+        if (typeof(initResult) === 'object' && typeof(initResult.then) === 'function') {
+          initResult.then(
+            function(){ featureInitialized(name); },
+            function(err){ featureFailed(name, err); }
+          );
+        } else {
+          featureInitialized(name);
+        }
       }
 
       featureList.forEach(function(featureName) {
-        self.log("[FEATURE " + featureName + "] initializing...");
+        self.log("[RemoteStorage] [FEATURE " + featureName + "] initializing...");
         var impl = RemoteStorage[featureName];
-        var initializedCb = featureInitializedCb(featureName);
-        var failedCb = featureFailedCb(featureName);
-        var supportedCb = featureSupportedCb(featureName);
+        var supported;
 
-        if (impl && (!impl._rs_supported || impl._rs_supported())) {
-          supportedCb(true);
-          var initResult;
-          try {
-            initResult = impl._rs_init(self);
-          } catch(e) {
-            failedCb(e);
-            return;
+        if (impl) {
+          supported = !impl._rs_supported || impl._rs_supported();
+
+          if (typeof supported === 'object') {
+            supported.then(
+              function(){
+                featureSupported(featureName, true);
+                initFeature(featureName);
+              },
+              function(){
+                featureSupported(featureName, false);
+              }
+            );
           }
-          if (typeof(initResult) === 'object' && typeof(initResult.then) === 'function') {
-            initResult.then(initializedCb, failedCb);
-          } else {
-            initializedCb();
+          else if (typeof supported === 'boolean') {
+            featureSupported(featureName, supported);
+            if (supported) {
+              initFeature(featureName);
+            }
           }
         } else {
-          supportedCb(false);
+          featureSupported(featureName, false);
         }
       });
     },
@@ -724,26 +740,6 @@
   };
 
   /**
-   * Method: claimAccess
-   *
-   * High-level method to claim access on one or multiple scopes and enable
-   * caching for them. WARNING: when using Caching control, use remoteStorage.access.claim instead,
-   * see https://github.com/remotestorage/remotestorage.js/issues/380
-   *
-   * Examples:
-   *   (start code)
-   *     remoteStorage.claimAccess('foo', 'rw');
-   *     // is equivalent to:
-   *     remoteStorage.claimAccess({ foo: 'rw' });
-   *
-   *     // is equivalent to:
-   *     remoteStorage.access.claim('foo', 'rw');
-   *     remoteStorage.caching.enable('/foo/');
-   *     remoteStorage.caching.enable('/public/foo/');
-   *   (end code)
-   */
-
-  /**
    * Property: connected
    *
    * Boolean property indicating if remoteStorage is currently connected.
@@ -803,7 +799,7 @@
       if (typeof(handler) !== 'function') {
         throw new Error('Argument handler should be a function');
       }
-      RemoteStorage.log('Adding event listener', eventName, handler);
+      RemoteStorage.log('[Eventhandling] Adding event listener', eventName, handler);
       this._validateEvent(eventName);
       this._handlers[eventName].push(handler);
     },
@@ -877,8 +873,8 @@
    *   };
    *
    *   var myObject = new MyConstructor();
-   *   myObject.on('connected', function() { RemoteStorage.log('connected'); });
-   *   myObject.on('disconnected', function() { RemoteStorage.log('disconnected'); });
+   *   myObject.on('connected', function() { console.log('connected'); });
+   *   myObject.on('disconnected', function() { console.log('disconnected'); });
    *   // This would throw an exception as well:
    *   // myObject.on('something-else', function() {});
    *   (end code)
@@ -1135,17 +1131,17 @@
           });
           self.online = true;
           if (isErrorStatus(response.status)) {
-            RemoteStorage.log('239 revision', response.status);
+            RemoteStorage.log('[WireClient] Error response status', response.status);
             if (getEtag) {
               revision = stripQuotes(response.getResponseHeader('ETag'));
             } else {
-              revision = response.status === 200 ? fakeRevision : undefined;
+              revision = undefined;
             }
             promise.fulfill(response.status, undefined, undefined, revision);
           } else if (isSuccessStatus(response.status) ||
                      (response.status === 200 && method !== 'GET')) {
             revision = stripQuotes(response.getResponseHeader('ETag'));
-            RemoteStorage.log('242 revision', revision);
+            RemoteStorage.log('[WireClient] Successful request', revision);
             promise.fulfill(response.status, undefined, undefined, revision);
           } else {
             var mimeType = response.getResponseHeader('Content-Type');
@@ -1156,9 +1152,9 @@
               revision = response.status === 200 ? fakeRevision : undefined;
             }
 
-            if ((! mimeType) || mimeType.match(/charset=binary/)) {
+            if ((!mimeType) || mimeType.match(/charset=binary/)) {
               RS.WireClient.readBinaryData(response.response, mimeType, function(result) {
-                RemoteStorage.log('255 revision', revision);
+                RemoteStorage.log('[WireClient] Successful request with unknown or binary mime-type', revision);
                 promise.fulfill(response.status, result, mimeType, revision);
               });
             } else {
@@ -1167,7 +1163,7 @@
               } else {
                 body = response.responseText;
               }
-              RemoteStorage.log('264 revision', revision);
+              RemoteStorage.log('[WireClient] Successful request', revision);
               promise.fulfill(response.status, body, mimeType, revision);
             }
           }
@@ -1316,7 +1312,7 @@
 
   // Shared request function used by WireClient, GoogleDrive and Dropbox.
   RS.WireClient.request = function(method, url, options, callback) {
-    RemoteStorage.log(method, url);
+    RemoteStorage.log('[WireClient]', method, url);
 
     callback = callback.bind(this);
 
@@ -1441,7 +1437,7 @@
       var xhr = new XMLHttpRequest();
       var url = urls.shift();
       if (!url) { return callback(); }
-      RemoteStorage.log('try url', url);
+      RemoteStorage.log('[Discover] Trying URL', url);
       xhr.open('GET', url, true);
       xhr.onabort = xhr.onerror = function() {
         console.error("webfinger error", arguments, '(', url, ')');
@@ -1454,13 +1450,13 @@
         try {
           profile = JSON.parse(xhr.responseText);
         } catch(e) {
-          RemoteStorage.log("Failed to parse profile ", xhr.responseText, e);
+          RemoteStorage.log("[Discover] Failed to parse profile ", xhr.responseText, e);
           tryOne();
           return;
         }
 
         if (!profile.links) {
-          RemoteStorage.log("profile has no links section ", JSON.stringify(profile));
+          RemoteStorage.log("[Discover] Profile has no links section ", JSON.stringify(profile));
           tryOne();
           return;
         }
@@ -1473,7 +1469,7 @@
             link = l;
           }
         });
-        RemoteStorage.log('got profile', profile, 'and link', link);
+        RemoteStorage.log('[Discover] Got profile', profile, 'and link', link);
         if (link) {
           var authURL = link.properties['http://tools.ietf.org/html/rfc6749#section-4.2']
                   || link.properties['auth-endpoint'],
@@ -1538,7 +1534,7 @@
   }
 
   RemoteStorage.Authorize = function(authURL, scope, redirectUri, clientId) {
-    RemoteStorage.log('Authorize authURL = ', authURL);
+    RemoteStorage.log('[Authorize] authURL = ', authURL);
 
     var url = authURL;
     url += authURL.indexOf('?') > 0 ? '&' : '?';
@@ -1652,8 +1648,8 @@
      *
      * Example:
      *   (start code)
-     *   remoteStorage.access.claim('foo', 'r');
-     *   remoteStorage.access.claim('bar', 'rw');
+     *   remoteStorage.access.claim('contacts', 'r');
+     *   remoteStorage.access.claim('pictures', 'rw');
      */
     claim: function(scope, mode) {
       if (typeof(scope) !== 'string' || scope.indexOf('/') !== -1 || scope.length === 0) {
@@ -1775,19 +1771,6 @@
     },
     configurable: true
   });
-
-  // Documented in src/remotestorage.js
-  // TODO claimAccess is outdated, should be deleted soon
-  // Also, this does not even do what the docs say anymore.
-  RemoteStorage.prototype.claimAccess = function(scopes) {
-    if (typeof(scopes) === 'object') {
-      for (var key in scopes) {
-        this.access.claim(key, scopes[key]);
-      }
-    } else {
-      this.access.claim(arguments[0], arguments[1]);
-    }
-  };
 
   RemoteStorage.Access._rs_init = function() {};
 })(typeof(window) !== 'undefined' ? window : global);
@@ -1934,9 +1917,9 @@ RemoteStorage.Assets = {
   };
 
   function stateSetter(widget, state) {
-    RemoteStorage.log('Producing stateSetter for', state);
+    RemoteStorage.log('[Widget] Producing stateSetter for', state);
     return function() {
-      RemoteStorage.log('Setting state', state, arguments);
+      RemoteStorage.log('[Widget] Setting state', state, arguments);
       if (hasLocalStorage) {
         localStorage[LS_STATE_KEY] = state;
       }
@@ -1961,7 +1944,7 @@ RemoteStorage.Assets = {
       } else if (error instanceof RemoteStorage.Unauthorized) {
         widget.view.setState('unauthorized');
       } else {
-        RemoteStorage.log('Unknown error');
+        RemoteStorage.log('[Widget] Unknown error');
         widget.view.setState('error', [error]);
       }
     };
@@ -2053,7 +2036,7 @@ RemoteStorage.Assets = {
       if (typeof(this.rs.sync) === 'object' && typeof(this.rs.sync.sync) === 'function') {
         this.view.on('sync', this.rs.sync.sync.bind(this.rs.sync));
       } else {
-        RemoteStorage.log('typeof this.rs.sync check fail', this.rs.sync);
+        RemoteStorage.log('[Widget] typeof this.rs.sync check fail', this.rs.sync);
         setTimeout(this.linkWidgetToSync.bind(this), 1000);
       }
     },
@@ -2226,7 +2209,7 @@ RemoteStorage.Assets = {
      *   args
      **/
     setState: function(state, args) {
-      RemoteStorage.log('widget.view.setState(',state,',',args,');');
+      RemoteStorage.log('[View] widget.view.setState(',state,',',args,');');
       var s = this.states[state];
       if (typeof(s) === 'undefined') {
         throw new Error("Bad State assigned to view: " + state);
@@ -3502,19 +3485,6 @@ Math.uuid = function (len, radix) {
 
   RS.BaseClient.prototype = {
 
-    // TODO has been lagacy for a long time, should be removed
-    // BEGIN LEGACY
-    use: function(path) {
-      deprecate('BaseClient#use(path)', 'BaseClient#cache(path)');
-      return this.cache(path);
-    },
-
-    release: function(path) {
-      deprecate('BaseClient#release(path)', 'BaseClient#cache(path, false)');
-      return this.cache(path, false);
-    },
-    // END LEGACY
-
     extend: function(object) {
       for (var key in object) {
         this[key] = object[key];
@@ -3869,12 +3839,12 @@ Math.uuid = function (len, radix) {
         throw 'Argument \'path\' of baseClient.cache must be a string';
       }
       if (strategy === false) {
-        deprecate('caching strategy <false> is deprecated, please use <"FLUSH"> instead');
+        deprecate('caching strategy <false>', '<"FLUSH">');
         strategy = 'FLUSH';
       } else if (strategy === undefined) {
         strategy = 'ALL';
-      } else if (strategy) {
-        deprecate('that caching strategy is deprecated, please use <"ALL"> instead');
+      } else if (typeof(strategy) !== 'string') {
+        deprecate('that caching strategy', '<"ALL">');
         strategy = 'ALL';
       }
       if (strategy !== 'FLUSH' &&
@@ -3884,6 +3854,7 @@ Math.uuid = function (len, radix) {
             + '["FLUSH", "SEEN", "ALL"]';
       }
       this.storage.caching.set(this.makePath(path), strategy);
+      return this;
     },
 
     flush: function(path) {
@@ -4214,7 +4185,7 @@ Math.uuid = function (len, radix) {
      */
     onActivate: function(cb) {
       var i;
-      RemoteStorage.log('setting activate handler', cb, this.pendingActivations);
+      RemoteStorage.log('[Caching] Setting activate handler', cb, this.pendingActivations);
       this.activateHandler = cb;
       for (i=0; i<this.pendingActivations.length; i++) {
         cb(this.pendingActivations[i]);
@@ -4295,6 +4266,38 @@ Math.uuid = function (len, radix) {
 
   function equal(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  function equalObj(x, y) {
+    var p;
+    for (p in y) {
+      if (typeof(x[p]) === 'undefined') {return false;}
+    }
+    for (p in y) {
+      if (y[p]) {
+        switch (typeof(y[p])) {
+          case 'object':
+            if (!y[p].equals(x[p])) { return false; }
+            break;
+          case 'function':
+            if (typeof(x[p])==='undefined' ||
+                (p !== 'equals' && y[p].toString() !== x[p].toString())) {
+              return false;
+            }
+            break;
+          default:
+            if (y[p] !== x[p]) { return false; }
+        }
+      } else {
+        if (x[p]) { return false; }
+      }
+    }
+    for (p in x) {
+      if(typeof(y[p]) === 'undefined') {
+        return false;
+      }
+    }
+    return true;
   }
 
   function isFolder(path) {
@@ -4437,7 +4440,7 @@ Math.uuid = function (len, radix) {
         }
 
         if (this.isCorrupt(node)) {
-          RemoteStorage.log('WARNING: corrupt node in local cache', node);
+          RemoteStorage.log('[Sync] WARNING: corrupt node in local cache', node);
           if (typeof(node) === 'object' && node.path) {
             this.addTask(node.path);
             num++;
@@ -4482,6 +4485,7 @@ Math.uuid = function (len, radix) {
       if (node.remote && node.remote.itemsMap === undefined && node.remote.body === undefined) {
         return true;
       }
+      return false;
     },
 
     needsPush: function(node) {
@@ -4549,7 +4553,7 @@ Math.uuid = function (len, radix) {
       for (var path in nodes) {
         // Strategy is 'FLUSH' and no local changes exist
         if (this.caching.checkPath(path) === 'FLUSH' && !nodes[path].local) {
-          RemoteStorage.log('Flushing', path);
+          RemoteStorage.log('[Sync] Flushing', path);
           nodes[path] = undefined; // Cause node to be flushed from cache
         }
       }
@@ -4630,6 +4634,11 @@ Math.uuid = function (len, radix) {
               node.local.itemsMap[itemName] = false;
             }
           }
+
+          // TODO test
+          if (equalObj(node.local.itemsMap, node.common.itemsMap)) {
+            delete node.local;
+          }
         }
       }
       return node;
@@ -4638,7 +4647,7 @@ Math.uuid = function (len, radix) {
     autoMergeDocument: function(node) {
       if (node.remote.body !== undefined) {
         // keep/revert:
-        RemoteStorage.log('Emitting keep/revert');
+        RemoteStorage.log('[Sync] Emitting keep/revert');
 
         this.local._emit('change', {
           origin:         'conflict',
@@ -4685,6 +4694,15 @@ Math.uuid = function (len, radix) {
             }
           }
         }
+      } else {
+        this.local._emit('change', {
+          origin:   'remote',
+          path:     node.path,
+          oldValue: (node.common.body === false ? undefined : node.common.body),
+          newValue: undefined
+        });
+
+        return undefined;
       }
       return node;
     },
@@ -4758,7 +4776,25 @@ Math.uuid = function (len, radix) {
                 recurse[nodePath+localItem] = true;
               }
             }
-            changedNodes[nodePath] = undefined;
+
+            if (node.remote || isFolder(nodePath)) {
+              changedNodes[nodePath] = undefined;
+            } else {
+              changedNodes[nodePath] = this.autoMerge(node);
+
+              if (typeof changedNodes[nodePath] === 'undefined') {
+                var parentPath = this.getParentPath(nodePath);
+                var parentNode = changedNodes[parentPath];
+                var itemName = nodePath.substring(path.length);
+                if (parentNode && parentNode.local) {
+                  delete parentNode.local.itemsMap[itemName];
+
+                  if (equalObj(parentNode.local.itemsMap, parentNode.common.itemsMap)) {
+                    delete parentNode.local;
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -4815,14 +4851,26 @@ Math.uuid = function (len, radix) {
     },
 
     completeFetch: function(path, bodyOrItemsMap, contentType, revision) {
-      var promise = this.local.getNodes([path]).then(function(nodes) {
+      var paths;
+      var parentPath;
+      var pathsFromRoot = this.local._getInternals().pathsFromRoot(path);
+
+      if (!isFolder(path)) {
+        parentPath = pathsFromRoot[1];
+        paths = [path, parentPath];
+      } else {
+        paths = [path];
+      }
+
+      var promise = this.local.getNodes(paths).then(function(nodes) {
         var itemName;
         var missingChildren = {};
         var node = nodes[path];
+        var parentNode;
 
-        collectMissingChildren = function(nodeSet) {
-          if (nodeSet && nodeSet.itemsMap) {
-            for (var itemName in nodeSet.itemsMap) {
+        collectMissingChildren = function(folder) {
+          if (folder && folder.itemsMap) {
+            for (var itemName in folder.itemsMap) {
               if (!bodyOrItemsMap[itemName]) {
                 missingChildren[itemName] = true;
               }
@@ -4836,6 +4884,7 @@ Math.uuid = function (len, radix) {
             path: path,
             common: {}
           };
+          nodes[path] = node;
         }
 
         node.remote = {
@@ -4845,7 +4894,6 @@ Math.uuid = function (len, radix) {
 
         if (isFolder(path)) {
           collectMissingChildren(node.common);
-          collectMissingChildren(node.local);
           collectMissingChildren(node.remote);
 
           node.remote.itemsMap = {};
@@ -4855,9 +4903,18 @@ Math.uuid = function (len, radix) {
         } else {
           node.remote.body = bodyOrItemsMap;
           node.remote.contentType = contentType;
+
+          parentNode = nodes[parentPath];
+          if (parentNode && parentNode.local && parentNode.local.itemsMap) {
+            itemName = path.substring(parentPath.length);
+            parentNode.local.itemsMap[itemName] = true;
+            if (equalObj(parentNode.local.itemsMap, parentNode.common.itemsMap)) {
+              delete parentNode.local;
+            }
+          }
         }
 
-        node = this.autoMerge(node);
+        nodes[path] = this.autoMerge(node);
 
         return {
           toBeSaved:       nodes,
@@ -4878,7 +4935,7 @@ Math.uuid = function (len, radix) {
         }
 
         if (conflict) {
-          RemoteStorage.log('We have a conflict');
+          RemoteStorage.log('[Sync] We have a conflict');
 
           if (!node.remote || node.remote.revision !== revision) {
             node.remote = {
@@ -4887,7 +4944,7 @@ Math.uuid = function (len, radix) {
             };
           }
 
-          node = this.autoMerge(node);
+          nodes[path] = this.autoMerge(node);
         } else {
           node.common = {
             revision:  revision,
@@ -4960,7 +5017,7 @@ Math.uuid = function (len, radix) {
         return this.completeFetch(path, bodyOrItemsMap, contentType, revision).then(function(dataFromFetch) {
           if (isFolder(path)) {
             if (this.corruptServerItemsMap(bodyOrItemsMap)) {
-              RemoteStorage.log('WARNING: Discarding corrupt folder description from server for ' + path);
+              RemoteStorage.log('[Sync] WARNING: Discarding corrupt folder description from server for ' + path);
               return false;
             } else {
               return this.markChildren(path, bodyOrItemsMap, dataFromFetch.toBeSaved, dataFromFetch.missingChildren).then(function() {
@@ -5018,7 +5075,7 @@ Math.uuid = function (len, radix) {
       task.promise.then(function(status, bodyOrItemsMap, contentType, revision) {
         return this.handleResponse(task.path, task.action, status, bodyOrItemsMap, contentType, revision);
       }.bind(this), function(err) {
-        RemoteStorage.log('wireclient rejects its promise!', task.path, task.action, err);
+        RemoteStorage.log('[Sync] wireclient rejects its promise!', task.path, task.action, err);
         return this.handleResponse(task.path, task.action, 'offline');
       }.bind(this))
 
@@ -5040,7 +5097,7 @@ Math.uuid = function (len, radix) {
         this.collectTasks(false).then(function() {
           // See if there are any more tasks that are not refresh tasks
           if (!this.hasTasks() || this.stopped) {
-            RemoteStorage.log('sync is done! reschedule?', Object.getOwnPropertyNames(this._tasks).length, this.stopped);
+            RemoteStorage.log('[Sync] Sync is done! Reschedule?', Object.getOwnPropertyNames(this._tasks).length, this.stopped);
             if (!this.done) {
               this.done = true;
               this._emit('done');
@@ -5057,7 +5114,7 @@ Math.uuid = function (len, radix) {
       }.bind(this),
 
       function(err) {
-        RemoteStorage.log('Error', err);
+        RemoteStorage.log('[Sync] Error', err);
         this.remote.online = false;
         delete this._timeStarted[task.path];
         delete this._running[task.path];
@@ -5140,10 +5197,10 @@ Math.uuid = function (len, radix) {
           try {
             this.doTasks();
           } catch(e) {
-            RemoteStorage.log('doTasks error', e);
+            RemoteStorage.log('[Sync] doTasks error', e);
           }
         }.bind(this), function(e) {
-          RemoteStorage.log('Sync error', e);
+          RemoteStorage.log('[Sync] Sync error', e);
           throw new Error('Local cache unavailable');
         });
       } else {
@@ -5205,7 +5262,7 @@ Math.uuid = function (len, radix) {
     }
 
     this.sync.on('done', function() {
-      RemoteStorage.log('Sync done. Setting timer to', this.getSyncInterval());
+      RemoteStorage.log('[Sync] Sync done. Setting timer to', this.getSyncInterval());
       if (!this.sync.stopped) {
         if (this._syncTimer) {
           clearTimeout(this._syncTimer);
@@ -5219,11 +5276,11 @@ Math.uuid = function (len, radix) {
 
   RemoteStorage.prototype.stopSync = function() {
     if (this.sync) {
-      RemoteStorage.log('Stopping sync');
+      RemoteStorage.log('[Sync] Stopping sync');
       this.sync.stopped = true;
     } else {
       // TODO When is this ever the case and what is syncStopped for then?
-      RemoteStorage.log('Will instantiate sync stopped');
+      RemoteStorage.log('[Sync] Will instantiate sync stopped');
       this.syncStopped = true;
     }
   };
@@ -5238,7 +5295,7 @@ Math.uuid = function (len, radix) {
 
   RemoteStorage.Sync._rs_init = function(remoteStorage) {
     syncCycleCb = function() {
-      RemoteStorage.log('syncCycleCb calling syncCycle:');
+      RemoteStorage.log('[Sync] syncCycleCb calling syncCycle');
 
       if (!remoteStorage.sync) {
         // Call this now that all other modules are also ready:
@@ -5247,13 +5304,13 @@ Math.uuid = function (len, radix) {
             remoteStorage.caching);
 
         if (remoteStorage.syncStopped) {
-          RemoteStorage.log('Instantiating sync stopped');
+          RemoteStorage.log('[Sync] Instantiating sync stopped');
           remoteStorage.sync.stopped = true;
           delete remoteStorage.syncStopped;
         }
       }
 
-      RemoteStorage.log('syncCycleCb calling syncCycle:');
+      RemoteStorage.log('[Sync] syncCycleCb calling syncCycle');
       remoteStorage.syncCycle();
     };
 
@@ -5437,7 +5494,7 @@ Math.uuid = function (len, radix) {
           }
           return nodes;
         } catch(e) {
-          RemoteStorage.log('Error during PUT', nodes, i, e);
+          RemoteStorage.log('[Cachinglayer] Error during PUT', nodes, i, e);
           throw e;
         }
       });
@@ -5459,8 +5516,13 @@ Math.uuid = function (len, radix) {
 
           // Document
           if (i === 0) {
-            // TODO should body better be undefined?
-            node.local = { body: false, timestamp: now };
+            previous = getLatest(node);
+            node.local = {
+              body:                false,
+              timestamp:           now,
+              previousBody:        (previous ? previous.body : undefined),
+              previousContentType: (previous ? previous.contentType : undefined),
+            };
           }
           // Folder
           else {
@@ -5549,24 +5611,26 @@ Math.uuid = function (len, radix) {
       return this.getNodes(paths).then(function(nodes) {
         var existingNodes = deepClone(nodes);
         var changeEvents = [];
+        var node;
 
         nodes = cb(nodes);
 
         for (var path in nodes) {
-          if (equal(nodes[path], existingNodes[path])) {
+          node = nodes[path];
+          if (equal(node, existingNodes[path])) {
             delete nodes[path];
           }
           else if(isDocument(path)) {
             changeEvents.push({
               path:           path,
               origin:         'window',
-              oldValue:       nodes[path].local.previousBody,
-              newValue:       nodes[path].local.body,
-              oldContentType: nodes[path].local.previousContentType,
-              newContentType: nodes[path].local.contentType
+              oldValue:       node.local.previousBody,
+              newValue:       node.local.body === false ? undefined : node.local.body,
+              oldContentType: node.local.previousContentType,
+              newContentType: node.local.contentType
             });
-            delete nodes[path].local.previousBody;
-            delete nodes[path].local.previousContentType;
+            delete node.local.previousBody;
+            delete node.local.previousContentType;
           }
         }
 
@@ -5706,7 +5770,7 @@ Math.uuid = function (len, radix) {
     this.db = database || DEFAULT_DB;
 
     if (!this.db) {
-      RemoteStorage.log("Failed to open indexedDB");
+      RemoteStorage.log("[IndexedDB] Failed to open DB");
       return undefined;
     }
 
@@ -5757,7 +5821,7 @@ Math.uuid = function (len, radix) {
 
       this.putsRunning++;
 
-      RemoteStorage.log('Starting put', nodes, this.putsRunning);
+      RemoteStorage.log('[IndexedDB] Starting put', nodes, this.putsRunning);
 
       for (var path in nodes) {
         var node = nodes[path];
@@ -5765,14 +5829,14 @@ Math.uuid = function (len, radix) {
           try {
             nodesStore.put(node);
           } catch(e) {
-            RemoteStorage.log('Error while putting', node, e);
+            RemoteStorage.log('[IndexedDB] Error while putting', node, e);
             throw e;
           }
         } else {
           try {
             nodesStore.delete(path);
           } catch(e) {
-            RemoteStorage.log('Error while removing', nodesStore, node, e);
+            RemoteStorage.log('[IndexedDB] Error while removing', nodesStore, node, e);
             throw e;
           }
         }
@@ -5781,7 +5845,7 @@ Math.uuid = function (len, radix) {
       transaction.oncomplete = function() {
         promise.fulfill();
         this.putsRunning--;
-        RemoteStorage.log('Finished put', nodes, this.putsRunning, (new Date().getTime() - startTime)+'ms');
+        RemoteStorage.log('[IndexedDB] Finished put', nodes, this.putsRunning, (new Date().getTime() - startTime)+'ms');
       }.bind(this);
 
       transaction.onerror = function() {
@@ -5840,12 +5904,12 @@ Math.uuid = function (len, radix) {
   RS.IndexedDB.open = function(name, callback) {
     var timer = setTimeout(function() {
       callback("timeout trying to open db");
-    }, 3500);
+    }, 10000);
 
     var req = indexedDB.open(name, DB_VERSION);
 
     req.onerror = function() {
-      RemoteStorage.log('Opening DB failed', req);
+      RemoteStorage.log('[IndexedDB] Opening DB failed', req);
 
       clearTimeout(timer);
       callback(req.error);
@@ -5876,7 +5940,7 @@ Math.uuid = function (len, radix) {
     var req = indexedDB.deleteDatabase(databaseName);
 
     req.onsuccess = function() {
-      RemoteStorage.log('Done removing DB');
+      RemoteStorage.log('[IndexedDB] Done removing DB');
       callback();
     };
 
@@ -5902,7 +5966,25 @@ Math.uuid = function (len, radix) {
   };
 
   RS.IndexedDB._rs_supported = function() {
-    return ('indexedDB' in global);
+    var promise = promising();
+
+    if ('indexedDB' in global) {
+      try {
+        var check = indexedDB.open("MyTestDatabase");
+        check.onerror = function(event) {
+          promise.reject();
+        };
+        check.onsuccess = function(event) {
+          promise.fulfill();
+        };
+      } catch(e) {
+        promise.reject();
+      }
+    } else {
+      promise.reject();
+    }
+
+    return promise;
   };
 
   RS.IndexedDB._rs_cleanup = function(remoteStorage) {
@@ -5935,7 +6017,7 @@ Math.uuid = function (len, radix) {
 
   RemoteStorage.LocalStorage = function() {
     RemoteStorage.cachingLayer(this);
-    RemoteStorage.log('[localstorage] Registering events');
+    RemoteStorage.log('[LocalStorage] Registering events');
     RemoteStorage.eventHandling(this, 'change');
   };
 
@@ -5995,6 +6077,7 @@ Math.uuid = function (len, radix) {
         try {
           nodes[paths[i]] = JSON.parse(localStorage[NODES_PREFIX+paths[i]]);
         } catch(e) {
+          nodes[paths[i]] = undefined;
         }
       }
 
@@ -6053,7 +6136,7 @@ Math.uuid = function (len, radix) {
     }
 
     keys.forEach(function(key) {
-      RemoteStorage.log('[localstorage] Removing', key);
+      RemoteStorage.log('[LocalStorage] Removing', key);
       delete localStorage[key];
     });
   };
@@ -6071,7 +6154,7 @@ Math.uuid = function (len, radix) {
 
   RemoteStorage.InMemoryStorage = function() {
     RemoteStorage.cachingLayer(this);
-    RemoteStorage.log('[inmemorystorage] Registering events');
+    RemoteStorage.log('[InMemoryStorage] Registering events');
     RemoteStorage.eventHandling(this, 'change');
 
     this._storage = {};
