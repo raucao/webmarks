@@ -23,7 +23,8 @@ RemoteStorage.defineModule('bookmarks', function(privateClient, publicClient) {
       "type": "string"
     },
     "createdAt": {
-      "type": "date"
+      "type": "string",
+      "format": "date-time"
     }
   };
 
@@ -102,11 +103,12 @@ RemoteStorage.defineModule('bookmarks', function(privateClient, publicClient) {
       store: function(bookmark) {
         bookmark.id = urlHash(bookmark.url);
         if (bookmark.createdAt) {
-          bookmark.updatedAt = new Date();
+          bookmark.updatedAt = new Date().toISOString();
         } else {
-          bookmark.createdAt = new Date();
+          bookmark.createdAt = new Date().toISOString();
         }
         var path = "archive/" + bookmark.id;
+        console.log(bookmark);
 
         return privateClient.storeObject("archive-bookmark", path, bookmark).
           then(function() {
