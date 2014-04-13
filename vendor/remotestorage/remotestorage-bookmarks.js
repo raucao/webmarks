@@ -17,16 +17,13 @@ RemoteStorage.defineModule('bookmarks', function(privateClient, publicClient) {
     },
     "url": {
       "type": "string",
-      "format": "uri",
-      "required": true
+      "format": "uri"
     },
     "title": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "createdAt": {
-      "type": "date",
-      "default": null
+      "type": "date"
     }
   };
 
@@ -43,10 +40,10 @@ RemoteStorage.defineModule('bookmarks', function(privateClient, publicClient) {
       },
       "thumbnail": {
         "description": "A base64-encoded screenshot of the bookmarked page",
-        "type": "string",
-        "default": null
+        "type": "string"
       }
-    }, baseProperties)
+    }, baseProperties),
+    "required": [ "id", "title", "url" ]
   });
 
   privateClient.declareType('browser-bookmark', {
