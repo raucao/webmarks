@@ -72,6 +72,7 @@ module.exports = function(grunt) {
 
   grunt.loadTasks('tasks'); // Loads tasks in `tasks/` folder
   grunt.loadNpmTasks('grunt-browser-sync');
+  grunt.loadNpmTasks('grunt-build-control');
 
   config.env = process.env;
 
