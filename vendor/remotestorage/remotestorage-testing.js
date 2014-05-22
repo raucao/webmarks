@@ -1,4 +1,4 @@
-/** remotestorage.js 0.10.0-beta, http://remotestorage.io, MIT-licensed **/
+/** remotestorage.js 0.10.0-beta3, http://remotestorage.io, MIT-licensed **/
 
 /** FILE: lib/promising.js **/
 (function(global) {
@@ -140,6 +140,22 @@
     get: function(path, maxAge) {
       var self = this;
       if (this.local) {
+        if (maxAge === undefined) {
+          if (this.connected) {
+            maxAge = 2*this.getSyncInterval();
+          } else {
+            maxAge = false;
+          }
+        }
+        var maxAgeInvalid = function(maxAge) {
+          return maxAge !== false && typeof(maxAge) !== 'number';
+        };
+
+        if (maxAgeInvalid(maxAge)) {
+          var promise = promising();
+          promise.reject('Argument \'maxAge\' must be false or a number');
+          return promise;
+        }
         return this.local.get(path, maxAge);
       } else {
         return this.remote.get(path);
@@ -295,6 +311,8 @@
       }
     }.bind(this));
   };
+
+  RemoteStorage.SyncedGetPutDelete = SyncedGetPutDelete;
 
   RemoteStorage.DiscoveryError = function(message) {
     Error.apply(this, arguments);
@@ -3447,35 +3465,29 @@ Math.uuid = function (len, radix) {
       this.moduleName = 'root';
     }
 
+    // Defined in baseclient/types.js
+    /**
+     * Property: schemas
+     *
+     * Contains schema objects of all types known to the BaseClient instance
+     **/
+
     /**
      * Event: change
-     * emitted when a node changes
      *
-     * Arguments: event
+     * Emitted when a node changes
+     *
+     * Arguments:
+     *   event - Event object containing information about the changed node
+     *
      * (start code)
      * {
-     *    path: path,
-     *    origin: 'window', 'local', or 'remote'
-     *    oldValue: oldBody,
-     *    newValue: newBody
+     *    path: path, // Path of the changed node
+     *    origin: 'window', 'local', or 'remote' // emitted by user action within the app, local data store, or remote sync
+     *    oldValue: oldBody, // Old body of the changed node (undefined if creation)
+     *    newValue: newBody  // New body of the changed node (undefined if deletion)
      *  }
      * (end code)
-     *
-     * * the path ofcourse is the path of the node that changed
-     *
-     *
-     * * the origin tells you if it's a change pulled by sync(remote)
-     * or some user action within the app(window) or a result of connecting
-     * with the local data store(local).
-     *
-     *
-     * * the oldValue defaults to undefined if you are dealing with some
-     * new file
-     *
-     *
-     * * the newValue defaults to undefined if you are dealing with a deletion
-     *
-     * * when newValue and oldValue are set you are dealing with an update
      **/
 
     RS.eventHandling(this, 'change');
@@ -3512,12 +3524,16 @@ Math.uuid = function (len, radix) {
      *
      * Parameters:
      *   path   - The path to query. It MUST end with a forward slash.
-     *   maxAge - (optional) Maximum age of cached listing in
-     *            milliseconds
+     *   maxAge - Either false or the maximum age of cached listing in
+     *            milliseconds. Defaults to false in anonymous mode and to
+     *            2*syncInterval in connected mode.
      *
      * Returns:
      *
-     *   A promise for an object, representing child nodes.
+     *   A promise for an object, representing child nodes. If the maxAge
+     *   requirement cannot be met because of network problems, this promise
+     *   will be rejected. If the maxAge requirement is set to false, the
+     *   promise will always be fulfilled with data from the local store.
      *
      *   Keys ending in a forward slash represent *folder nodes*, while all
      *   other keys represent *data nodes*.
@@ -3528,7 +3544,7 @@ Math.uuid = function (len, radix) {
      *
      * Example:
      *   (start code)
-     *   client.getListing('').then(function(listing) {
+     *   client.getListing('', false).then(function(listing) {
      *     listing.forEach(function(item) {
      *       console.log(item);
      *     });
@@ -3540,9 +3556,6 @@ Math.uuid = function (len, radix) {
         path = '';
       } else if (path.length > 0 && path[path.length - 1] !== '/') {
         throw "Not a folder: " + path;
-      }
-      if (maxAgeInvalid(maxAge)) {
-        return promising().reject('Argument \'maxAge\' of baseClient.getListing must be undefined or a number');
       }
       return this.storage.get(this.makePath(path), maxAge).then(
         function(status, body) {
@@ -3557,16 +3570,20 @@ Math.uuid = function (len, radix) {
      * Get all objects directly below a given path.
      *
      * Parameters:
-     *   path   - path to the folder
-     *   maxAge - (optional) Maximum age of cached objects in
-     *            milliseconds
+     *   path   - Path to the folder.
+     *   maxAge - Either false or the maximum age of cached objects in
+     *            milliseconds. Defaults to false in anonymous mode and to
+     *            2*syncInterval in connected mode.
      *
      * Returns:
-     *   a promise for an object in the form { path : object, ... }
+     *   A promise for an object in the form { path : object, ... }. If the
+     *   maxAge requirement cannot be met because of network problems, this
+     *   promise will be rejected. If the maxAge requirement is set to false,
+     *   the promise will always be fulfilled with data from the local store.
      *
      * Example:
      *   (start code)
-     *   client.getAll('').then(function(objects) {
+     *   client.getAll('', false).then(function(objects) {
      *     for (var key in objects) {
      *       console.log('- ' + key + ': ', objects[key]);
      *     }
@@ -3578,9 +3595,6 @@ Math.uuid = function (len, radix) {
         path = '';
       } else if (path.length > 0 && path[path.length - 1] !== '/') {
         throw "Not a folder: " + path;
-      }
-      if (maxAgeInvalid(maxAge)) {
-        return promising().reject('Argument \'maxAge\' of baseClient.getAll must be undefined or a number');
       }
 
       return this.storage.get(this.makePath(path), maxAge).then(function(status, body) {
@@ -3618,7 +3632,10 @@ Math.uuid = function (len, radix) {
      * getObject.
      *
      * Parameters:
-     *   path     - see getObject
+     *   path   - See getObject.
+     *   maxAge - Either false or the maximum age of cached file in
+     *            milliseconds. Defaults to false in anonymous mode and to
+     *            2*syncInterval in connected mode.
      *
      * Returns:
      *   A promise for an object:
@@ -3626,10 +3643,14 @@ Math.uuid = function (len, radix) {
      *   mimeType - String representing the MIME Type of the document.
      *   data     - Raw data of the document (either a string or an ArrayBuffer)
      *
+     *   If the maxAge requirement cannot be met because of network problems, this
+     *   promise will be rejected. If the maxAge requirement is set to false, the
+     *   promise will always be fulfilled with data from the local store.
+     *
      * Example:
      *   (start code)
      *   // Display an image:
-     *   client.getFile('path/to/some/image').then(function(file) {
+     *   client.getFile('path/to/some/image', false).then(function(file) {
      *     var blob = new Blob([file.data], { type: file.mimeType });
      *     var targetElement = document.findElementById('my-image-element');
      *     targetElement.src = window.URL.createObjectURL(blob);
@@ -3639,9 +3660,6 @@ Math.uuid = function (len, radix) {
     getFile: function(path, maxAge) {
       if (typeof(path) !== 'string') {
         return promising().reject('Argument \'path\' of baseClient.getFile must be a string');
-      }
-      if (maxAgeInvalid(maxAge)) {
-        return promising().reject('Argument \'maxAge\' of baseClient.getFile must be undefined or a number');
       }
       return this.storage.get(this.makePath(path), maxAge).then(function(status, body, mimeType, revision) {
         return {
@@ -3716,14 +3734,20 @@ Math.uuid = function (len, radix) {
      * Get a JSON object from given path.
      *
      * Parameters:
-     *   path     - relative path from the module root (without leading slash)
+     *   path   - Relative path from the module root (without leading slash).
+     *   maxAge - Either false or the maximum age of cached object in
+     *            milliseconds. Defaults to false in anonymous mode and to
+     *            2*syncInterval in connected mode.
      *
      * Returns:
-     *   A promise for the object.
+     *   A promise for the object. If the maxAge requirement cannot be met
+     *   because of network problems, this promise will be rejected. If the
+     *   maxAge requirement is set to false, the promise will always be
+     *   fulfilled with data from the local store.
      *
      * Example:
      *   (start code)
-     *   client.getObject('/path/to/object').
+     *   client.getObject('/path/to/object', false).
      *     then(function(object) {
      *       // object is either an object or null
      *     });
@@ -3732,9 +3756,6 @@ Math.uuid = function (len, radix) {
     getObject: function(path, maxAge) {
       if (typeof(path) !== 'string') {
         return promising().reject('Argument \'path\' of baseClient.getObject must be a string');
-      }
-      if (maxAgeInvalid(maxAge)) {
-        return promising().reject('Argument \'maxAge\' of baseClient.getObject must be undefined or a number');
       }
       return this.storage.get(this.makePath(path), maxAge).then(function(status, body, mimeType, revision) {
         if (typeof(body) === 'object') {
@@ -3796,7 +3817,9 @@ Math.uuid = function (len, radix) {
       if (typeof(object) !== 'object') {
         return promising().reject('Argument \'object\' of baseClient.storeObject must be an object');
       }
+
       this._attachType(object, typeAlias);
+
       try {
         var validationResult = this.validate(object);
         if (! validationResult.valid) {
@@ -3807,6 +3830,7 @@ Math.uuid = function (len, radix) {
           return promising().reject(exc);
         }
       }
+
       return this.storage.put(this.makePath(path), object, 'application/json; charset=UTF-8').then(function(status, _body, _mimeType, revision) {
         if (status === 200 || status === 201) {
           return revision;
@@ -3943,9 +3967,13 @@ Math.uuid = function (len, radix) {
   });
   */
 
-  maxAgeInvalid = function(maxAge) {
-    return typeof(maxAge) !== 'undefined' && typeof(maxAge) !== 'number';
-  };
+  // Defined in baseclient/types.js
+  /**
+   * Method: declareType
+   *
+   * Declare a remoteStorage object type using a JSON schema. See
+   * <RemoteStorage.BaseClient.Types>
+   **/
 
 })(typeof(window) !== 'undefined' ? window : global);
 
@@ -3953,6 +3981,13 @@ Math.uuid = function (len, radix) {
 /** FILE: src/baseclient/types.js **/
 (function(global) {
 
+  /**
+   * Class: RemoteStorage.BaseClient.Types
+   *
+   * - Manages and validates types of remoteStorage objects, using JSON-LD and
+   *   JSON Schema
+   * - Adds schema declaration/validation methods to BaseClient instances.
+   **/
   RemoteStorage.BaseClient.Types = {
     // <alias> -> <uri>
     uris: {},
@@ -4014,18 +4049,65 @@ Math.uuid = function (len, radix) {
   SchemaNotFound.prototype = Error.prototype;
 
   RemoteStorage.BaseClient.Types.SchemaNotFound = SchemaNotFound;
+
   /**
    * Class: RemoteStorage.BaseClient
    **/
   RemoteStorage.BaseClient.prototype.extend({
     /**
-     * Method: validate(object)
+     * Method: declareType
      *
-     * validates an Object against the associated schema
-     * the context has to have a @context property
+     * Declare a remoteStorage object type using a JSON schema.
+     *
+     * Parameters:
+     *   alias  - A type alias/shortname
+     *   uri    - (optional) JSON-LD URI of the schema. Automatically generated if none given
+     *   schema - A JSON Schema object describing the object type
+     *
+     * Example:
+     *
+     * (start code)
+     * client.declareType('todo-item', {
+     *   "type": "object",
+     *   "properties": {
+     *     "id": {
+     *       "type": "string"
+     *     },
+     *     "title": {
+     *       "type": "string"
+     *     },
+     *     "finished": {
+     *       "type": "boolean"
+     *       "default": false
+     *     },
+     *     "createdAt": {
+     *       "type": "date"
+     *     }
+     *   },
+     *   "required": ["id", "title"]
+     * })
+     * (end code)
+     *
+     * Visit <http://json-schema.org> for details on how to use JSON Schema.
+     **/
+    declareType: function(alias, uri, schema) {
+      if (! schema) {
+        schema = uri;
+        uri = this._defaultTypeURI(alias);
+      }
+      RemoteStorage.BaseClient.Types.declare(this.moduleName, alias, uri, schema);
+    },
+
+    /**
+     * Method: validate
+     *
+     * Validate an object against the associated schema.
+     *
+     * Parameters:
+     *  object - Object to validate. Must have a @context property.
      *
      * Returns:
-     *   A validate object giving you information about errors
+     *   An object containing information about validation errors
      **/
     validate: function(object) {
       var schema = RemoteStorage.BaseClient.Types.getSchema(object['@context']);
@@ -4034,17 +4116,6 @@ Math.uuid = function (len, radix) {
       } else {
         throw new SchemaNotFound(object['@context']);
       }
-    },
-
-    // client.declareType(alias, schema);
-    //  /* OR */
-    // client.declareType(alias, uri, schema);
-    declareType: function(alias, uri, schema) {
-      if (! schema) {
-        schema = uri;
-        uri = this._defaultTypeURI(alias);
-      }
-      RemoteStorage.BaseClient.Types.declare(this.moduleName, alias, uri, schema);
     },
 
     _defaultTypeURI: function(alias) {
@@ -4056,6 +4127,7 @@ Math.uuid = function (len, radix) {
     }
   });
 
+  // Documented in baseclient.js
   Object.defineProperty(RemoteStorage.BaseClient.prototype, 'schemas', {
     configurable: true,
     get: function() {
@@ -5391,9 +5463,17 @@ Math.uuid = function (len, radix) {
     }
   }
 
-  function isOutdated(node, maxAge) {
-    return !node || !node.timestamp ||
-           ((new Date().getTime()) - node.timestamp > maxAge);
+  function isOutdated(nodes, maxAge) {
+    var path, node;
+    for (path in nodes) {
+      node = getLatest(nodes[path]);
+      if (node && node.timestamp && (new Date().getTime()) - node.timestamp <= maxAge) {
+        return false;
+      } else if (!node) {
+        return true;
+      }
+    }
+    return true;
   }
 
   function pathsFromRoot(path) {
@@ -5442,21 +5522,31 @@ Math.uuid = function (len, radix) {
     get: function(path, maxAge) {
       var promise = promising();
 
-      this.getNodes([path]).then(function(objs) {
-        var node = getLatest(objs[path]);
-        if ((typeof(maxAge) === 'number') && isOutdated(node, maxAge)) {
-          remoteStorage.sync.queueGetRequest(path, promise);
-        }
-
-        if (node) {
-          promise.fulfill(200, node.body || node.itemsMap, node.contentType);
-        } else {
-          promise.fulfill(404);
-        }
-      }.bind(this), function(err) {
-        promise.reject(err);
-      }.bind(this));
-
+      if (typeof(maxAge) === 'number') {
+        this.getNodes(pathsFromRoot(path)).then(function(objs) {
+          var node = getLatest(objs[path]);
+          if (isOutdated(objs, maxAge)) {
+            remoteStorage.sync.queueGetRequest(path, promise);
+          } else if (node) {
+            promise.fulfill(200, node.body || node.itemsMap, node.contentType);
+          } else {
+            promise.fulfill(404);
+          }
+        }.bind(this), function(err) {
+          promise.reject(err);
+        });
+      } else {
+        this.getNodes([path]).then(function(objs) {
+          var node = getLatest(objs[path]);
+          if (node) {
+            promise.fulfill(200, node.body || node.itemsMap, node.contentType);
+          } else {
+            promise.fulfill(404);
+          }
+        }.bind(this), function(err) {
+          promise.reject(err);
+        });
+      }
       return promise;
     },
 
@@ -5868,10 +5958,14 @@ Math.uuid = function (len, radix) {
       this.db.close();
 
       RS.IndexedDB.clean(this.db.name, function() {
-        RS.IndexedDB.open(dbName, function(other) {
-          // hacky!
-          self.db = other.db;
-          callback(self);
+        RS.IndexedDB.open(dbName, function(err, other) {
+          if (err) {
+            RemoteStorage.log('[IndexedDB] Error while resetting local storage', err);
+          } else {
+            // hacky!
+            self.db = other;
+          }
+          if (typeof callback === 'function') { callback(self); }
         });
       });
     },
@@ -5970,11 +6064,12 @@ Math.uuid = function (len, radix) {
 
     if ('indexedDB' in global) {
       try {
-        var check = indexedDB.open("MyTestDatabase");
+        var check = indexedDB.open("rs-check");
         check.onerror = function(event) {
           promise.reject();
         };
         check.onsuccess = function(event) {
+          indexedDB.deleteDatabase("rs-check");
           promise.fulfill();
         };
       } catch(e) {

@@ -2,36 +2,14 @@ import Bookmark from 'appkit/models/bookmark';
 
 var BookmarksIndexController = Ember.ArrayController.extend({
 
-  contentBinding: 'App.archiveBookmarks',
+  needs: ['index'],
+
+  contentBinding: 'controllers.index.content',
 
   filterText: '',
 
   sortProperties: ['createdAt'],
   sortAscending: false,
-
-  init: function() {
-    // TODO move to route
-    this._super();
-    self = this;
-
-    remoteStorage.bookmarks.archive.getAll().then(
-      function(bookmarks) {
-        bookmarks.forEach(function(bookmark){
-          var item = Bookmark.create({
-            id: bookmark.id,
-            url: bookmark.url,
-            title: bookmark.title,
-            description: bookmark.description,
-            tags: bookmark.tags,
-            createdAt: bookmark.createdAt
-          });
-
-          var existingItem = self.findProperty('id', bookmark.id);
-          if (!existingItem) { self.pushObject(item); }
-        });
-      }
-    );
-  },
 
   filteredContent: function() {
     var filterText = this.get('filterText').toLowerCase();
