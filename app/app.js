@@ -67,32 +67,32 @@ App.initializer({
       application.set('rsConnected', false);
     });
 
-    var archiveClient = remoteStorage.bookmarks.client.scope('archive/');
+    // var archiveClient = remoteStorage.bookmarks.client.scope('archive/');
 
-    archiveClient.on('change', function(event){
-      if (!event.origin.match(/remote/)) { return; }
-      var item;
+    // archiveClient.on('change', function(event){
+    //   if (!event.origin.match(/remote/)) { return; }
+    //   var item;
 
-      // New object coming in from remote
-      if (!event.oldValue && event.newValue) {
-        item = Bookmark.create(event.newValue);
-        application.archiveBookmarks.pushObject(item);
-      }
+    //   // New object coming in from remote
+    //   if (!event.oldValue && event.newValue) {
+    //     item = Bookmark.create(event.newValue);
+    //     application.archiveBookmarks.pushObject(item);
+    //   }
 
-      // Object deleted on remote
-      if (event.oldValue && !event.newValue) {
-        item = application.archiveBookmarks.findProperty('id', event.oldValue.id);
-        application.archiveBookmarks.removeObject(item);
-      }
+    //   // Object deleted on remote
+    //   if (event.oldValue && !event.newValue) {
+    //     item = application.archiveBookmarks.findProperty('id', event.oldValue.id);
+    //     application.archiveBookmarks.removeObject(item);
+    //   }
 
-      //TODO Object updated on remote
-      if (event.oldValue && event.newValue) {
-        item = Bookmark.create(event.newValue);
-        var oldItem = application.archiveBookmarks.findProperty('id', item.id);
-        if (oldItem) { application.archiveBookmarks.removeObject(oldItem); }
-        application.archiveBookmarks.pushObject(item);
-      }
-    });
+    //   //TODO Object updated on remote
+    //   if (event.oldValue && event.newValue) {
+    //     item = Bookmark.create(event.newValue);
+    //     var oldItem = application.archiveBookmarks.findProperty('id', item.id);
+    //     if (oldItem) { application.archiveBookmarks.removeObject(oldItem); }
+    //     application.archiveBookmarks.pushObject(item);
+    //   }
+    // });
   }
 });
 
