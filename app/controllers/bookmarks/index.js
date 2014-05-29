@@ -24,7 +24,7 @@ var BookmarksIndexController = Ember.ArrayController.extend({
         return match;
       });
     }
-  }.property('filterText'),
+  }.property('filterText', 'content'),
 
   actions: {
     remove: function(item) {
