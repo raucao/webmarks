@@ -4,7 +4,9 @@ var BookmarksNewController = Ember.ObjectController.extend({
 
   queryParams: ['title', 'url'],
 
-  archiveBookmarksBinding: 'App.archiveBookmarks',
+  needs: ['index'],
+
+  archiveBookmarksBinding: 'controllers.index.content',
 
   bookmarkletUsed: false,
 

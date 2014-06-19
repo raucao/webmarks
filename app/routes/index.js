@@ -5,8 +5,6 @@ var IndexRoute = Ember.Route.extend({
   model: function(){
     return remoteStorage.bookmarks.archive.getAll().then(
       function(bookmarks) {
-        console.log('got bookmarks', bookmarks);
-
         var collection = [];
 
         bookmarks.forEach(function(bookmark){
@@ -20,7 +18,6 @@ var IndexRoute = Ember.Route.extend({
           });
           collection.push(item);
         });
-        console.log(collection);
 
         return collection;
       }
@@ -29,7 +26,6 @@ var IndexRoute = Ember.Route.extend({
 
   setupController: function(controller, model){
     this._super(controller, model);
-    console.log(model);
   },
 
   redirect: function() {

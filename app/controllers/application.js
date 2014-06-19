@@ -1,6 +1,7 @@
-export default Ember.Controller.extend({
+export default Ember.ObjectController.extend({
 
   rsConnectedBinding: 'App.rsConnected',
+  archiveBookmarks: [],
 
   handleRsDisconnect: function() {
     if (!this.get('rsConnected')) {
