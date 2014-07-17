@@ -6,6 +6,12 @@ module.exports = {
     push: true,
     message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
   },
+  staging: {
+    options: {
+      remote: 'git@5stage.com:skddc_webmarks.git',
+      branch: 'master',
+    }
+  },
   production: {
     options: {
       remote: 'git@5apps.com:basti_webmarks.git',
