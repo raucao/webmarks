@@ -24,6 +24,12 @@ module.exports = {
       branch: 'master',
     }
   },
+  fivedev: {
+    options: {
+      remote: 'git@5apps.dev:basti_webmarks.git',
+      branch: 'master',
+    }
+  },
   local: {
     options: {
       remote: '../',
