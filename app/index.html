@@ -17,7 +17,8 @@
 
       <!-- @if dist=false -->
       <script src="/config/environments/development.js"></script>
-      <!-- @endif --><!-- @if dist=true -->
+      <!-- @endif -->
+      <!-- @if dist=true -->
       <script src="/config/environments/production.js"></script>
       <!-- @endif -->
 
@@ -28,7 +29,12 @@
   <!-- endbuild -->
 
   <!-- build:js(tmp/result) /assets/remotestorage.min.js -->
-    <script src="/vendor/remotestorage/remotestorage-0.11.0.js"></script>
+    <!-- @if dist=false -->
+    <script src="/vendor/remotestorage/remotestorage.js"></script>
+    <!-- @endif -->
+    <!-- @if dist=true -->
+    <script src="/vendor/remotestorage/remotestorage.min.js"></script>
+    <!-- @endif -->
     <script src="/vendor/remotestorage/remotestorage-bookmarks.js"></script>
   <!-- endbuild -->
 
