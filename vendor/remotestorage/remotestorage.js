@@ -1,4 +1,4 @@
-/** remotestorage.js 0.11.1, http://remotestorage.io, MIT-licensed **/
+/** remotestorage.js 0.11.2, http://remotestorage.io, MIT-licensed **/
 
 /** FILE: lib/bluebird.js **/
 /**
@@ -4673,7 +4673,7 @@ module.exports = ret;
    */
 
   var hasLocalStorage;
-  var SETTINGS_KEY = "remotestorage:wireclient";
+  var SETTINGS_KEY = 'remotestorage:wireclient';
 
   var API_2012 = 1, API_00 = 2, API_01 = 3, API_02 = 4, API_HEAD = 5;
 
@@ -4726,11 +4726,26 @@ module.exports = ret;
   }
 
   function readBinaryData(content, mimeType, callback) {
-    var blob = new Blob([content], { type: mimeType });
+    var blob;
+    global.BlobBuilder = global.BlobBuilder || global.WebKitBlobBuilder;
+    if (typeof global.BlobBuilder !== 'undefined') {
+      var bb = new global.BlobBuilder();
+      bb.append(content);
+      blob = bb.getBlob(mimeType);
+    } else {
+      blob = new Blob([content], { type: mimeType });
+    }
+
     var reader = new FileReader();
-    reader.addEventListener("loadend", function () {
-      callback(reader.result); // reader.result contains the contents of blob as a typed array
-    });
+    if (typeof reader.addEventListener === 'function') {
+      reader.addEventListener('loadend', function () {
+        callback(reader.result); // reader.result contains the contents of blob as a typed array
+      });
+    } else {
+      reader.onloadend = function() {
+        callback(reader.result); // reader.result contains the contents of blob as a typed array
+      }
+    }
     reader.readAsArrayBuffer(blob);
   }
 
@@ -4740,11 +4755,26 @@ module.exports = ret;
       var buffer = new Buffer(new Uint8Array(arrayBuffer));
       pending.resolve(buffer.toString(encoding));
     } else {
-      var blob = new Blob([arrayBuffer]);
+      var blob;
+      global.BlobBuilder = global.BlobBuilder || global.WebKitBlobBuilder;
+      if (typeof global.BlobBuilder !== 'undefined') {
+        var bb = new global.BlobBuilder();
+        bb.append(arrayBuffer);
+        blob = bb.getBlob();
+      } else {
+        blob = new Blob([arrayBuffer]);
+      }
+
       var fileReader = new FileReader();
-      fileReader.addEventListener("loadend", function (evt) {
-        pending.resolve(evt.target.result);
-      });
+      if (typeof fileReader.addEventListener === 'function') {
+        fileReader.addEventListener('loadend', function (evt) {
+          pending.resolve(evt.target.result);
+        });
+      } else {
+        fileReader.onloadend = function(evt) {
+          pending.resolve(evt.target.result);
+        }
+      }
       fileReader.readAsText(blob, encoding);
     }
     return pending.promise;
@@ -4858,7 +4888,7 @@ module.exports = ret;
 
     _request: function (method, uri, token, headers, body, getEtag, fakeRevision) {
       if ((method === 'PUT' || method === 'DELETE') && uri[uri.length - 1] === '/') {
-        return Promise.reject("Don't " + method + " on directories!");
+        return Promise.reject('Don\'t ' + method + ' on directories!');
       }
 
       var revision;
@@ -5001,7 +5031,7 @@ module.exports = ret;
     get: function (path, options) {
       var self = this;
       if (!this.connected) {
-        return Promise.reject("not connected (path: " + path + ")");
+        return Promise.reject('not connected (path: ' + path + ')');
       }
       if (!options) { options = {}; }
       var headers = {};
@@ -5044,7 +5074,7 @@ module.exports = ret;
           // < 02 spec
             Object.keys(r.body).forEach(function (key){
               self._revisionCache[path + key] = r.body[key];
-              itemsMap[key] = {"ETag": r.body[key]};
+              itemsMap[key] = {'ETag': r.body[key]};
             });
           }
           r.body = itemsMap;
@@ -5057,7 +5087,7 @@ module.exports = ret;
 
     put: function (path, body, contentType, options) {
       if (!this.connected) {
-        return Promise.reject("not connected (path: " + path + ")");
+        return Promise.reject('not connected (path: ' + path + ')');
       }
       if (!options) { options = {}; }
       if ((!contentType.match(/charset=/)) && (body instanceof ArrayBuffer || isArrayBufferView(body))) {
@@ -5078,7 +5108,7 @@ module.exports = ret;
 
     'delete': function (path, options) {
       if (!this.connected) {
-        throw new Error("not connected (path: " + path + ")");
+        throw new Error('not connected (path: ' + path + ')');
       }
       if (!options) { options = {}; }
       var headers = {};
@@ -5995,7 +6025,7 @@ RemoteStorage.Assets = {
 (function (window) {
 
   var hasLocalStorage;
-  var LS_STATE_KEY = "remotestorage:widget:state";
+  var LS_STATE_KEY = 'remotestorage:widget:state';
 
   // states allowed to immediately jump into after a reload.
   var VALID_ENTRY_STATES = {
@@ -6181,17 +6211,19 @@ RemoteStorage.Assets = {
 
   function errorsHandler(widget) {
     return function (error) {
+      var s;
       if (error instanceof RemoteStorage.DiscoveryError) {
         console.error('Discovery failed', error, '"' + error.message + '"');
-        stateSetter('initial', [error.message]);
+        s = stateSetter(widget, 'initial', [error.message]);
       } else if (error instanceof RemoteStorage.SyncError) {
-        stateSetter('offline', []);
+        s = stateSetter(widget, 'offline', []);
       } else if (error instanceof RemoteStorage.Unauthorized) {
-        stateSetter('unauthorized');
+        s = stateSetter(widget, 'unauthorized');
       } else {
         RemoteStorage.log('[Widget] Unknown error');
-        stateSetter('error', [error]);
+        s = stateSetter(widget, 'error', [error]);
       }
+      s.apply();
     };
   }
 
@@ -11377,7 +11409,21 @@ Math.uuid = function (len, radix) {
   RS.IndexedDB._rs_supported = function () {
     var pending = Promise.defer();
 
-    if ('indexedDB' in global) {
+    global.indexedDB = global.indexedDB    || global.webkitIndexedDB ||
+                       global.mozIndexedDB || global.oIndexedDB      ||
+                       global.msIndexedDB;
+
+    // Detect browsers with known IndexedDb issues (e.g. Android pre-4.4)
+    var poorIndexedDbSupport = false;
+    if (typeof global.navigator !== 'undefined' &&
+        global.navigator.userAgent.match(/Android (2|3|4\.[0-3])/)) {
+      // Chrome and Firefox support IndexedDB
+      if (!navigator.userAgent.match(/Chrome|Firefox/)) {
+        poorIndexedDbSupport = true;
+      }
+    }
+
+    if ('indexedDB' in global && !poorIndexedDbSupport) {
       try {
         var check = indexedDB.open("rs-check");
         check.onerror = function (event) {
@@ -11412,6 +11458,7 @@ Math.uuid = function (len, radix) {
   };
 
 })(typeof(window) !== 'undefined' ? window : global);
+
 
 /** FILE: src/localstorage.js **/
 (function (global) {
