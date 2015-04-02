@@ -16,6 +16,13 @@ var App = Ember.Application.extend({
 App.initializer({
   name: "remoteStorage",
   initialize: function(container, application) {
+    remoteStorage.setApiKeys('dropbox', {
+      api_key: 'ab7ipym2z9knns7'
+    });
+    remoteStorage.setApiKeys('googledrive', {
+      client_id: '292754314332-2dtduqk6lkmiacu8hlu537blm6l8vs9o.apps.googleusercontent.com'
+    });
+
     remoteStorage.access.claim('bookmarks', 'rw');
     remoteStorage.caching.enable('/bookmarks/archive/');
     remoteStorage.displayWidget('remotestorage-connect', { redirectUri: window.location.href });
