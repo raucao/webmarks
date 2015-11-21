@@ -1,4 +1,4 @@
-/** remotestorage.js 0.11.2, http://remotestorage.io, MIT-licensed **/
+/** remotestorage.js 0.12.1, http://remotestorage.io, MIT-licensed **/
 
 /** FILE: lib/bluebird.js **/
 /**
@@ -3313,9 +3313,11 @@ module.exports = ret;
       var self = this;
       if (this.local) {
         if (maxAge === undefined) {
-          if (this.connected) {
+          if ((typeof this.remote === 'object') &&
+               this.remote.connected && this.remote.online) {
             maxAge = 2*this.getSyncInterval();
           } else {
+            RemoteStorage.log('Not setting default maxAge, because remote is offline or not connected');
             maxAge = false;
           }
         }
@@ -3378,7 +3380,8 @@ module.exports = ret;
    *
    *  (start code)
    *  var remoteStorage = new RemoteStorage({
-   *    logging: true  // defaults to false
+   *    logging: true,  // defaults to false
+   *    cordovaRedirectUri: 'https://app.mygreatapp.com' // defaults to undefined
    *  });
    *  (end code)
    */
@@ -3440,6 +3443,7 @@ module.exports = ret;
     // Initial configuration property settings.
     if (typeof cfg === 'object') {
       RemoteStorage.config.logging = !!cfg.logging;
+      RemoteStorage.config.cordovaRedirectUri = cfg.cordovaRedirectUri;
     }
 
     RemoteStorage.eventHandling(
@@ -3530,7 +3534,8 @@ module.exports = ret;
       remote:   true,
       conflict: true
     },
-    discoveryTimeout: 10000
+    discoveryTimeout: 10000,
+    cordovaRedirectUri: undefined
   };
 
   RemoteStorage.prototype = {
@@ -3583,20 +3588,46 @@ module.exports = ret;
      * Connect to a remoteStorage server.
      *
      * Parameters:
-     *   userAddress - The user address (user@host) to connect to.
+     *   userAddress        - The user address (user@host) to connect to.
+     *   token              - (optional) A bearer token acquired beforehand
      *
-     * Discovers the webfinger profile of the given user address and initiates
+     * Discovers the WebFinger profile of the given user address and initiates
      * the OAuth dance.
      *
      * This method must be called *after* all required access has been claimed.
+     * When using the connect widget, it will call this method itself.
      *
+     * Special cases:
+     *
+     * 1. If a bearer token is supplied as second argument, the OAuth dance
+     *    will be skipped and the supplied token be used instead. This is
+     *    useful outside of browser environments, where the token has been
+     *    acquired in a different way.
+     *
+     * 2. If the Webfinger profile for the given user address doesn't contain
+     *    an auth URL, the library will assume that client and server have
+     *    established authorization among themselves, which will omit bearer
+     *    tokens in all requests later on. This is useful for example when using
+     *    Kerberos and similar protocols.
      */
-    connect: function (userAddress) {
+    connect: function (userAddress, token) {
       this.setBackend('remotestorage');
       if (userAddress.indexOf('@') < 0) {
         this._emit('error', new RemoteStorage.DiscoveryError("User address doesn't contain an @."));
         return;
       }
+
+      if (global.cordova) {
+        if (typeof RemoteStorage.config.cordovaRedirectUri !== 'string') {
+          this._emit('error', new RemoteStorage.DiscoveryError("Please supply a custom HTTPS redirect URI for your Cordova app"));
+          return;
+        }
+        if (!global.cordova.InAppBrowser) {
+          this._emit('error', new RemoteStorage.DiscoveryError("Please include the InAppBrowser Cordova plugin to enable OAuth"));
+          return;
+        }
+      }
+
       this.remote.configure({
         userAddress: userAddress
       });
@@ -3615,13 +3646,22 @@ module.exports = ret;
         this.remote.configure(info);
         if (! this.remote.connected) {
           if (info.authURL) {
-            this.authorize(info.authURL);
+            if (typeof token === 'undefined') {
+              // Normal authorization step; the default way to connect
+              this.authorize(info.authURL, RemoteStorage.config.cordovaRedirectUri);
+            } else if (typeof token === 'string') {
+              // Token supplied directly by app/developer/user
+              RemoteStorage.log('Skipping authorization sequence and connecting with known token');
+              this.remote.configure({ token: token });
+            } else {
+              throw new Error("Supplied bearer token must be a string");
+            }
           } else {
-            // In lieu of an excplicit authURL, assume that the browser
-            // and server handle any authorization needs; for instance,
-            // TLS may trigger the browser to use a client certificate,
-            // or a 401 Not Authorized response may make the browser
-            // send a Kerberos ticket using the SPNEGO method.
+            // In lieu of an excplicit authURL, assume that the browser and
+            // server handle any authorization needs; for instance, TLS may
+            // trigger the browser to use a client certificate, or a 401 Not
+            // Authorized response may make the browser send a Kerberos ticket
+            // using the SPNEGO method.
             this.impliedauth();
           }
         }
@@ -3746,8 +3786,8 @@ module.exports = ret;
      *
      * Parameters:
      *   type - string, either 'googledrive' or 'dropbox'
-     *   keys - object, with one string field; 'client_id' for GoogleDrive, or
-     *          'api_key' for Dropbox.
+     *   keys - object, with one string field; 'clientId' for GoogleDrive, or
+     *          'appKey' for Dropbox.
      *
      */
     setApiKeys: function (type, keys) {
@@ -3759,6 +3799,22 @@ module.exports = ret;
       if (this.localStorageAvailable()) {
         localStorage['remotestorage:api-keys'] = JSON.stringify(this.apiKeys);
       }
+    },
+
+    /**
+     * Method: setCordovaRedirectUri
+     *
+     * Set redirect URI to be used for the OAuth redirect within the
+     * in-app-browser window in Cordova apps.
+     *
+     * Parameters:
+     *   uri - string, valid HTTP(S) URI
+     */
+    setCordovaRedirectUri: function (uri) {
+      if (typeof uri !== 'string' || !uri.match(/http(s)?\:\/\//)) {
+        throw new Error("Cordova redirect URI must be a URI string");
+      }
+      RemoteStorage.config.cordovaRedirectUri = uri;
     },
 
     /**
@@ -4744,7 +4800,7 @@ module.exports = ret;
     } else {
       reader.onloadend = function() {
         callback(reader.result); // reader.result contains the contents of blob as a typed array
-      }
+      };
     }
     reader.readAsArrayBuffer(blob);
   }
@@ -4773,7 +4829,7 @@ module.exports = ret;
       } else {
         fileReader.onloadend = function(evt) {
           pending.resolve(evt.target.result);
-        }
+        };
       }
       fileReader.readAsText(blob, encoding);
     }
@@ -4816,11 +4872,12 @@ module.exports = ret;
 
     /**
      * Event: change
-     *   never fired for some reason
+     *   Never fired for some reason
+     *   # TODO create issue and fix or remove
      *
      * Event: connected
-     *   fired when the wireclient connect method realizes that it is
-     *   in posession of a token and a href
+     *   Fired when the wireclient connect method realizes that it is in
+     *   possession of a token and href
      **/
     RS.eventHandling(this, 'change', 'connected', 'wire-busy', 'wire-done', 'not-connected');
 
@@ -5310,7 +5367,7 @@ module.exports = ret;
 /** FILE: node_modules/webfinger.js/src/webfinger.js **/
 /*!
  * webfinger.js
- *   version 2.1.4
+ *   version 2.2.1
  *   http://github.com/silverbucket/webfinger.js
  *
  * Developed and Maintained by:
@@ -5337,6 +5394,7 @@ if (typeof XMLHttpRequest === 'undefined') {
     'http://webfist.org/spec/rel': 'webfist',
     'http://webfinger.net/rel/avatar': 'avatar',
     'remotestorage': 'remotestorage',
+    'http://tools.ietf.org/id/draft-dejong-remotestorage': 'remotestorage',
     'remoteStorage': 'remotestorage',
     'http://www.packetizer.com/rel/share': 'share',
     'http://webfinger.net/rel/profile-page': 'profile',
@@ -5357,7 +5415,7 @@ if (typeof XMLHttpRequest === 'undefined') {
     'share': [],
     'profile': [],
     'webfist': [],
-    'camilstore': []
+    'camlistore': []
   };
 
   // list of endpoints to try, fallback from beginning to end.
@@ -5579,6 +5637,23 @@ if (typeof XMLHttpRequest === 'undefined') {
     setTimeout(_call, 0);
   };
 
+  WebFinger.prototype.lookupLink = function (address, rel, cb) {
+    if (LINK_PROPERTIES.hasOwnProperty(rel)) {
+      this.lookup(address, function (err, p) {
+        var links  = p.idx.links[rel];
+        if (err) {
+          cb (err);
+        } else if (links.length === 0) {
+          cb ('no links found with rel="' + rel + '"');
+        } else {
+          cb (null, links[0]);
+        }
+      });
+    } else {
+      cb ('unsupported rel ' + rel);
+    }
+  };
+
   if (typeof window === 'object') {
     window.WebFinger = WebFinger;
   } else if (typeof (define) === 'function' && define.amd) {
@@ -5595,13 +5670,13 @@ if (typeof XMLHttpRequest === 'undefined') {
 /** FILE: src/authorize.js **/
 (function (global) {
 
-  function extractParams() {
+  function extractParams(url) {
     //FF already decodes the URL fragment in document.location.hash, so use this instead:
-    var location = RemoteStorage.Authorize.getLocation(),
-        hashPos  = location.href.indexOf('#'),
+    var location = url || RemoteStorage.Authorize.getLocation().href,
+        hashPos  = location.indexOf('#'),
         hash;
     if (hashPos === -1) { return; }
-    hash = location.href.substring(hashPos+1);
+    hash = location.substring(hashPos+1);
     // if hash is not of the form #key=val&key=val, it's probably not for us
     if (hash.indexOf('=') === -1) { return; }
     return hash.split('&').reduce(function (m, kvs) {
@@ -5632,16 +5707,42 @@ if (typeof XMLHttpRequest === 'undefined') {
       url += '&state=' + encodeURIComponent(redirectUri.substring(hashPos+1));
     }
     url += '&response_type=token';
+
+    if (global.cordova) {
+      return RemoteStorage.Authorize.openWindow(
+          url,
+          redirectUri,
+          'location=yes,clearsessioncache=yes,clearcache=yes'
+        )
+        .then(function(authResult) {
+          remoteStorage.remote.configure({
+            token: authResult.access_token
+          });
+
+          // TODO
+          // sync doesn't start until after reload
+          // possibly missing some initialization step?
+          global.location.reload();
+        })
+        .then(null, function(error) {
+          console.error(error);
+          remoteStorage.widget.view.setState('initial');
+        });
+    }
+
     RemoteStorage.Authorize.setLocation(url);
   };
 
   RemoteStorage.Authorize.IMPLIED_FAKE_TOKEN = false;
 
-  RemoteStorage.prototype.authorize = function (authURL) {
+  RemoteStorage.prototype.authorize = function (authURL, cordovaRedirectUri) {
     this.access.setStorageType(this.remote.storageType);
     var scope = this.access.scopeParameter;
 
-    var redirectUri = String(RemoteStorage.Authorize.getLocation());
+    var redirectUri = global.cordova ?
+      cordovaRedirectUri :
+      String(RemoteStorage.Authorize.getLocation());
+
     var clientId = redirectUri.match(/^(https?:\/\/[^\/]+)/)[0];
 
     RemoteStorage.Authorize(authURL, scope, redirectUri, clientId);
@@ -5669,6 +5770,45 @@ if (typeof XMLHttpRequest === 'undefined') {
     } else {
       throw "Invalid location " + location;
     }
+  };
+
+  /**
+   * Open new InAppBrowser window for OAuth in Cordova
+   */
+  RemoteStorage.Authorize.openWindow = function (url, redirectUri, options) {
+    var pending = Promise.defer();
+    var newWindow = global.open(url, '_blank', options);
+
+    if (!newWindow || newWindow.closed) {
+      pending.reject('Authorization popup was blocked');
+      return pending.promise;
+    }
+
+    var handleExit = function () {
+      pending.reject('Authorization was canceled');
+    };
+
+    var handleLoadstart = function (event) {
+      if (event.url.indexOf(redirectUri) !== 0) {
+        return;
+      }
+
+      newWindow.removeEventListener('exit', handleExit);
+      newWindow.close();
+
+      var authResult = extractParams(event.url);
+
+      if (!authResult) {
+        return pending.reject('Authorization error');
+      }
+
+      return pending.resolve(authResult);
+    };
+
+    newWindow.addEventListener('loadstart', handleLoadstart);
+    newWindow.addEventListener('exit', handleExit);
+
+    return pending.promise;
   };
 
   RemoteStorage.prototype.impliedauth = function () {
@@ -7088,7 +7228,7 @@ UriTemplate.prototype = {
 		});
 	}
 };
-var ValidatorContext = function ValidatorContext(parent, collectMultiple, errorMessages, checkRecursive, trackUnknownProperties) {
+var ValidatorContext = function ValidatorContext(parent, collectMultiple, errorReporter, checkRecursive, trackUnknownProperties) {
 	this.missing = [];
 	this.missingMap = {};
 	this.formatValidators = parent ? Object.create(parent.formatValidators) : {};
@@ -7110,7 +7250,10 @@ var ValidatorContext = function ValidatorContext(parent, collectMultiple, errorM
 		this.knownPropertyPaths = {};
 		this.unknownPropertyPaths = {};
 	}
-	this.errorMessages = errorMessages;
+	this.errorReporter = errorReporter || defaultErrorReporter('en');
+	if (typeof this.errorReporter === 'string') {
+		throw new Error('debug');
+	}
 	this.definedKeywords = {};
 	if (parent) {
 		for (var key in parent.definedKeywords) {
@@ -7122,17 +7265,10 @@ ValidatorContext.prototype.defineKeyword = function (keyword, keywordFunction) {
 	this.definedKeywords[keyword] = this.definedKeywords[keyword] || [];
 	this.definedKeywords[keyword].push(keywordFunction);
 };
-ValidatorContext.prototype.createError = function (code, messageParams, dataPath, schemaPath, subErrors) {
-	var messageTemplate = this.errorMessages[code] || ErrorMessagesDefault[code];
-	if (typeof messageTemplate !== 'string') {
-		return new ValidationError(code, "Unknown error code " + code + ": " + JSON.stringify(messageParams), messageParams, dataPath, schemaPath, subErrors);
-	}
-	// Adapted from Crockford's supplant()
-	var message = messageTemplate.replace(/\{([^{}]*)\}/g, function (whole, varName) {
-		var subValue = messageParams[varName];
-		return typeof subValue === 'string' || typeof subValue === 'number' ? subValue : whole;
-	});
-	return new ValidationError(code, message, messageParams, dataPath, schemaPath, subErrors);
+ValidatorContext.prototype.createError = function (code, messageParams, dataPath, schemaPath, subErrors, data, schema) {
+	var error = new ValidationError(code, messageParams, dataPath, schemaPath, subErrors);
+	error.message = this.errorReporter(error, data, schema);
+	return error;
 };
 ValidatorContext.prototype.returnError = function (error) {
 	return error;
@@ -7149,9 +7285,9 @@ ValidatorContext.prototype.prefixErrors = function (startIndex, dataPath, schema
 	}
 	return this;
 };
-ValidatorContext.prototype.banUnknownProperties = function () {
+ValidatorContext.prototype.banUnknownProperties = function (data, schema) {
 	for (var unknownPath in this.unknownPropertyPaths) {
-		var error = this.createError(ErrorCodes.UNKNOWN_PROPERTY, {path: unknownPath}, unknownPath, "");
+		var error = this.createError(ErrorCodes.UNKNOWN_PROPERTY, {path: unknownPath}, unknownPath, "", null, data, schema);
 		var result = this.handleError(error);
 		if (result) {
 			return result;
@@ -7173,7 +7309,7 @@ ValidatorContext.prototype.resolveRefs = function (schema, urlHistory) {
 	if (schema['$ref'] !== undefined) {
 		urlHistory = urlHistory || {};
 		if (urlHistory[schema['$ref']]) {
-			return this.createError(ErrorCodes.CIRCULAR_REFERENCE, {urls: Object.keys(urlHistory).join(', ')}, '', '');
+			return this.createError(ErrorCodes.CIRCULAR_REFERENCE, {urls: Object.keys(urlHistory).join(', ')}, '', '', null, undefined, schema);
 		}
 		urlHistory[schema['$ref']] = true;
 		schema = this.getSchema(schema['$ref'], urlHistory);
@@ -7415,13 +7551,13 @@ ValidatorContext.prototype.validateFormat = function (data, schema) {
 	}
 	var errorMessage = this.formatValidators[schema.format].call(null, data, schema);
 	if (typeof errorMessage === 'string' || typeof errorMessage === 'number') {
-		return this.createError(ErrorCodes.FORMAT_CUSTOM, {message: errorMessage}).prefixWith(null, "format");
+		return this.createError(ErrorCodes.FORMAT_CUSTOM, {message: errorMessage}, '', '/format', null, data, schema);
 	} else if (errorMessage && typeof errorMessage === 'object') {
-		return this.createError(ErrorCodes.FORMAT_CUSTOM, {message: errorMessage.message || "?"}, errorMessage.dataPath || null, errorMessage.schemaPath || "/format");
+		return this.createError(ErrorCodes.FORMAT_CUSTOM, {message: errorMessage.message || "?"}, errorMessage.dataPath || '', errorMessage.schemaPath || "/format", null, data, schema);
 	}
 	return null;
 };
-ValidatorContext.prototype.validateDefinedKeywords = function (data, schema) {
+ValidatorContext.prototype.validateDefinedKeywords = function (data, schema, dataPointerPath) {
 	for (var key in this.definedKeywords) {
 		if (typeof schema[key] === 'undefined') {
 			continue;
@@ -7429,20 +7565,22 @@ ValidatorContext.prototype.validateDefinedKeywords = function (data, schema) {
 		var validationFunctions = this.definedKeywords[key];
 		for (var i = 0; i < validationFunctions.length; i++) {
 			var func = validationFunctions[i];
-			var result = func(data, schema[key], schema);
+			var result = func(data, schema[key], schema, dataPointerPath);
 			if (typeof result === 'string' || typeof result === 'number') {
-				return this.createError(ErrorCodes.KEYWORD_CUSTOM, {key: key, message: result}).prefixWith(null, "format");
+				return this.createError(ErrorCodes.KEYWORD_CUSTOM, {key: key, message: result}, '', '', null, data, schema).prefixWith(null, key);
 			} else if (result && typeof result === 'object') {
-				var code = result.code || ErrorCodes.KEYWORD_CUSTOM;
+				var code = result.code;
 				if (typeof code === 'string') {
 					if (!ErrorCodes[code]) {
 						throw new Error('Undefined error code (use defineError): ' + code);
 					}
 					code = ErrorCodes[code];
+				} else if (typeof code !== 'number') {
+					code = ErrorCodes.KEYWORD_CUSTOM;
 				}
 				var messageParams = (typeof result.message === 'object') ? result.message : {key: key, message: result.message || "?"};
-				var schemaPath = result.schemaPath ||( "/" + key.replace(/~/g, '~0').replace(/\//g, '~1'));
-				return this.createError(code, messageParams, result.dataPath || null, schemaPath);
+				var schemaPath = result.schemaPath || ("/" + key.replace(/~/g, '~0').replace(/\//g, '~1'));
+				return this.createError(code, messageParams, result.dataPath || null, schemaPath, null, data, schema);
 			}
 		}
 	}
@@ -7453,7 +7591,7 @@ function recursiveCompare(A, B) {
 	if (A === B) {
 		return true;
 	}
-	if (typeof A === "object" && typeof B === "object") {
+	if (A && B && typeof A === "object" && typeof B === "object") {
 		if (Array.isArray(A) !== Array.isArray(B)) {
 			return false;
 		} else if (Array.isArray(A)) {
@@ -7510,7 +7648,7 @@ ValidatorContext.prototype.validateType = function validateType(data, schema) {
 		dataType = "array";
 	}
 	var allowedTypes = schema.type;
-	if (typeof allowedTypes !== "object") {
+	if (!Array.isArray(allowedTypes)) {
 		allowedTypes = [allowedTypes];
 	}
 
@@ -7520,7 +7658,7 @@ ValidatorContext.prototype.validateType = function validateType(data, schema) {
 			return null;
 		}
 	}
-	return this.createError(ErrorCodes.INVALID_TYPE, {type: dataType, expected: allowedTypes.join("/")});
+	return this.createError(ErrorCodes.INVALID_TYPE, {type: dataType, expected: allowedTypes.join("/")}, '', '', null, data, schema);
 };
 
 ValidatorContext.prototype.validateEnum = function validateEnum(data, schema) {
@@ -7533,7 +7671,7 @@ ValidatorContext.prototype.validateEnum = function validateEnum(data, schema) {
 			return null;
 		}
 	}
-	return this.createError(ErrorCodes.ENUM_MISMATCH, {value: (typeof JSON !== 'undefined') ? JSON.stringify(data) : data});
+	return this.createError(ErrorCodes.ENUM_MISMATCH, {value: (typeof JSON !== 'undefined') ? JSON.stringify(data) : data}, '', '', null, data, schema);
 };
 
 ValidatorContext.prototype.validateNumeric = function validateNumeric(data, schema, dataPointerPath) {
@@ -7553,7 +7691,7 @@ ValidatorContext.prototype.validateMultipleOf = function validateMultipleOf(data
 	if (typeof data === "number") {
 		var remainder = (data/multipleOf)%1;
 		if (remainder >= CLOSE_ENOUGH_LOW && remainder < CLOSE_ENOUGH_HIGH) {
-			return this.createError(ErrorCodes.NUMBER_MULTIPLE_OF, {value: data, multipleOf: multipleOf});
+			return this.createError(ErrorCodes.NUMBER_MULTIPLE_OF, {value: data, multipleOf: multipleOf}, '', '', null, data, schema);
 		}
 	}
 	return null;
@@ -7565,29 +7703,29 @@ ValidatorContext.prototype.validateMinMax = function validateMinMax(data, schema
 	}
 	if (schema.minimum !== undefined) {
 		if (data < schema.minimum) {
-			return this.createError(ErrorCodes.NUMBER_MINIMUM, {value: data, minimum: schema.minimum}).prefixWith(null, "minimum");
+			return this.createError(ErrorCodes.NUMBER_MINIMUM, {value: data, minimum: schema.minimum}, '', '/minimum', null, data, schema);
 		}
 		if (schema.exclusiveMinimum && data === schema.minimum) {
-			return this.createError(ErrorCodes.NUMBER_MINIMUM_EXCLUSIVE, {value: data, minimum: schema.minimum}).prefixWith(null, "exclusiveMinimum");
+			return this.createError(ErrorCodes.NUMBER_MINIMUM_EXCLUSIVE, {value: data, minimum: schema.minimum}, '', '/exclusiveMinimum', null, data, schema);
 		}
 	}
 	if (schema.maximum !== undefined) {
 		if (data > schema.maximum) {
-			return this.createError(ErrorCodes.NUMBER_MAXIMUM, {value: data, maximum: schema.maximum}).prefixWith(null, "maximum");
+			return this.createError(ErrorCodes.NUMBER_MAXIMUM, {value: data, maximum: schema.maximum}, '', '/maximum', null, data, schema);
 		}
 		if (schema.exclusiveMaximum && data === schema.maximum) {
-			return this.createError(ErrorCodes.NUMBER_MAXIMUM_EXCLUSIVE, {value: data, maximum: schema.maximum}).prefixWith(null, "exclusiveMaximum");
+			return this.createError(ErrorCodes.NUMBER_MAXIMUM_EXCLUSIVE, {value: data, maximum: schema.maximum}, '', '/exclusiveMaximum', null, data, schema);
 		}
 	}
 	return null;
 };
 
-ValidatorContext.prototype.validateNaN = function validateNaN(data) {
+ValidatorContext.prototype.validateNaN = function validateNaN(data, schema) {
 	if (typeof data !== "number") {
 		return null;
 	}
 	if (isNaN(data) === true || data === Infinity || data === -Infinity) {
-		return this.createError(ErrorCodes.NUMBER_NOT_A_NUMBER, {value: data}).prefixWith(null, "type");
+		return this.createError(ErrorCodes.NUMBER_NOT_A_NUMBER, {value: data}, '', '/type', null, data, schema);
 	}
 	return null;
 };
@@ -7604,27 +7742,45 @@ ValidatorContext.prototype.validateStringLength = function validateStringLength(
 	}
 	if (schema.minLength !== undefined) {
 		if (data.length < schema.minLength) {
-			return this.createError(ErrorCodes.STRING_LENGTH_SHORT, {length: data.length, minimum: schema.minLength}).prefixWith(null, "minLength");
+			return this.createError(ErrorCodes.STRING_LENGTH_SHORT, {length: data.length, minimum: schema.minLength}, '', '/minLength', null, data, schema);
 		}
 	}
 	if (schema.maxLength !== undefined) {
 		if (data.length > schema.maxLength) {
-			return this.createError(ErrorCodes.STRING_LENGTH_LONG, {length: data.length, maximum: schema.maxLength}).prefixWith(null, "maxLength");
+			return this.createError(ErrorCodes.STRING_LENGTH_LONG, {length: data.length, maximum: schema.maxLength}, '', '/maxLength', null, data, schema);
 		}
 	}
 	return null;
 };
 
 ValidatorContext.prototype.validateStringPattern = function validateStringPattern(data, schema) {
-	if (typeof data !== "string" || schema.pattern === undefined) {
+	if (typeof data !== "string" || (typeof schema.pattern !== "string" && !(schema.pattern instanceof RegExp))) {
 		return null;
 	}
-	var regexp = new RegExp(schema.pattern);
+	var regexp;
+	if (schema.pattern instanceof RegExp) {
+	  regexp = schema.pattern;
+	}
+	else {
+	  var body, flags = '';
+	  // Check for regular expression literals
+	  // @see http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.5
+	  var literal = schema.pattern.match(/^\/(.+)\/([img]*)$/);
+	  if (literal) {
+	    body = literal[1];
+	    flags = literal[2];
+	  }
+	  else {
+	    body = schema.pattern;
+	  }
+	  regexp = new RegExp(body, flags);
+	}
 	if (!regexp.test(data)) {
-		return this.createError(ErrorCodes.STRING_PATTERN, {pattern: schema.pattern}).prefixWith(null, "pattern");
+		return this.createError(ErrorCodes.STRING_PATTERN, {pattern: schema.pattern}, '', '/pattern', null, data, schema);
 	}
 	return null;
 };
+
 ValidatorContext.prototype.validateArray = function validateArray(data, schema, dataPointerPath) {
 	if (!Array.isArray(data)) {
 		return null;
@@ -7639,7 +7795,7 @@ ValidatorContext.prototype.validateArrayLength = function validateArrayLength(da
 	var error;
 	if (schema.minItems !== undefined) {
 		if (data.length < schema.minItems) {
-			error = (this.createError(ErrorCodes.ARRAY_LENGTH_SHORT, {length: data.length, minimum: schema.minItems})).prefixWith(null, "minItems");
+			error = this.createError(ErrorCodes.ARRAY_LENGTH_SHORT, {length: data.length, minimum: schema.minItems}, '', '/minItems', null, data, schema);
 			if (this.handleError(error)) {
 				return error;
 			}
@@ -7647,7 +7803,7 @@ ValidatorContext.prototype.validateArrayLength = function validateArrayLength(da
 	}
 	if (schema.maxItems !== undefined) {
 		if (data.length > schema.maxItems) {
-			error = (this.createError(ErrorCodes.ARRAY_LENGTH_LONG, {length: data.length, maximum: schema.maxItems})).prefixWith(null, "maxItems");
+			error = this.createError(ErrorCodes.ARRAY_LENGTH_LONG, {length: data.length, maximum: schema.maxItems}, '', '/maxItems', null, data, schema);
 			if (this.handleError(error)) {
 				return error;
 			}
@@ -7661,7 +7817,7 @@ ValidatorContext.prototype.validateArrayUniqueItems = function validateArrayUniq
 		for (var i = 0; i < data.length; i++) {
 			for (var j = i + 1; j < data.length; j++) {
 				if (recursiveCompare(data[i], data[j])) {
-					var error = (this.createError(ErrorCodes.ARRAY_UNIQUE, {match1: i, match2: j})).prefixWith(null, "uniqueItems");
+					var error = this.createError(ErrorCodes.ARRAY_UNIQUE, {match1: i, match2: j}, '', '/uniqueItems', null, data, schema);
 					if (this.handleError(error)) {
 						return error;
 					}
@@ -7686,7 +7842,7 @@ ValidatorContext.prototype.validateArrayItems = function validateArrayItems(data
 			} else if (schema.additionalItems !== undefined) {
 				if (typeof schema.additionalItems === "boolean") {
 					if (!schema.additionalItems) {
-						error = (this.createError(ErrorCodes.ARRAY_ADDITIONAL_ITEMS, {})).prefixWith("" + i, "additionalItems");
+						error = (this.createError(ErrorCodes.ARRAY_ADDITIONAL_ITEMS, {}, '/' + i, '/additionalItems', null, data, schema));
 						if (this.handleError(error)) {
 							return error;
 						}
@@ -7722,7 +7878,7 @@ ValidatorContext.prototype.validateObjectMinMaxProperties = function validateObj
 	var error;
 	if (schema.minProperties !== undefined) {
 		if (keys.length < schema.minProperties) {
-			error = this.createError(ErrorCodes.OBJECT_PROPERTIES_MINIMUM, {propertyCount: keys.length, minimum: schema.minProperties}).prefixWith(null, "minProperties");
+			error = this.createError(ErrorCodes.OBJECT_PROPERTIES_MINIMUM, {propertyCount: keys.length, minimum: schema.minProperties}, '', '/minProperties', null, data, schema);
 			if (this.handleError(error)) {
 				return error;
 			}
@@ -7730,7 +7886,7 @@ ValidatorContext.prototype.validateObjectMinMaxProperties = function validateObj
 	}
 	if (schema.maxProperties !== undefined) {
 		if (keys.length > schema.maxProperties) {
-			error = this.createError(ErrorCodes.OBJECT_PROPERTIES_MAXIMUM, {propertyCount: keys.length, maximum: schema.maxProperties}).prefixWith(null, "maxProperties");
+			error = this.createError(ErrorCodes.OBJECT_PROPERTIES_MAXIMUM, {propertyCount: keys.length, maximum: schema.maxProperties}, '', '/maxProperties', null, data, schema);
 			if (this.handleError(error)) {
 				return error;
 			}
@@ -7744,7 +7900,7 @@ ValidatorContext.prototype.validateObjectRequiredProperties = function validateO
 		for (var i = 0; i < schema.required.length; i++) {
 			var key = schema.required[i];
 			if (data[key] === undefined) {
-				var error = this.createError(ErrorCodes.OBJECT_REQUIRED, {key: key}).prefixWith(null, "" + i).prefixWith(null, "required");
+				var error = this.createError(ErrorCodes.OBJECT_REQUIRED, {key: key}, '', '/required/' + i, null, data, schema);
 				if (this.handleError(error)) {
 					return error;
 				}
@@ -7784,7 +7940,7 @@ ValidatorContext.prototype.validateObjectProperties = function validateObjectPro
 				}
 				if (typeof schema.additionalProperties === "boolean") {
 					if (!schema.additionalProperties) {
-						error = this.createError(ErrorCodes.OBJECT_ADDITIONAL_PROPERTIES, {}).prefixWith(key, "additionalProperties");
+						error = this.createError(ErrorCodes.OBJECT_ADDITIONAL_PROPERTIES, {key: key}, '', '/additionalProperties', null, data, schema).prefixWith(key, null);
 						if (this.handleError(error)) {
 							return error;
 						}
@@ -7813,7 +7969,7 @@ ValidatorContext.prototype.validateObjectDependencies = function validateObjectD
 				var dep = schema.dependencies[depKey];
 				if (typeof dep === "string") {
 					if (data[dep] === undefined) {
-						error = this.createError(ErrorCodes.OBJECT_DEPENDENCY_KEY, {key: depKey, missing: dep}).prefixWith(null, depKey).prefixWith(null, "dependencies");
+						error = this.createError(ErrorCodes.OBJECT_DEPENDENCY_KEY, {key: depKey, missing: dep}, '', '', null, data, schema).prefixWith(null, depKey).prefixWith(null, "dependencies");
 						if (this.handleError(error)) {
 							return error;
 						}
@@ -7822,7 +7978,7 @@ ValidatorContext.prototype.validateObjectDependencies = function validateObjectD
 					for (var i = 0; i < dep.length; i++) {
 						var requiredKey = dep[i];
 						if (data[requiredKey] === undefined) {
-							error = this.createError(ErrorCodes.OBJECT_DEPENDENCY_KEY, {key: depKey, missing: requiredKey}).prefixWith(null, "" + i).prefixWith(null, depKey).prefixWith(null, "dependencies");
+							error = this.createError(ErrorCodes.OBJECT_DEPENDENCY_KEY, {key: depKey, missing: requiredKey}, '', '/' + i, null, data, schema).prefixWith(null, depKey).prefixWith(null, "dependencies");
 							if (this.handleError(error)) {
 								return error;
 							}
@@ -7914,7 +8070,7 @@ ValidatorContext.prototype.validateAnyOf = function validateAnyOf(data, schema, 
 	if (errorAtEnd) {
 		errors = errors.concat(this.errors.slice(startErrorCount));
 		this.errors = this.errors.slice(0, startErrorCount);
-		return this.createError(ErrorCodes.ANY_OF_MISSING, {}, "", "/anyOf", errors);
+		return this.createError(ErrorCodes.ANY_OF_MISSING, {}, "", "/anyOf", errors, data, schema);
 	}
 };
 
@@ -7945,7 +8101,7 @@ ValidatorContext.prototype.validateOneOf = function validateOneOf(data, schema, 
 				validIndex = i;
 			} else {
 				this.errors = this.errors.slice(0, startErrorCount);
-				return this.createError(ErrorCodes.ONE_OF_MULTIPLE, {index1: validIndex, index2: i}, "", "/oneOf");
+				return this.createError(ErrorCodes.ONE_OF_MULTIPLE, {index1: validIndex, index2: i}, "", "/oneOf", null, data, schema);
 			}
 			if (this.trackUnknownProperties) {
 				for (var knownKey in this.knownPropertyPaths) {
@@ -7969,7 +8125,7 @@ ValidatorContext.prototype.validateOneOf = function validateOneOf(data, schema, 
 	if (validIndex === null) {
 		errors = errors.concat(this.errors.slice(startErrorCount));
 		this.errors = this.errors.slice(0, startErrorCount);
-		return this.createError(ErrorCodes.ONE_OF_MISSING, {}, "", "/oneOf", errors);
+		return this.createError(ErrorCodes.ONE_OF_MISSING, {}, "", "/oneOf", errors, data, schema);
 	} else {
 		this.errors = this.errors.slice(0, startErrorCount);
 	}
@@ -7996,7 +8152,7 @@ ValidatorContext.prototype.validateNot = function validateNot(data, schema, data
 		this.knownPropertyPaths = oldKnownPropertyPaths;
 	}
 	if (error === null && notErrors.length === 0) {
-		return this.createError(ErrorCodes.NOT_PASSED, {}, "", "/not");
+		return this.createError(ErrorCodes.NOT_PASSED, {}, "", "/not", null, data, schema);
 	}
 	return null;
 };
@@ -8102,6 +8258,25 @@ function normSchema(schema, baseUri) {
 	}
 }
 
+function defaultErrorReporter(language) {
+	language = language || 'en';
+
+	var errorMessages = languages[language];
+
+	return function (error) {
+		var messageTemplate = errorMessages[error.code] || ErrorMessagesDefault[error.code];
+		if (typeof messageTemplate !== 'string') {
+			return "Unknown error code " + error.code + ": " + JSON.stringify(error.messageParams);
+		}
+		var messageParams = error.params;
+		// Adapted from Crockford's supplant()
+		return messageTemplate.replace(/\{([^{}]*)\}/g, function (whole, varName) {
+			var subValue = messageParams[varName];
+			return typeof subValue === 'string' || typeof subValue === 'number' ? subValue : whole;
+		});
+	};
+}
+
 var ErrorCodes = {
 	INVALID_TYPE: 0,
 	ENUM_MISMATCH: 1,
@@ -8181,12 +8356,12 @@ var ErrorMessagesDefault = {
 	UNKNOWN_PROPERTY: "Unknown property (not in schema)"
 };
 
-function ValidationError(code, message, params, dataPath, schemaPath, subErrors) {
+function ValidationError(code, params, dataPath, schemaPath, subErrors) {
 	Error.call(this);
 	if (code === undefined) {
-		throw new Error ("No code supplied for error: "+ message);
+		throw new Error ("No error code supplied: " + schemaPath);
 	}
-	this.message = message;
+	this.message = '';
 	this.params = params;
 	this.code = code;
 	this.dataPath = dataPath || "";
@@ -8240,8 +8415,16 @@ function isTrustedUrl(baseUrl, testUrl) {
 var languages = {};
 function createApi(language) {
 	var globalContext = new ValidatorContext();
-	var currentLanguage = language || 'en';
+	var currentLanguage;
+	var customErrorReporter;
 	var api = {
+		setErrorReporter: function (reporter) {
+			if (typeof reporter === 'string') {
+				return this.language(reporter);
+			}
+			customErrorReporter = reporter;
+			return true;
+		},
 		addFormat: function () {
 			globalContext.addFormat.apply(globalContext, arguments);
 		},
@@ -8288,14 +8471,18 @@ function createApi(language) {
 			return result;
 		},
 		validate: function (data, schema, checkRecursive, banUnknownProperties) {
-			var context = new ValidatorContext(globalContext, false, languages[currentLanguage], checkRecursive, banUnknownProperties);
+			var def = defaultErrorReporter(currentLanguage);
+			var errorReporter = customErrorReporter ? function (error, data, schema) {
+				return customErrorReporter(error, data, schema) || def(error, data, schema);
+			} : def;
+			var context = new ValidatorContext(globalContext, false, errorReporter, checkRecursive, banUnknownProperties);
 			if (typeof schema === "string") {
 				schema = {"$ref": schema};
 			}
 			context.addSchema("", schema);
 			var error = context.validateAll(data, schema, null, null, "");
 			if (!error && banUnknownProperties) {
-				error = context.banUnknownProperties();
+				error = context.banUnknownProperties(data, schema);
 			}
 			this.error = error;
 			this.missing = context.missing;
@@ -8308,14 +8495,18 @@ function createApi(language) {
 			return result;
 		},
 		validateMultiple: function (data, schema, checkRecursive, banUnknownProperties) {
-			var context = new ValidatorContext(globalContext, true, languages[currentLanguage], checkRecursive, banUnknownProperties);
+			var def = defaultErrorReporter(currentLanguage);
+			var errorReporter = customErrorReporter ? function (error, data, schema) {
+				return customErrorReporter(error, data, schema) || def(error, data, schema);
+			} : def;
+			var context = new ValidatorContext(globalContext, true, errorReporter, checkRecursive, banUnknownProperties);
 			if (typeof schema === "string") {
 				schema = {"$ref": schema};
 			}
 			context.addSchema("", schema);
 			context.validateAll(data, schema, null, null, "");
 			if (banUnknownProperties) {
-				context.banUnknownProperties();
+				context.banUnknownProperties(data, schema);
 			}
 			var result = {};
 			result.errors = context.errors;
@@ -8381,6 +8572,7 @@ function createApi(language) {
 		getDocumentUri: getDocumentUri,
 		errorCodes: ErrorCodes
 	};
+	api.language(language || 'en');
 	return api;
 }
 
@@ -8663,8 +8855,9 @@ Math.uuid = function (len, radix) {
      *
      *   A promise for an object, representing child nodes. If the maxAge
      *   requirement cannot be met because of network problems, this promise
-     *   will be rejected. If the maxAge requirement is set to false, the
-     *   promise will always be fulfilled with data from the local store.
+     *   will be rejected. If the maxAge requirement is set to false or the
+     *   library is in offline state, the promise will always be fulfilled with
+     *   data from the local store.
      *
      *   Keys ending in a forward slash represent *folder nodes*, while all
      *   other keys represent *data nodes*.
@@ -9350,29 +9543,36 @@ Math.uuid = function (len, radix) {
     /**
      * Method: set
      *
-     * Set the caching strategy for a given path explicitly.
+     * Configure caching for a given path explicitly.
      *
      * Not needed when using <enable>/<disable>.
      *
      * Parameters:
-     *   path  - Path to cache
-     *   value - Caching strategy. One of 'ALL', 'SEEN', or 'FLUSH'.
+     *   path     - Path to cache
+     *   strategy - Caching strategy. One of 'ALL', 'SEEN', or 'FLUSH'.
      *
      * Example:
      *   (start code)
      *   remoteStorage.caching.set('/bookmarks/archive')
      */
-    set: function (path, value) {
-      if (typeof(path) !== 'string') {
+    set: function (path, strategy) {
+      if (typeof path !== 'string') {
         throw new Error('path should be a string');
       }
-      if (typeof(value) === 'undefined') {
-        throw new Error("value should be 'FLUSH', 'SEEN', or 'ALL'");
+      if (!RemoteStorage.util.isFolder(path)) {
+        throw new Error('path should be a folder');
+      }
+      if (this._remoteStorage && this._remoteStorage.access &&
+          !this._remoteStorage.access.checkPathPermission(path, 'r')) {
+        throw new Error('No access to path "'+path+'". You have to claim access to it first.');
+      }
+      if (!strategy.match(/^(FLUSH|SEEN|ALL)$/)) {
+        throw new Error("strategy should be 'FLUSH', 'SEEN', or 'ALL'");
       }
 
-      this._rootPaths[path] = value;
+      this._rootPaths[path] = strategy;
 
-      if (value === 'ALL') {
+      if (strategy === 'ALL') {
         if (this.activateHandler) {
           this.activateHandler(path);
         } else {
@@ -9454,6 +9654,7 @@ Math.uuid = function (len, radix) {
      **/
     reset: function () {
       this._rootPaths = {};
+      this._remoteStorage = null;
     }
   };
 
@@ -9473,7 +9674,9 @@ Math.uuid = function (len, radix) {
     }
   });
 
-  RemoteStorage.Caching._rs_init = function () {};
+  RemoteStorage.Caching._rs_init = function (remoteStorage) {
+    this._remoteStorage = remoteStorage;
+  };
 
 })(typeof(window) !== 'undefined' ? window : global);
 
@@ -9583,6 +9786,7 @@ Math.uuid = function (len, radix) {
 
     queueGetRequest: function (path) {
       var pending = Promise.defer();
+
       if (!this.remote.connected) {
         pending.reject('cannot fulfill maxAge requirement - remote is not connected');
       } else if (!this.remote.online) {
@@ -9596,6 +9800,7 @@ Math.uuid = function (len, radix) {
 
         this.doTasks();
       }
+
       return pending.promise;
     },
 
@@ -9761,7 +9966,7 @@ Math.uuid = function (len, radix) {
 
     deleteChildPathsFromTasks: function () {
       for (var path in this._tasks) {
-        paths = pathsFromRoot(path);
+        var paths = pathsFromRoot(path);
 
         for (var i=1; i<paths.length; i++) {
           if (this._tasks[paths[i]]) {
@@ -10010,7 +10215,7 @@ Math.uuid = function (len, radix) {
         var cachingStrategy;
         var node;
 
-        nodeChanged = function (node, etag) {
+        var nodeChanged = function (node, etag) {
           return node.common.revision !== etag && (!node.remote || node.remote.revision !== etag);
         };
 
@@ -10154,7 +10359,7 @@ Math.uuid = function (len, radix) {
         var node = nodes[path];
         var parentNode;
 
-        collectMissingChildren = function (folder) {
+        var collectMissingChildren = function (folder) {
           if (folder && folder.itemsMap) {
             for (var itemName in folder.itemsMap) {
               if (!bodyOrItemsMap[itemName]) {
@@ -10379,7 +10584,7 @@ Math.uuid = function (len, radix) {
 
         if (completed) {
           if (self._tasks[task.path]) {
-            for (i=0; i<self._tasks[task.path].length; i++) {
+            for (var i=0; i<self._tasks[task.path].length; i++) {
               self._tasks[task.path][i]();
             }
             delete self._tasks[task.path];
@@ -10710,7 +10915,7 @@ Math.uuid = function (len, radix) {
       if (nodes[path] && nodes[path].remote) {
         return true;
       }
-      nodeVersion = getLatest(nodes[path]);
+      var nodeVersion = getLatest(nodes[path]);
       if (nodeVersion && nodeVersion.timestamp && (new Date().getTime()) - nodeVersion.timestamp <= maxAge) {
         return false;
       } else if (!nodeVersion) {
@@ -11347,33 +11552,55 @@ Math.uuid = function (len, radix) {
       callback("timeout trying to open db");
     }, 10000);
 
-    var req = indexedDB.open(name, DB_VERSION);
+    try {
+      var req = indexedDB.open(name, DB_VERSION);
 
-    req.onerror = function () {
-      RemoteStorage.log('[IndexedDB] Opening DB failed', req);
+      req.onerror = function () {
+        RemoteStorage.log('[IndexedDB] Opening DB failed', req);
+
+        clearTimeout(timer);
+        callback(req.error);
+      };
+
+      req.onupgradeneeded = function (event) {
+        var db = req.result;
+
+        RemoteStorage.log("[IndexedDB] Upgrade: from ", event.oldVersion, " to ", event.newVersion);
+
+        if (event.oldVersion !== 1) {
+          RemoteStorage.log("[IndexedDB] Creating object store: nodes");
+          db.createObjectStore('nodes', { keyPath: 'path' });
+        }
+
+        RemoteStorage.log("[IndexedDB] Creating object store: changes");
+
+        db.createObjectStore('changes', { keyPath: 'path' });
+      };
+
+      req.onsuccess = function () {
+        clearTimeout(timer);
+
+        // check if all object stores exist
+        var db = req.result;
+        if(!db.objectStoreNames.contains('nodes') || !db.objectStoreNames.contains('changes')) {
+          RemoteStorage.log("[IndexedDB] Missing object store. Resetting the database.");
+          RS.IndexedDB.clean(name, function() {
+            RS.IndexedDB.open(name, callback);
+          });
+          return;
+        }
+
+        callback(null, req.result);
+      };
+    } catch(error) {
+      RemoteStorage.log("[IndexedDB] Failed to open database: " + error);
+      RemoteStorage.log("[IndexedDB] Resetting database and trying again.");
 
       clearTimeout(timer);
-      callback(req.error);
-    };
 
-    req.onupgradeneeded = function (event) {
-      var db = req.result;
-
-      RemoteStorage.log("[IndexedDB] Upgrade: from ", event.oldVersion, " to ", event.newVersion);
-
-      if (event.oldVersion !== 1) {
-        RemoteStorage.log("[IndexedDB] Creating object store: nodes");
-        db.createObjectStore('nodes', { keyPath: 'path' });
-      }
-
-      RemoteStorage.log("[IndexedDB] Creating object store: changes");
-
-      db.createObjectStore('changes', { keyPath: 'path' });
-    };
-
-    req.onsuccess = function () {
-      clearTimeout(timer);
-      callback(null, req.result);
+      RS.IndexedDB.clean(name, function() {
+        RS.IndexedDB.open(name, callback);
+      });
     };
   };
 
@@ -11895,6 +12122,21 @@ Math.uuid = function (len, radix) {
    * Class: RemoteStorage.GoogleDrive
    *
    * WORK IN PROGRESS, NOT RECOMMENDED FOR PRODUCTION USE
+   *
+   * To use this backend, you need to specify the app's client ID like so:
+   *
+   * (start code)
+   *
+   * remoteStorage.setApiKeys('googledrive', {
+   *   clientId: 'your-client-id'
+   * });
+   *
+   * (end code)
+   *
+   * An client ID can be obtained by registering your app in the Google
+   * Developers Console: https://developers.google.com/drive/web/auth/web-client
+   *
+   * Docs: https://developers.google.com/drive/web/auth/web-client#create_a_client_id_and_client_secret
    **/
 
   var RS = RemoteStorage;
@@ -12287,7 +12529,7 @@ Math.uuid = function (len, radix) {
   RS.GoogleDrive._rs_init = function (remoteStorage) {
     var config = remoteStorage.apiKeys.googledrive;
     if (config) {
-      remoteStorage.googledrive = new RS.GoogleDrive(remoteStorage, config.client_id);
+      remoteStorage.googledrive = new RS.GoogleDrive(remoteStorage, config.clientId);
       if (remoteStorage.backend === 'googledrive') {
         remoteStorage._origRemote = remoteStorage.remote;
         remoteStorage.remote = remoteStorage.googledrive;
@@ -12327,26 +12569,26 @@ Math.uuid = function (len, radix) {
    * initialize and replace remoteStorage.remote with remoteStorage.dropbox.
    *
    * In order to ensure compatibility with the public folder, <BaseClient.getItemURL>
-   * gets hijacked to return the DropBox public share URL.
+   * gets hijacked to return the Dropbox public share URL.
    *
-   * To use this backend, you need to specify the DropBox API key like so:
+   * To use this backend, you need to specify the Dropbox app key like so:
    *
    * (start code)
    *
-   * remoteStorage.setaApiKeys('dropbox', {
-   *   api_key: 'your-api-key'
+   * remoteStorage.setApiKeys('dropbox', {
+   *   appKey: 'your-app-key'
    * });
-   * 
+   *
    * (end code)
    *
-   * An API key can be obtained by registering your app at https://www.dropbox.com/developers/apps
+   * An app key can be obtained by registering your app at https://www.dropbox.com/developers/apps
    *
    * Known issues:
    *
    *   - Storing files larger than 150MB is not yet supported
    *   - Listing and deleting folders with more than 10'000 files will cause problems
-   *   - Content-Type is not fully supported due to limitations of the DropBox API
-   *   - DropBox preserves cases but is not case-sensitive
+   *   - Content-Type is not fully supported due to limitations of the Dropbox API
+   *   - Dropbox preserves cases but is not case-sensitive
    *   - getItemURL is asynchronous which means getIetmURL returns useful values
    *     after the syncCycle
    */
@@ -12488,7 +12730,7 @@ Math.uuid = function (len, radix) {
     RS.eventHandling(this, 'change', 'connected', 'wire-busy', 'wire-done', 'not-connected');
     rs.on('error', onErrorCb);
 
-    this.clientId = rs.apiKeys.dropbox.api_key;
+    this.clientId = rs.apiKeys.dropbox.appKey;
     this._revCache = new LowerCaseCache('rev');
     this._itemRefs = {};
     this._metadataCache = {};
@@ -12517,7 +12759,7 @@ Math.uuid = function (len, radix) {
      * Method: connect
      *
      * Set the backed to 'dropbox' and start the authentication flow in order
-     * to obtain an API token from DropBox.
+     * to obtain an API token from Dropbox.
      */
     connect: function () {
       // TODO handling when token is already present
@@ -12829,7 +13071,7 @@ Math.uuid = function (len, radix) {
     /**
      * Method: share
      *
-     * Gets a publicly-accessible URL for the path from DropBox and stores it
+     * Gets a publicly-accessible URL for the path from Dropbox and stores it
      * in _itemRefs.
      *
      * Returns:
@@ -12842,13 +13084,13 @@ Math.uuid = function (len, radix) {
 
       return this._request('POST', url, {}).then(function (response) {
         if (response.status !== 200) {
-          return Promise.reject(new Error('Invalid DropBox API response status when sharing "' + path + '":' + response.status));
+          return Promise.reject(new Error('Invalid Dropbox API response status when sharing "' + path + '":' + response.status));
         }
 
         try {
           response = JSON.parse(response.responseText);
         } catch (e) {
-          return Promise.reject(new Error('Invalid DropBox API response when sharing "' + path + '": ' + response.responseText));
+          return Promise.reject(new Error('Invalid Dropbox API response when sharing "' + path + '": ' + response.responseText));
         }
 
         self._itemRefs[path] = response.url;
@@ -12859,7 +13101,7 @@ Math.uuid = function (len, radix) {
 
         return Promise.resolve(url);
       }, function (error) {
-        err.message = 'Sharing DropBox file or folder ("' + path + '") failed.' + err.message;
+        err.message = 'Sharing dropbox file or folder ("' + path + '") failed.' + err.message;
         return Promise.reject(error);
       });
     },
@@ -12867,7 +13109,7 @@ Math.uuid = function (len, radix) {
     /**
      * Method: info
      *
-     * Fetches the user's info from DropBox and returns a promise for it.
+     * Fetches the user's info from dropbox and returns a promise for it.
      *
      * Returns:
      *
@@ -12918,7 +13160,7 @@ Math.uuid = function (len, radix) {
     /**
      * Method: fetchDelta
      *
-     * Fetches the revision of all the files from DropBox API and puts them
+     * Fetches the revision of all the files from dropbox API and puts them
      * into _revCache. These values can then be used to determine if something
      * has changed.
      */
@@ -13079,7 +13321,7 @@ Math.uuid = function (len, radix) {
           return Promise.reject(e);
         }
 
-        // Conflict happened. Delete the copy created by DropBox
+        // Conflict happened. Delete the copy created by dropbox
         if (response.path !== params.path) {
           var deleteUrl = 'https://api.dropbox.com/1/fileops/delete?root=auto&path=' + encodeURIComponent(response.path);
           self._request('POST', deleteUrl, {});
@@ -13165,9 +13407,9 @@ Math.uuid = function (len, radix) {
   }
 
   function unHookGetItemURL(rs){
-    if (! rs._origBaseClieNtGetItemURL) { return; }
-    RS.BaseClient.prototype.getItemURL = rs._origBaseClietGetItemURL;
-    delete rs._origBaseClietGetItemURL;
+    if (! rs._origBaseClientGetItemURL) { return; }
+    RS.BaseClient.prototype.getItemURL = rs._origBaseClientGetItemURL;
+    delete rs._origBaseClientGetItemURL;
   }
 
   function hookRemote(rs){
