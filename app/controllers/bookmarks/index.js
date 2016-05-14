@@ -17,10 +17,11 @@ var BookmarksIndexController = Ember.ArrayController.extend({
       return this.get('arrangedContent');
     } else {
       return this.get('arrangedContent').filter(function(item) {
-        var match = ( item.description.toLowerCase().indexOf(filterText) !== -1 ||
+        var match = ( (!Ember.isEmpty(item.description) &&
+                       item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
                       item.url.toLowerCase().indexOf(filterText) !== -1 ||
-                      item.tags.indexOf(filterText) !== -1 );
+                      (!Ember.isEmpty(item.tags) && item.tags.indexOf(filterText) !== -1) );
         return match;
       });
     }
