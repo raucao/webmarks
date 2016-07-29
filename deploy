@@ -1,9 +1,0 @@
-#!/bin/sh
-
-grunt dist
-
-if [ $1 ]; then
-  grunt buildcontrol:$1
-else
-  grunt buildcontrol:development
-fi
