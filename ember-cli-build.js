@@ -21,6 +21,8 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('bower_components/moment/moment.js');
+  app.import('bower_components/remotestorage/release/stable/remotestorage.js');
+  app.import('vendor/remotestorage/remotestorage-bookmarks.js');
 
   return app.toTree();
 };

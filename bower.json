@@ -4,6 +4,7 @@
     "ember": "~2.7.0",
     "ember-cli-shims": "0.1.1",
     "ember-qunit-notifications": "0.1.0",
-    "moment": "^2.14.1"
+    "moment": "^2.14.1",
+    "remotestorage": "^0.14.0"
   }
 }

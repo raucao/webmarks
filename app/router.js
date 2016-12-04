@@ -7,6 +7,12 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
+  this.route('welcome', { path: "/welcome" });
+
+  this.resource('bookmarks', function() {
+    this.route('new', { queryParams: ['title', 'url'] });
+    this.route('edit', { path: 'edit/:bookmark_id' });
+  });
 });
 
 export default Router;

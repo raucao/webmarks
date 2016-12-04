@@ -1,0 +1,30 @@
+<section id="bookmark-edit">
+  <header>
+    <h2>Update bookmark</h2>
+  </header>
+
+  <form {{action commit on="submit"}}>
+    <fieldset>
+      <div class="control-group">
+        <label for="title">Title</label>
+        {{view Ember.TextField valueBinding="title" id="title" required="required"}}
+      </div>
+      <div class="control-group">
+        <label for="url">URL</label>
+        {{view Ember.TextField valueBinding="url" id="url" required="required"}}
+      </div>
+      <div class="control-group">
+        <label for="description">Description</label>
+        {{view Ember.TextField valueBinding="description" id="description"}}
+      </div>
+      <div class="control-group">
+        <label for="tags">Tags</label>
+        {{view Ember.TextField valueBinding="tags" id="tags"}}
+      </div>
+    </fieldset>
+    <div class="controls">
+      <button type="submit" class="button button-primary">Save</button>
+      <button {{action 'cancel'}} class="button button-secondary">Cancel</button>
+    </div>
+  </form>
+</section>

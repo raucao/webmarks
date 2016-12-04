@@ -1,0 +1,43 @@
+import Ember from 'ember';
+import Bookmark from 'webmarks/models/bookmark';
+
+export default Ember.ObjectController.extend({
+
+  queryParams: ['title', 'url'],
+
+  needs: ['index'],
+
+  archiveBookmarksBinding: 'controllers.index.content',
+
+  bookmarkletUsed: false,
+
+  actions: {
+    commit: function() {
+      var self = this;
+
+      remoteStorage.bookmarks.archive.store(this.get('serialize')).then(
+        function(bookmark) {
+          // Remove existing item from collection if exists
+          var oldItem = self.archiveBookmarks.findProperty('id', bookmark.id);
+          if (oldItem) { self.archiveBookmarks.removeObject(oldItem); }
+
+          // Add new item to collection
+          var newItem = Bookmark.create(bookmark);
+          self.archiveBookmarks.pushObject(newItem);
+
+          self.transitionToRoute('index');
+        },
+        function(error) {
+          alert('Something went wrong.');
+          console.log('ERROR:');
+          console.log(error);
+        }
+      );
+    },
+
+    cancel: function() {
+      this.transitionToRoute('index');
+    }
+  }
+
+});

@@ -1,0 +1,41 @@
+<section id="search">
+  <div class="search-input">
+    {{input value=filterText placeholder="Search"}}
+  </div>
+</section>
+
+{{#if model}}
+  <ul class="bookmark-list">
+    {{#each item in filteredContent}}
+      <li class="bookmark">
+        <h4 class="heading">
+          <a {{bind-attr href="item.url"}}>{{item.title}}</a>
+        </h4>
+        <p class="meta">
+          <span class="domain">{{item.domain}}<span>
+          &middot;
+          <span class="date">{{item.createdAtTimeAgo}}<span>
+          {{#if item.updatedAt}}
+            (updated <span class="date">{{item.updatedAtTimeAgo}})<span>
+          {{/if}}
+          {{#if item.tags}}
+            &middot;
+            {{#each tag in item.tags}}
+            <span class="tag">{{tag}}</span>
+            {{/each}}
+          {{/if}}
+        </p>
+        <div class="actions">
+          {{#link-to "bookmarks.edit" item}}<i class="icon-pencil"></i>{{/link-to}}
+          <a {{action 'remove' item}}><i class="icon-trash"></i></a>
+        </div>
+        {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <div class="no-bookmarks">
+    <p>You haven&#39;t stored any bookmarks yet.</p>
+    <p>{{#link-to "bookmarks.new"}}Add the first one{{/link-to}}</p>
+  </div>
+{{/if}}
