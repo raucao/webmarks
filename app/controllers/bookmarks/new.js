@@ -6,7 +6,7 @@ export default Ember.Controller.extend({
   queryParams: ['title', 'url'],
 
   index: Ember.inject.controller(),
-  archiveBookmarks: Ember.computed.alias('index.content'),
+  archiveBookmarks: Ember.computed.alias('index.model'),
 
   bookmarkletUsed: false,
 
@@ -14,15 +14,15 @@ export default Ember.Controller.extend({
     commit: function() {
       var self = this;
 
-      remoteStorage.bookmarks.archive.store(this.get('serialize')).then(
+      remoteStorage.bookmarks.archive.store(this.get('model.serialize')).then(
         function(bookmark) {
           // Remove existing item from collection if exists
-          var oldItem = self.archiveBookmarks.findBy('id', bookmark.id);
-          if (oldItem) { self.archiveBookmarks.removeObject(oldItem); }
+          var oldItem = self.get('archiveBookmarks').findBy('id', bookmark.id);
+          if (oldItem) { self.get('archiveBookmarks').removeObject(oldItem); }
 
           // Add new item to collection
           var newItem = Bookmark.create(bookmark);
-          self.archiveBookmarks.pushObject(newItem);
+          self.get('archiveBookmarks').pushObject(newItem);
 
           self.transitionToRoute('index');
         },

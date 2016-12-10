@@ -3,7 +3,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
 
   index: Ember.inject.controller(),
-  content: Ember.computed.alias('index.content'),
+  model: Ember.computed.alias('index.model'),
 
   filterText: '',
 
@@ -24,16 +24,16 @@ export default Ember.Controller.extend({
         return match;
       });
     }
-  }.property('filterText', 'content'),
+  }.property('filterText', 'model'),
 
   actions: {
     remove: function(item) {
       var self = this;
-      var bookmark = this.findBy('id', item.id);
+      var bookmark = this.get('model').findBy('id', item.id);
 
       remoteStorage.bookmarks.archive.remove(item.id).then(
         function() {
-          self.removeObject(bookmark);
+          self.get('model').removeObject(bookmark);
         },
         function(error) {
           alert('Something went wrong.');
