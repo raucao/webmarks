@@ -23,14 +23,14 @@ export default Ember.Route.extend({
 
         // Object deleted on remote
         if (event.oldValue && !event.newValue) {
-          item = archiveBookmarks.findProperty('id', event.oldValue.id);
+          item = archiveBookmarks.findBy('id', event.oldValue.id);
           archiveBookmarks.removeObject(item);
         }
 
         // Object updated on remote
         if (event.oldValue && event.newValue) {
           item = Bookmark.create(event.newValue);
-          var oldItem = archiveBookmarks.findProperty('id', item.id);
+          var oldItem = archiveBookmarks.findBy('id', item.id);
           if (oldItem) { archiveBookmarks.removeObject(oldItem); }
           archiveBookmarks.pushObject(item);
         }

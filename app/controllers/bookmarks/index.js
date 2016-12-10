@@ -30,7 +30,7 @@ export default Ember.Controller.extend({
   actions: {
     remove: function(item) {
       var self = this;
-      var bookmark = this.findProperty('id', item.id);
+      var bookmark = this.findBy('id', item.id);
 
       remoteStorage.bookmarks.archive.remove(item.id).then(
         function() {

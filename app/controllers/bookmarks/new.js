@@ -18,7 +18,7 @@ export default Ember.Controller.extend({
       remoteStorage.bookmarks.archive.store(this.get('serialize')).then(
         function(bookmark) {
           // Remove existing item from collection if exists
-          var oldItem = self.archiveBookmarks.findProperty('id', bookmark.id);
+          var oldItem = self.archiveBookmarks.findBy('id', bookmark.id);
           if (oldItem) { self.archiveBookmarks.removeObject(oldItem); }
 
           // Add new item to collection
