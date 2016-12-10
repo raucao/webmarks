@@ -25,10 +25,6 @@ export default Ember.Route.extend({
     );
   },
 
-  setupController: function(controller, model){
-    this._super(controller, model);
-  },
-
   redirect: function() {
     if (!remoteStorage.connected) {
       this.transitionTo('welcome');
