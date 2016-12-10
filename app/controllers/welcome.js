@@ -2,13 +2,17 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  rsConnected: Ember.computed.alias('App.rsConnected'),
+  storage: Ember.inject.service(),
 
-  handleRsConnect: function() {
-    if (this.get('rsConnected')) {
-      console.log('rs connected, transition to index');
-      this.transitionToRoute('index');
-    }
-  }.observes('rsConnected')
+  init: function() {
+    this._super(...arguments);
+
+    this.get('storage').on('connected', this.handleStorageConnect.bind(this));
+  },
+
+  handleStorageConnect: function() {
+    console.log('rs connected, transition to index');
+    this.transitionToRoute('index');
+  }
 
 });
