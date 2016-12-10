@@ -42,6 +42,6 @@ export default Ember.Object.extend({
     }
 
     return serialized;
-  }.property()
+  }.property('url', 'title', 'description', 'tags', 'createdAt')
 
 });
