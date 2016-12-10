@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import Bookmark from 'webmarks/models/bookmark';
 
-export default Ember.ObjectController.extend({
+export default Ember.Controller.extend({
 
   queryParams: ['title', 'url'],
 
