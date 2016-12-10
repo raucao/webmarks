@@ -6,7 +6,7 @@
 
 {{#if model}}
   <ul class="bookmark-list">
-    {{#each item in filteredContent}}
+    {{#each filteredContent as |item|}}
       <li class="bookmark">
         <h4 class="heading">
           <a {{bind-attr href="item.url"}}>{{item.title}}</a>
@@ -20,8 +20,8 @@
           {{/if}}
           {{#if item.tags}}
             &middot;
-            {{#each tag in item.tags}}
-            <span class="tag">{{tag}}</span>
+            {{#each item.tags as |tag|}}
+              <span class="tag">{{tag}}</span>
             {{/each}}
           {{/if}}
         </p>
