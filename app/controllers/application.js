@@ -2,7 +2,7 @@ import Ember from "ember";
 
 export default Ember.Controller.extend({
 
-  rsConnectedBinding: 'App.rsConnected',
+  rsConnected: Ember.computed.alias('App.rsConnected'),
   archiveBookmarks: [],
 
   handleRsDisconnect: function() {

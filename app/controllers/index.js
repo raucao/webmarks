@@ -2,8 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['application'],
-
-  contentBinding: 'controllers.application.archiveBookmarks',
+  application: Ember.inject.controller(),
+  content: Ember.computed.alias('application.archiveBookmarks'),
 
 });

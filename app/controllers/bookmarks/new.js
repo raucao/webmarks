@@ -5,9 +5,8 @@ export default Ember.Controller.extend({
 
   queryParams: ['title', 'url'],
 
-  needs: ['index'],
-
-  archiveBookmarksBinding: 'controllers.index.content',
+  index: Ember.inject.controller(),
+  archiveBookmarks: Ember.computed.alias('index.content'),
 
   bookmarkletUsed: false,
 

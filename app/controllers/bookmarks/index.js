@@ -2,9 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  needs: ['index'],
-
-  contentBinding: 'controllers.index.content',
+  index: Ember.inject.controller(),
+  content: Ember.computed.alias('index.content'),
 
   filterText: '',
 
