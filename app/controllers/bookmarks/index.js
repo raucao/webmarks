@@ -7,15 +7,15 @@ export default Ember.Controller.extend({
 
   filterText: '',
 
-  sortProperties: ['createdAt'],
-  sortAscending: false,
+  sortProperties: ['createdAt:desc'],
+  sortedBookmarks: Ember.computed.sort('model', 'sortProperties'),
 
   filteredContent: function() {
     var filterText = this.get('filterText').toLowerCase();
     if (Ember.isEmpty(filterText) || filterText.length < 3) {
-      return this.get('arrangedContent');
+      return this.get('sortedBookmarks');
     } else {
-      return this.get('arrangedContent').filter(function(item) {
+      return this.get('sortedBookmarks').filter(function(item) {
         var match = ( (!Ember.isEmpty(item.description) &&
                        item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
@@ -24,7 +24,7 @@ export default Ember.Controller.extend({
         return match;
       });
     }
-  }.property('filterText', 'model'),
+  }.property('filterText', 'sortedBookmarks'),
 
   actions: {
     remove: function(item) {
