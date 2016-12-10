@@ -9,7 +9,7 @@
     {{#each filteredContent as |item|}}
       <li class="bookmark">
         <h4 class="heading">
-          <a {{bind-attr href="item.url"}}>{{item.title}}</a>
+          <a href={{item.url}}>{{item.title}}</a>
         </h4>
         <p class="meta">
           <span class="domain">{{item.domain}}</span>
