@@ -12,11 +12,11 @@
           <a {{bind-attr href="item.url"}}>{{item.title}}</a>
         </h4>
         <p class="meta">
-          <span class="domain">{{item.domain}}<span>
+          <span class="domain">{{item.domain}}</span>
           &middot;
-          <span class="date">{{item.createdAtTimeAgo}}<span>
+          <span class="date">{{item.createdAtTimeAgo}}</span>
           {{#if item.updatedAt}}
-            (updated <span class="date">{{item.updatedAtTimeAgo}})<span>
+            (updated <span class="date">{{item.updatedAtTimeAgo}})</span>
           {{/if}}
           {{#if item.tags}}
             &middot;
