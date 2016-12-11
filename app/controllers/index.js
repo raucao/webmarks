@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  application: Ember.inject.controller(),
-  model: Ember.computed.alias('application.archiveBookmarks'),
+  storage: Ember.inject.service(),
+  model: Ember.computed.alias('storage.archiveBookmarks'),
 
 });

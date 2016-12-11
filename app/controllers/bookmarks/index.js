@@ -2,8 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
-  index: Ember.inject.controller(),
-  model: Ember.computed.alias('index.model'),
+  storage: Ember.inject.service(),
+  model: Ember.computed.alias('storage.archiveBookmarks'),
 
   filterText: '',
 
@@ -28,19 +28,11 @@ export default Ember.Controller.extend({
 
   actions: {
     remove: function(item) {
-      var self = this;
-      var bookmark = this.get('model').findBy('id', item.id);
-
-      remoteStorage.bookmarks.archive.remove(item.id).then(
-        function() {
-          self.get('model').removeObject(bookmark);
-        },
-        function(error) {
-          alert('Something went wrong.');
-          console.log('ERROR:');
-          console.log(error);
-        }
-      );
+      this.get('storage').removeBookmark(item.id).catch((error) => {
+        alert('Something went wrong.');
+        console.log('ERROR:');
+        console.log(error);
+      });
     }
   }
 

@@ -3,8 +3,10 @@ import Bookmark from 'webmarks/models/bookmark';
 
 export default Ember.Route.extend({
 
+  storage: Ember.inject.service(),
+
   beforeModel: function() {
-    if (!remoteStorage.connected) {
+    if (!this.get('storage.connected')) {
       this.transitionTo('welcome');
     }
   },
