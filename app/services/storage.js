@@ -14,7 +14,7 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   fetchBookmarks() {
-    remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
+    return remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
       bookmarks.forEach((bookmark) => {
         let item = Bookmark.create({
           id: bookmark.id,
@@ -52,7 +52,6 @@ export default Ember.Service.extend(Ember.Evented, {
   setup() {
     this.setupRemoteStorage();
     this.setupEventHandlers();
-    this.setupChangeHandler();
   },
 
   setupRemoteStorage() {
@@ -72,6 +71,8 @@ export default Ember.Service.extend(Ember.Evented, {
         // New object coming in from remote
         if (!event.oldValue && event.newValue) {
           item = Bookmark.create(event.newValue);
+          let oldItem = archiveBookmarks.findBy('id', item.id);
+          if (oldItem) { archiveBookmarks.removeObject(oldItem); }
           archiveBookmarks.pushObject(item);
         }
 
@@ -101,7 +102,9 @@ export default Ember.Service.extend(Ember.Evented, {
       console.log('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
-      this.fetchBookmarks();
+      this.fetchBookmarks().then(() => {
+        this.setupChangeHandler();
+      });
       this.trigger('connected');
     });
 
