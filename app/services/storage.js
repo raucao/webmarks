@@ -72,7 +72,10 @@ export default Ember.Service.extend(Ember.Evented, {
         if (!event.oldValue && event.newValue) {
           item = Bookmark.create(event.newValue);
           let oldItem = archiveBookmarks.findBy('id', item.id);
-          if (oldItem) { archiveBookmarks.removeObject(oldItem); }
+          if (oldItem) {
+            Ember.logger.warn('Received change event for a new item that was already cached', oldItem, event);
+            archiveBookmarks.removeObject(oldItem);
+          }
           archiveBookmarks.pushObject(item);
         }
 
