@@ -18,6 +18,13 @@ export default Ember.Route.extend(RequireRSConnection, {
       controller.set('bookmarkletUsed', true);
     }
     this._super(controller, bookmark);
+  },
+
+  resetController: function(controller) {
+    let queryParams = controller.get('queryParams');
+    queryParams.forEach((param) => {
+      controller.set(param, null);
+    });
   }
 
 });

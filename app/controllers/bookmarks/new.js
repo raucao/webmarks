@@ -3,6 +3,8 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
 
   queryParams: ['title', 'url'],
+  title: null,
+  url: null,
 
   storage: Ember.inject.service(),
   bookmarkletUsed: false,
