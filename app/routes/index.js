@@ -1,43 +1,15 @@
 import Ember from 'ember';
-import Bookmark from 'webmarks/models/bookmark';
 
 export default Ember.Route.extend({
 
-  model: function(){
-    return remoteStorage.bookmarks.archive.getAll().then(
-      function(bookmarks) {
-        var collection = [];
-
-        bookmarks.forEach(function(bookmark){
-          var item = Bookmark.create({
-            id: bookmark.id,
-            url: bookmark.url,
-            title: bookmark.title,
-            description: bookmark.description,
-            tags: bookmark.tags,
-            createdAt: bookmark.createdAt
-          });
-          collection.push(item);
-        });
-
-        return collection;
-      }
-    );
-  },
-
-  setupController: function(controller, model){
-    this._super(controller, model);
-  },
+  storage: Ember.inject.service(),
 
   redirect: function() {
-    if (!remoteStorage.connected) {
+    if (!this.get('storage.connected')) {
       this.transitionTo('welcome');
+    } else {
+      this.transitionTo('bookmarks.index');
     }
-  },
-
-  renderTemplate: function() {
-    this.render('bookmarks/index');
-    // uses bookmarks/index controller
   }
 
 });

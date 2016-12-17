@@ -1,22 +1,20 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
+export default Ember.Controller.extend({
 
-  needs: ['index'],
-
-  contentBinding: 'controllers.index.content',
+  storage: Ember.inject.service(),
 
   filterText: '',
 
-  sortProperties: ['createdAt'],
-  sortAscending: false,
+  sortProperties: ['createdAt:desc'],
+  sortedBookmarks: Ember.computed.sort('model', 'sortProperties'),
 
   filteredContent: function() {
     var filterText = this.get('filterText').toLowerCase();
     if (Ember.isEmpty(filterText) || filterText.length < 3) {
-      return this.get('arrangedContent');
+      return this.get('sortedBookmarks');
     } else {
-      return this.get('arrangedContent').filter(function(item) {
+      return this.get('sortedBookmarks').filter(function(item) {
         var match = ( (!Ember.isEmpty(item.description) &&
                        item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
@@ -25,23 +23,15 @@ export default Ember.ArrayController.extend({
         return match;
       });
     }
-  }.property('filterText', 'content'),
+  }.property('filterText', 'sortedBookmarks'),
 
   actions: {
     remove: function(item) {
-      var self = this;
-      var bookmark = this.findProperty('id', item.id);
-
-      remoteStorage.bookmarks.archive.remove(item.id).then(
-        function() {
-          self.removeObject(bookmark);
-        },
-        function(error) {
-          alert('Something went wrong.');
-          console.log('ERROR:');
-          console.log(error);
-        }
-      );
+      this.get('storage').removeBookmark(item.id).catch((error) => {
+        alert('Something went wrong.');
+        console.log('ERROR:');
+        console.log(error);
+      });
     }
   }
 

@@ -1,9 +1,5 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
-
-  needs: ['application'],
-
-  contentBinding: 'controllers.application.archiveBookmarks',
-
+export default Ember.Controller.extend({
 });
+
