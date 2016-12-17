@@ -7,6 +7,10 @@ export default Ember.Controller.extend({
   storage: Ember.inject.service(),
   bookmarkletUsed: false,
 
+  bookmarkletLink: Ember.computed(() => {
+    return Ember.String.htmlSafe(`javascript:void(location.href="${window.location.origin}/bookmarks/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
+  }),
+
   actions: {
     commit: function() {
       this.get('storage').storeBookmark(this.get('model.serialize')).then(() => {
