@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(RequireRSConnection, {
 
   storage: Ember.inject.service(),
 

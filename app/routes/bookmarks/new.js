@@ -1,15 +1,8 @@
 import Ember from 'ember';
 import Bookmark from 'webmarks/models/bookmark';
+import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 
-export default Ember.Route.extend({
-
-  storage: Ember.inject.service(),
-
-  beforeModel: function() {
-    if (!this.get('storage.connected')) {
-      this.transitionTo('welcome');
-    }
-  },
+export default Ember.Route.extend(RequireRSConnection, {
 
   model: function(params) {
     var bookmark = {};
