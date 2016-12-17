@@ -7,12 +7,9 @@ export default Ember.Route.extend({
   redirect: function() {
     if (!this.get('storage.connected')) {
       this.transitionTo('welcome');
+    } else {
+      this.transitionTo('bookmarks.index');
     }
-  },
-
-  renderTemplate: function() {
-    this.render('bookmarks/index');
-    // uses bookmarks/index controller
   }
 
 });

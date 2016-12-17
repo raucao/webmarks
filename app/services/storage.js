@@ -13,8 +13,23 @@ export default Ember.Service.extend(Ember.Evented, {
     this.set('archiveBookmarks', []);
   },
 
+  getBookmarks() {
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      if (Ember.isPresent(this.get('archiveBookmarks'))) {
+        resolve(this.get('archiveBookmarks'));
+      } else {
+        this.fetchBookmarks().then((bookmarks) => {
+          resolve(bookmarks);
+          this.setupChangeHandler();
+        }).catch(reject);
+      }
+    });
+  },
+
   fetchBookmarks() {
     return remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
+      let archiveBookmarks = this.get('archiveBookmarks');
+
       bookmarks.forEach((bookmark) => {
         let item = Bookmark.create({
           id: bookmark.id,
@@ -24,8 +39,16 @@ export default Ember.Service.extend(Ember.Evented, {
           tags: bookmark.tags,
           createdAt: bookmark.createdAt
         });
-        this.get('archiveBookmarks').pushObject(item);
+
+        let oldItem = archiveBookmarks.findBy('id', item.id);
+        if (oldItem) {
+          archiveBookmarks.removeObject(oldItem);
+        }
+
+        archiveBookmarks.pushObject(item);
       });
+
+      return archiveBookmarks;
     });
   },
 
@@ -105,9 +128,6 @@ export default Ember.Service.extend(Ember.Evented, {
       console.log('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
-      this.fetchBookmarks().then(() => {
-        this.setupChangeHandler();
-      });
       this.trigger('connected');
     });
 
