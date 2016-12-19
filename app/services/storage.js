@@ -26,6 +26,18 @@ export default Ember.Service.extend(Ember.Evented, {
     });
   },
 
+  getBookmark(id) {
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      if (Ember.isPresent(this.get('archiveBookmarks'))) {
+        resolve(this.get('archiveBookmarks').findBy('id', id));
+      } else {
+        this.fetchBookmarks().then((bookmarks) => {
+          resolve(bookmarks.findBy('id', id));
+        }).catch(reject);
+      }
+    });
+  },
+
   fetchBookmarks() {
     return remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
       let archiveBookmarks = this.get('archiveBookmarks');
