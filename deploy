@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -xe
+
+# Install via `gem install git-up`
+git up
+# Build with prod env
+npm run build-prod
+# Check out build branch
+git checkout build-production
+# Copy from build dir to root
+cp -r dist/* .
+# Add all files
+git add --all
+# Commit build files
+git commit -m "Update build - `date -u`"
+# Push to remote
+if [ $1 = "production" ]; then
+  # For prod deploys you need to have the 5apps remote configured:
+  # git remote add 5apps git@5apps.com:remotestorage_remotestorageio.git
+  git push -f 5apps build-production:master
+else
+  git push 5apps_staging build-production:master
+fi
+# Go back to master branch
+git checkout master
