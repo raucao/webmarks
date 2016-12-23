@@ -22,5 +22,6 @@ if [ $1 = "production" ]; then
 else
   git push 5apps_staging build-production:master
 fi
+git push origin build-production:build-production
 # Go back to master branch
 git checkout master
