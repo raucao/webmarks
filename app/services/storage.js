@@ -6,6 +6,7 @@ export default Ember.Service.extend(Ember.Evented, {
   connecting: false,
   connected: remoteStorage.connected,
   archiveBookmarks: null,
+  bookmarksLoaded: false,
 
   init() {
     this._super(...arguments);
@@ -15,12 +16,11 @@ export default Ember.Service.extend(Ember.Evented, {
 
   getBookmarks() {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      if (Ember.isPresent(this.get('archiveBookmarks'))) {
+      if (this.get('bookmarksLoaded')) {
         resolve(this.get('archiveBookmarks'));
       } else {
-        this.fetchBookmarks().then((bookmarks) => {
+        this.loadBookmarks().then((bookmarks) => {
           resolve(bookmarks);
-          this.setupChangeHandler();
         }).catch(reject);
       }
     });
@@ -28,17 +28,17 @@ export default Ember.Service.extend(Ember.Evented, {
 
   getBookmark(id) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      if (Ember.isPresent(this.get('archiveBookmarks'))) {
+      if (this.get('bookmarksLoaded')) {
         resolve(this.get('archiveBookmarks').findBy('id', id));
       } else {
-        this.fetchBookmarks().then((bookmarks) => {
+        this.loadBookmarks().then((bookmarks) => {
           resolve(bookmarks.findBy('id', id));
         }).catch(reject);
       }
     });
   },
 
-  fetchBookmarks() {
+  loadBookmarks() {
     return remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
       let archiveBookmarks = this.get('archiveBookmarks');
 
@@ -59,6 +59,9 @@ export default Ember.Service.extend(Ember.Evented, {
 
         archiveBookmarks.pushObject(item);
       });
+
+      this.set('bookmarksLoaded', true);
+      this.setupChangeHandler();
 
       return archiveBookmarks;
     });
