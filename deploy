@@ -16,8 +16,6 @@ git add --all
 git commit -m "Update build - `date -u`"
 # Push to remote
 if [ $1 = "production" ]; then
-  # For prod deploys you need to have the 5apps remote configured:
-  # git remote add 5apps git@5apps.com:remotestorage_remotestorageio.git
   git push 5apps build-production:master
 else
   git push 5apps_staging build-production:master
