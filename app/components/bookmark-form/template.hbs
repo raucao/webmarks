@@ -1,0 +1,24 @@
+<form {{action "commit" on="submit"}}>
+  <fieldset>
+    <div class="control-group">
+      <label for="title">Title</label>
+      {{input value=bookmark.title id="title" required="required"}}
+    </div>
+    <div class="control-group">
+      <label for="url">URL</label>
+      {{input value=bookmark.url id="url" required="required"}}
+    </div>
+    <div class="control-group">
+      <label for="description">Description</label>
+      {{input value=bookmark.description id="description"}}
+    </div>
+    <div class="control-group">
+      <label for="tags">Tags</label>
+      {{input value=bookmark.tags id="tags"}}
+    </div>
+  </fieldset>
+  <div class="controls">
+    <button type="submit" class="button button-primary">Save</button>
+    <button {{action 'cancel'}} class="button button-secondary">Cancel</button>
+  </div>
+</form>

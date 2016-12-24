@@ -14,6 +14,7 @@ export default Ember.Controller.extend({
   }),
 
   actions: {
+
     commit: function() {
       this.get('storage').storeBookmark(this.get('model.serialize')).then(() => {
         this.transitionToRoute('index');
@@ -27,6 +28,7 @@ export default Ember.Controller.extend({
     cancel: function() {
       this.transitionToRoute('index');
     }
+
   }
 
 });

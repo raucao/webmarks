@@ -3,28 +3,5 @@
     <h2>Update bookmark</h2>
   </header>
 
-  <form {{action "commit" on="submit"}}>
-    <fieldset>
-      <div class="control-group">
-        <label for="title">Title</label>
-        {{input value=model.title id="title" required="required"}}
-      </div>
-      <div class="control-group">
-        <label for="url">URL</label>
-        {{input value=model.url id="url" required="required"}}
-      </div>
-      <div class="control-group">
-        <label for="description">Description</label>
-        {{input value=model.description id="description"}}
-      </div>
-      <div class="control-group">
-        <label for="tags">Tags</label>
-        {{input value=model.tags id="tags"}}
-      </div>
-    </fieldset>
-    <div class="controls">
-      <button type="submit" class="button button-primary">Save</button>
-      <button {{action 'cancel'}} class="button button-secondary">Cancel</button>
-    </div>
-  </form>
+  {{bookmark-form bookmark=model commit=(action "commit") cancel=(action "cancel")}}
 </section>
