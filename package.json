@@ -9,6 +9,8 @@
   "scripts": {
     "build": "ember build",
     "build-prod": "ember build --environment production",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy-prod": "bash scripts/deploy.sh production",
     "start": "ember server",
     "test": "ember test",
     "postinstall": "bower install"

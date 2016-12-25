@@ -47,7 +47,13 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Deploying
 
-*TODO* Specify what it takes to deploy your app.
+Build production branch and deploy to [staging](https://webmarks-dev.5apps.com):
+
+    npm run deploy
+
+Deploy current production branch to [production](https://webmarks-dev.5apps.com):
+
+    npm run deploy-prod
 
 ## Further Reading / Useful Links
 
