@@ -7,13 +7,14 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build",
-    "build-prod": "ember build --environment production",
-    "deploy": "bash scripts/deploy.sh",
-    "deploy-prod": "bash scripts/deploy.sh production",
     "start": "ember server",
     "test": "ember test",
-    "postinstall": "bower install"
+    "postinstall": "bower install",
+    "build": "ember build",
+    "build-prod": "ember build --environment production && npm run update-version-file",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy-prod": "bash scripts/deploy.sh production",
+    "update-version-file": "bash scripts/update-version-file.sh"
   },
   "repository": "",
   "engines": {
