@@ -2,6 +2,7 @@
   "name": "webmarks",
   "version": "1.0.0-beta",
   "description": "remoteStorage-enabled bookmarking app",
+  "repository": "https://github.com/skddc/webmarks",
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -16,7 +17,6 @@
     "deploy-prod": "bash scripts/deploy.sh production",
     "update-version-file": "bash scripts/update-version-file.sh"
   },
-  "repository": "",
   "engines": {
     "node": ">= 5.0.0"
   },
