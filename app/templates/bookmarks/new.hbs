@@ -3,7 +3,8 @@
     <h2>Add a new bookmark</h2>
   </header>
 
-  {{bookmark-form bookmark=model commit=(action "commit") cancel=(action "cancel")}}
+  {{bookmark-form bookmark=model availableTags=availableTags
+                  commit=(action "commit") cancel=(action "cancel") }}
 </section>
 
 {{#unless bookmarkletUsed}}

@@ -17,6 +17,10 @@ export default Ember.Route.extend(RequireRSConnection, {
     if (bookmark.title.length > 0) {
       controller.set('bookmarkletUsed', true);
     }
+
+    let tags = ['lgoony', 'lalala'];
+    controller.set('availableTags', tags);
+
     this._super(controller, bookmark);
   },
 
