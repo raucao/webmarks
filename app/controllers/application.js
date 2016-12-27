@@ -11,7 +11,8 @@ export default Ember.Controller.extend({
   },
 
   handleStorageDisconnect: function() {
-    console.log('rs disconnected, transition to welcome');
+    localStorage.removeItem('webmarks:tags');
+    Ember.Logger.debug('RS disconnected, transition to welcome');
     this.transitionToRoute('welcome');
   }
 
