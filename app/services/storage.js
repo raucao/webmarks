@@ -7,6 +7,7 @@ export default Ember.Service.extend(Ember.Evented, {
   connected: remoteStorage.connected,
   archiveBookmarks: null,
   bookmarksLoaded: false,
+  tags: null,
 
   init() {
     this._super(...arguments);
@@ -59,8 +60,8 @@ export default Ember.Service.extend(Ember.Evented, {
 
         archiveBookmarks.pushObject(item);
       });
-
       this.set('bookmarksLoaded', true);
+      this.createTagListCache();
       this.setupChangeHandler();
 
       return archiveBookmarks;
@@ -173,7 +174,42 @@ export default Ember.Service.extend(Ember.Evented, {
       this.set('connecting', true);
       this.set('connected', false);
     });
+  },
+
+  createTagListCache() {
+    let tagList = this.get('archiveBookmarks')
+                      .mapBy('tags')
+                      .compact()
+                      .reduce((a, b) => a.concat(b))
+                      .uniq()
+                      .sort();
+
+    Ember.Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
+
+    try {
+      localStorage.setItem('webmarks:tags', tagList);
+    }
+    catch(e) {
+      Ember.Logger.warn('[storage] Error writing tag list to localStorage', e);
+    }
+  },
+
+  getTagListCache() {
+    let tagList = localStorage.getItem('webmarks:tags');
+
+    if (Ember.isPresent(tagList)) {
+      console.debug(tagList);
+      return tagList.split(',');
+    } else {
+      Ember.Logger.warn('[storage] Tag list from cache was empty');
+      return [];
+    }
   }
+
+  // TODO
+  // addToTagListCache() {
+  //
+  // }
 
 });
 

@@ -11,7 +11,7 @@ export default Ember.Route.extend(RequireRSConnection, {
   },
 
   setupController(controller, model) {
-    let tags = ['lgoony', 'lalala'];
+    let tags = this.get('storage').getTagListCache();
     controller.set('availableTags', tags);
     // clone the bookmark for editing so it's only persisted when
     // submitting the form
