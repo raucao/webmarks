@@ -137,24 +137,24 @@ export default Ember.Service.extend(Ember.Evented, {
 
   setupEventHandlers() {
     remoteStorage.on('ready', () => {
-      console.log('rs.on ready');
+      Ember.Logger.debug('rs.on ready');
     });
 
     remoteStorage.on('connected', () => {
-      console.log('rs.on connected');
+      Ember.Logger.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
     });
 
     remoteStorage.on('not-connected', () => {
-      console.log('rs.on not-connected');
+      Ember.Logger.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
     });
 
     remoteStorage.on('disconnected', () => {
-      console.log('rs.on disconnected');
+      Ember.Logger.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
 
@@ -164,13 +164,13 @@ export default Ember.Service.extend(Ember.Evented, {
     });
 
     remoteStorage.on('connecting', () => {
-      console.log('rs.on connecting');
+      Ember.Logger.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
     remoteStorage.on('authing', () => {
-      console.log('rs.on authing');
+      Ember.Logger.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
     });
@@ -198,7 +198,6 @@ export default Ember.Service.extend(Ember.Evented, {
     let tagList = localStorage.getItem('webmarks:tags');
 
     if (Ember.isPresent(tagList)) {
-      console.debug(tagList);
       return tagList.split(',');
     } else {
       Ember.Logger.warn('[storage] Tag list from cache was empty');
