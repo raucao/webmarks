@@ -23,7 +23,7 @@ test('#createTagListCache writes correct list to localStorage', function(assert)
   bookmarks.pushObject(Bookmark.create({
     id: '2',
     url: 'https://unhosted.org',
-    title: 'Webmarks',
+    title: 'Unhosted',
     tags: ['unhosted', 'no-backend']
   }));
   bookmarks.pushObject(Bookmark.create({
@@ -45,4 +45,13 @@ test('#getTagListCache reads tag list from localStorage', function(assert) {
 
   let tags = service.getTagListCache();
   assert.deepEqual(tags, ['app','no-backend','unhosted']);
+});
+
+test('#deleteTagListCache deletes tag list from localStorage', function(assert) {
+  let service = this.subject();
+  localStorage.setItem('webmarks:tags', 'app,no-backend,unhosted');
+
+  service.deleteTagListCache();
+
+  assert.equal(localStorage.getItem('webmarks:tags'), null);
 });

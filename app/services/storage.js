@@ -203,6 +203,16 @@ export default Ember.Service.extend(Ember.Evented, {
       Ember.Logger.warn('[storage] Tag list from cache was empty');
       return [];
     }
+  },
+
+  deleteTagListCache() {
+    try {
+      return localStorage.removeItem('webmarks:tags');
+    }
+    catch(e) {
+      Ember.Logger.warn('[storage] Error deleting tag list from localStorage', e);
+      return false;
+    }
   }
 
   // TODO
