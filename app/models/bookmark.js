@@ -34,11 +34,10 @@ export default Ember.Object.extend({
     }
 
     if (tags && tags.length > 0) {
-      if ((typeof tags) === 'string') {
-        serialized.tags = tags.split(',').map(Ember.$.trim);
-      } else {
-        serialized.tags = tags;
-      }
+      if ((typeof tags) === 'string') { tags = tags.split(','); }
+
+      serialized.tags = tags.map(Ember.$.trim)
+                            .reject(t => Ember.isEmpty(t));
     }
 
     return serialized;
