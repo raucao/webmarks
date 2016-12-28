@@ -2,11 +2,12 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
+  storage: Ember.inject.service(),
+
   queryParams: ['title', 'url'],
   title: null,
   url: null,
 
-  storage: Ember.inject.service(),
   bookmarkletUsed: false,
 
   bookmarkletLink: Ember.computed(() => {

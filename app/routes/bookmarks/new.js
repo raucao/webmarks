@@ -4,6 +4,8 @@ import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 
 export default Ember.Route.extend(RequireRSConnection, {
 
+  storage: Ember.inject.service(),
+
   model: function(params) {
     var bookmark = {};
     if (params.title && params.url) {
@@ -17,6 +19,10 @@ export default Ember.Route.extend(RequireRSConnection, {
     if (bookmark.title.length > 0) {
       controller.set('bookmarkletUsed', true);
     }
+
+    let tags = this.get('storage').getTagListCache();
+    controller.set('availableTags', tags);
+
     this._super(controller, bookmark);
   },
 

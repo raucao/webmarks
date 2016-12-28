@@ -1,0 +1,16 @@
+.ui-widget {
+  font-family: $baseFontFamily;
+  width: 300px !important;
+}
+
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+a.ui-button:active,
+.ui-button:active,
+.ui-button.ui-state-active:hover {
+  border: none;
+  background-color: $linkColor;
+  font-weight: normal;
+  color: #fff;
+}

@@ -7,6 +7,7 @@ export default Ember.Service.extend(Ember.Evented, {
   connected: remoteStorage.connected,
   archiveBookmarks: null,
   bookmarksLoaded: false,
+  tags: null,
 
   init() {
     this._super(...arguments);
@@ -59,8 +60,8 @@ export default Ember.Service.extend(Ember.Evented, {
 
         archiveBookmarks.pushObject(item);
       });
-
       this.set('bookmarksLoaded', true);
+      this.createTagListCache();
       this.setupChangeHandler();
 
       return archiveBookmarks;
@@ -136,24 +137,24 @@ export default Ember.Service.extend(Ember.Evented, {
 
   setupEventHandlers() {
     remoteStorage.on('ready', () => {
-      console.log('rs.on ready');
+      Ember.Logger.debug('rs.on ready');
     });
 
     remoteStorage.on('connected', () => {
-      console.log('rs.on connected');
+      Ember.Logger.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
     });
 
     remoteStorage.on('not-connected', () => {
-      console.log('rs.on not-connected');
+      Ember.Logger.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
     });
 
     remoteStorage.on('disconnected', () => {
-      console.log('rs.on disconnected');
+      Ember.Logger.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
 
@@ -163,17 +164,61 @@ export default Ember.Service.extend(Ember.Evented, {
     });
 
     remoteStorage.on('connecting', () => {
-      console.log('rs.on connecting');
+      Ember.Logger.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
     remoteStorage.on('authing', () => {
-      console.log('rs.on authing');
+      Ember.Logger.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
     });
+  },
+
+  createTagListCache() {
+    let tagList = this.get('archiveBookmarks')
+                      .mapBy('tags')
+                      .compact()
+                      .reduce((a, b) => a.concat(b))
+                      .uniq()
+                      .sort();
+
+    Ember.Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
+
+    try {
+      localStorage.setItem('webmarks:tags', tagList);
+    }
+    catch(e) {
+      Ember.Logger.warn('[storage] Error writing tag list to localStorage', e);
+    }
+  },
+
+  getTagListCache() {
+    let tagList = localStorage.getItem('webmarks:tags');
+
+    if (Ember.isPresent(tagList)) {
+      return tagList.split(',');
+    } else {
+      Ember.Logger.warn('[storage] Tag list from cache was empty');
+      return [];
+    }
+  },
+
+  deleteTagListCache() {
+    try {
+      return localStorage.removeItem('webmarks:tags');
+    }
+    catch(e) {
+      Ember.Logger.warn('[storage] Error deleting tag list from localStorage', e);
+      return false;
+    }
   }
+
+  // TODO
+  // addToTagListCache() {
+  //
+  // }
 
 });
 
