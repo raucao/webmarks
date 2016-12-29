@@ -7,6 +7,21 @@ export default Ember.Route.extend(RequireRSConnection, {
 
   model() {
     return this.get('storage').getBookmarks();
+  },
+
+  activate() {
+    Ember.run.scheduleOnce('afterRender', this.focusSearchField);
+    document.addEventListener("visibilitychange", this.focusSearchField, false);
+  },
+
+  deactivate() {
+    document.removeEventListener("visibilitychange", this.focusSearchField);
+  },
+
+  focusSearchField() {
+    if (!document.hidden) {
+      Ember.$('.search-input input')[0].focus();
+    }
   }
 
 });
