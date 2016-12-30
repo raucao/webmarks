@@ -1,10 +1,6 @@
 #!/bin/sh
 set -xe
 
-# Install via `gem install git-up`
-git up
-# Build with prod env
-npm run build-prod
 # Check out build branch
 git checkout build-production
 
