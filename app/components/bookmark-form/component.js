@@ -18,7 +18,7 @@ export default Ember.Component.extend({
     };
     this.$("input#tags").bind("keydown", function(event) {
       if (event.keyCode === Ember.$.ui.keyCode.TAB &&
-          Ember.$(this).data("autocomplete").menu.active) {
+          Ember.$(this).data("uiAutocomplete").menu.active) {
         event.preventDefault();
       }
     }).autocomplete({
