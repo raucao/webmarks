@@ -1,10 +1,26 @@
 import Ember from 'ember';
 import Bookmark from 'webmarks/models/bookmark';
+import RemoteStorage from 'npm:remotestoragejs';
+import 'npm:remotestorage-widget';
+import 'npm:remotestorage-module-bookmarks';
 
-export default Ember.Service.extend(Ember.Evented, {
+const {
+  Service,
+  Evented,
+  computed,
+  RSVP: {
+    Promise
+  },
+  Logger,
+  run,
+  isPresent
+} = Ember;
 
+export default Service.extend(Evented, {
+
+  remoteStorage: null,
   connecting: false,
-  connected: remoteStorage.connected,
+  connected: computed.alias('remoteStorage.connected'),
   archiveBookmarks: null,
   bookmarksLoaded: false,
   tags: null,
@@ -13,10 +29,11 @@ export default Ember.Service.extend(Ember.Evented, {
     this._super(...arguments);
 
     this.set('archiveBookmarks', []);
+    this.set('remoteStorage', new RemoteStorage());
   },
 
   getBookmarks() {
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (this.get('bookmarksLoaded')) {
         resolve(this.get('archiveBookmarks'));
       } else {
@@ -28,7 +45,7 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   getBookmark(id) {
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (this.get('bookmarksLoaded')) {
         resolve(this.get('archiveBookmarks').findBy('id', id));
       } else {
@@ -40,7 +57,7 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   loadBookmarks() {
-    return remoteStorage.bookmarks.archive.getAll().then((bookmarks) => {
+    return this.get('remoteStorage').bookmarks.archive.getAll().then((bookmarks) => {
       let archiveBookmarks = this.get('archiveBookmarks');
 
       bookmarks.forEach((bookmark) => {
@@ -71,13 +88,13 @@ export default Ember.Service.extend(Ember.Evented, {
   removeBookmark(id) {
     let bookmark = this.get('archiveBookmarks').findBy('id', id);
 
-    return remoteStorage.bookmarks.archive.remove(id).then(() => {
+    return this.get('remoteStorage').bookmarks.archive.remove(id).then(() => {
       this.get('archiveBookmarks').removeObject(bookmark);
     });
   },
 
   storeBookmark(item) {
-    return remoteStorage.bookmarks.archive.store(item).then((bookmark) => {
+    return this.get('remoteStorage').bookmarks.archive.store(item).then((bookmark) => {
       // Remove existing item from collection if exists
       let oldItem = this.get('archiveBookmarks').findBy('id', bookmark.id);
       if (oldItem) { this.get('archiveBookmarks').removeObject(oldItem); }
@@ -94,14 +111,14 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   setupRemoteStorage() {
-    remoteStorage.access.claim('bookmarks', 'rw');
-    remoteStorage.caching.enable('/bookmarks/archive/');
-    remoteStorage.displayWidget('remotestorage-connect', { redirectUri: window.location.href });
+    this.get('remoteStorage').access.claim('bookmarks', 'rw');
+    this.get('remoteStorage').caching.enable('/bookmarks/archive/');
+    this.get('remoteStorage').displayWidget({ domID: 'remotestorage-connect', redirectUri: window.location.href });
   },
 
   setupChangeHandler() {
-    remoteStorage.bookmarks.client.scope('archive/').on('change', (event) => {
-      Ember.run(() => {
+    this.get('remoteStorage').bookmarks.client.scope('archive/').on('change', (event) => {
+      run(() => {
         let archiveBookmarks = this.get('archiveBookmarks');
 
         if (!event.origin.match(/remote/)) { return; }
@@ -112,7 +129,7 @@ export default Ember.Service.extend(Ember.Evented, {
           item = Bookmark.create(event.newValue);
           let oldItem = archiveBookmarks.findBy('id', item.id);
           if (oldItem) {
-            Ember.Logger.warn('Received change event for a new item that was already cached', oldItem, event);
+            Logger.warn('Received change event for a new item that was already cached', oldItem, event);
             archiveBookmarks.removeObject(oldItem);
           }
           archiveBookmarks.pushObject(item);
@@ -136,25 +153,25 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   setupEventHandlers() {
-    remoteStorage.on('ready', () => {
-      Ember.Logger.debug('rs.on ready');
+    this.get('remoteStorage').on('ready', () => {
+      Logger.debug('rs.on ready');
     });
 
-    remoteStorage.on('connected', () => {
-      Ember.Logger.debug('rs.on connected');
+    this.get('remoteStorage').on('connected', () => {
+      Logger.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
     });
 
-    remoteStorage.on('not-connected', () => {
-      Ember.Logger.debug('rs.on not-connected');
+    this.get('remoteStorage').on('not-connected', () => {
+      Logger.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
     });
 
-    remoteStorage.on('disconnected', () => {
-      Ember.Logger.debug('rs.on disconnected');
+    this.get('remoteStorage').on('disconnected', () => {
+      Logger.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
 
@@ -163,14 +180,14 @@ export default Ember.Service.extend(Ember.Evented, {
       this.set('archiveBookmarks', []);
     });
 
-    remoteStorage.on('connecting', () => {
-      Ember.Logger.debug('rs.on connecting');
+    this.get('remoteStorage').on('connecting', () => {
+      Logger.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
-    remoteStorage.on('authing', () => {
-      Ember.Logger.debug('rs.on authing');
+    this.get('remoteStorage').on('authing', () => {
+      Logger.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
     });
@@ -185,23 +202,23 @@ export default Ember.Service.extend(Ember.Evented, {
                       .uniq()
                       .sort();
 
-    Ember.Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
+    Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
 
     try {
       localStorage.setItem('webmarks:tags', tagList);
     }
     catch(e) {
-      Ember.Logger.warn('[storage] Error writing tag list to localStorage', e);
+      Logger.warn('[storage] Error writing tag list to localStorage', e);
     }
   },
 
   getTagListCache() {
     let tagList = localStorage.getItem('webmarks:tags');
 
-    if (Ember.isPresent(tagList)) {
+    if (isPresent(tagList)) {
       return tagList.split(',');
     } else {
-      Ember.Logger.warn('[storage] Tag list from cache was empty');
+      Logger.warn('[storage] Tag list from cache was empty');
       return [];
     }
   },
@@ -211,7 +228,7 @@ export default Ember.Service.extend(Ember.Evented, {
       return localStorage.removeItem('webmarks:tags');
     }
     catch(e) {
-      Ember.Logger.warn('[storage] Error deleting tag list from localStorage', e);
+      Logger.warn('[storage] Error deleting tag list from localStorage', e);
       return false;
     }
   }
