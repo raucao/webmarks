@@ -180,7 +180,8 @@ export default Ember.Service.extend(Ember.Evented, {
     let tagList = this.get('archiveBookmarks')
                       .mapBy('tags')
                       .compact()
-                      .reduce((a, b) => a.concat(b))
+                      .reduce((a, b) => a.concat(b), [""])
+                      .reject((a) => Ember.isEmpty(a))
                       .uniq()
                       .sort();
 

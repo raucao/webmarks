@@ -39,6 +39,15 @@ test('#createTagListCache writes correct list to localStorage', function(assert)
   assert.equal(tags, 'app,no-backend,unhosted');
 });
 
+test('#createTagListCache writes empty list to localStorage when there are no tags', function(assert) {
+  let service = this.subject();
+
+  service.createTagListCache();
+
+  let tags = localStorage.getItem('webmarks:tags');
+  assert.equal(tags, '');
+});
+
 test('#getTagListCache reads tag list from localStorage', function(assert) {
   let service = this.subject();
   localStorage.setItem('webmarks:tags', 'app,no-backend,unhosted');
