@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'npm:remotestoragejs';
-import 'npm:remotestorage-widget';
+import Widget from 'npm:remotestorage-widget';
 import 'npm:remotestorage-module-bookmarks';
 
 const {
@@ -111,9 +111,15 @@ export default Service.extend(Evented, {
   },
 
   setupRemoteStorage() {
-    this.get('remoteStorage').access.claim('bookmarks', 'rw');
-    this.get('remoteStorage').caching.enable('/bookmarks/archive/');
-    this.get('remoteStorage').displayWidget({ domID: 'remotestorage-connect', redirectUri: window.location.href });
+    const remoteStorage = this.get('remoteStorage');
+
+    remoteStorage.access.claim('bookmarks', 'rw');
+    remoteStorage.caching.enable('/bookmarks/archive/');
+
+    new Widget(remoteStorage, {
+      domID: 'remotestorage-connect',
+      redirectUri: window.location.href
+    });
   },
 
   setupChangeHandler() {

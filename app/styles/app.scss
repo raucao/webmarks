@@ -305,10 +305,10 @@ section#welcome {
 
 // REMOTESTORAGE WIDGET
 
-#remotestorage-connect {
-  top: 0;
-  right: 0;
+#remotestorage-widget {
   position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 1000000;
 }
 
