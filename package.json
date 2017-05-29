@@ -47,9 +47,8 @@
     "es6-promise": "^4.0.5",
     "loader.js": "^4.0.10",
     "moment": "2.14.1",
-    "remotestorage-module-bookmarks": "lesion/remotestorage-module-bookmarks",
-    "remotestorage-widget": "remotestorage/remotestorage-widget#feature/no-global",
-    "remotestoragejs": "remotestorage/remotestorage.js#feature/949-noglobal",
-    "xmlhttprequest": "^1.8.0"
+    "remotestorage-module-bookmarks": "github:lesion/remotestorage-module-bookmarks#67a29bb375e9f",
+    "remotestorage-widget": "github:remotestorage/remotestorage-widget#a36b3ba7acb7",
+    "remotestoragejs": "github:remotestorage/remotestorage.js#c9569b7217f4"
   }
 }
