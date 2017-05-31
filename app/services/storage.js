@@ -64,14 +64,16 @@ export default Service.extend(Evented, {
   fetchBookmarks() {
     let archive = this.get('remoteStorage').bookmarks.archive;
 
-    let promise = archive.getAll();
+    return new Promise((resolve/*, reject */) => {
+      archive.getAll().then(resolve);
 
-    // setTimeout(() => {
-    //   Logger.debug('Timed out (8s) syncing bookmarks from remote, using local cache');
-    //   return archive.getAll({maxAge: false});
-    // }, 8000);
-
-    return promise;
+      // TODO implement options for getAll in bookmarks module so we can set maxAge to false
+      // setTimeout(() => {
+      //   Logger.debug('Timed out (10s) fetching bookmarks from remote, using local cache');
+      //   archive.getAll({maxAge: false}).then(resolve));
+      //   // TODO if nothing in local cache, communicate to the user what happened
+      // }, 10000);
+    });
   },
 
   /**
