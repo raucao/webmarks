@@ -2,15 +2,13 @@ import Ember from 'ember';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'npm:remotestoragejs';
 import Widget from 'npm:remotestorage-widget';
-import 'npm:remotestorage-module-bookmarks';
+import Bookmarks from 'npm:remotestorage-module-bookmarks';
 
 const {
+  RSVP: { Promise },
   Service,
   Evented,
   computed,
-  RSVP: {
-    Promise
-  },
   Logger,
   run,
   isPresent
@@ -19,7 +17,7 @@ const {
 export default Service.extend(Evented, {
 
   remoteStorage: null,
-  connecting: false,
+  connecting: true,
   connected: computed.alias('remoteStorage.connected'),
   archiveBookmarks: null,
   bookmarksLoaded: false,
@@ -29,7 +27,9 @@ export default Service.extend(Evented, {
     this._super(...arguments);
 
     this.set('archiveBookmarks', []);
-    this.set('remoteStorage', new RemoteStorage());
+
+    this.setupRemoteStorage();
+    this.setupEventHandlers();
   },
 
   getBookmarks() {
@@ -56,8 +56,31 @@ export default Service.extend(Evented, {
     });
   },
 
+  /**
+   * Fetches bookmarks from storage
+   *
+   * @protected
+   */
+  fetchBookmarks() {
+    let archive = this.get('remoteStorage').bookmarks.archive;
+
+    let promise = archive.getAll();
+
+    // setTimeout(() => {
+    //   Logger.debug('Timed out (8s) syncing bookmarks from remote, using local cache');
+    //   return archive.getAll({maxAge: false});
+    // }, 8000);
+
+    return promise;
+  },
+
+  /**
+   * Load all bookmarks into archiveBookmarks collection as model instances
+   *
+   * @protected
+   */
   loadBookmarks() {
-    return this.get('remoteStorage').bookmarks.archive.getAll().then((bookmarks) => {
+    return this.fetchBookmarks().then((bookmarks) => {
       let archiveBookmarks = this.get('archiveBookmarks');
 
       bookmarks.forEach((bookmark) => {
@@ -105,13 +128,9 @@ export default Service.extend(Evented, {
     });
   },
 
-  setup() {
-    this.setupRemoteStorage();
-    this.setupEventHandlers();
-  },
-
   setupRemoteStorage() {
-    const remoteStorage = this.get('remoteStorage');
+    let remoteStorage = new RemoteStorage({modules: [Bookmarks.default]});
+    this.set('remoteStorage', remoteStorage);
 
     remoteStorage.access.claim('bookmarks', 'rw');
     remoteStorage.caching.enable('/bookmarks/archive/');
@@ -159,24 +178,27 @@ export default Service.extend(Evented, {
   },
 
   setupEventHandlers() {
-    this.get('remoteStorage').on('ready', () => {
+    let rs = this.get('remoteStorage');
+
+    rs.on('ready', () => {
       Logger.debug('rs.on ready');
+      // this.set('connecting', false);
     });
 
-    this.get('remoteStorage').on('connected', () => {
+    rs.on('connected', () => {
       Logger.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
     });
 
-    this.get('remoteStorage').on('not-connected', () => {
+    rs.on('not-connected', () => {
       Logger.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
     });
 
-    this.get('remoteStorage').on('disconnected', () => {
+    rs.on('disconnected', () => {
       Logger.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
@@ -186,13 +208,13 @@ export default Service.extend(Evented, {
       this.set('archiveBookmarks', []);
     });
 
-    this.get('remoteStorage').on('connecting', () => {
+    rs.on('connecting', () => {
       Logger.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
-    this.get('remoteStorage').on('authing', () => {
+    rs.on('authing', () => {
       Logger.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
