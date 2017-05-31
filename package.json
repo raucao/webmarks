@@ -48,7 +48,7 @@
     "loader.js": "^4.0.10",
     "moment": "2.14.1",
     "remotestorage-module-bookmarks": "github:lesion/remotestorage-module-bookmarks#eabb785f6fe99835adb1a5eb2c368410ffada825",
-    "remotestorage-widget": "github:remotestorage/remotestorage-widget#a36b3ba7acb7",
-    "remotestoragejs": "github:remotestorage/remotestorage.js#334ca2c"
+    "remotestorage-widget": "github:remotestorage/remotestorage-widget#v0.4.0",
+    "remotestoragejs": "github:remotestorage/remotestorage.js#1.0.0-alpha3"
   }
 }
