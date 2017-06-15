@@ -10,7 +10,7 @@ test('it sets focus on the title field when empty', function(assert) {
   this.render(hbs`{{bookmark-form bookmark=bookmark}}`);
 
   assert.equal(this.$('input#title').val(), '');
-  assert.equal(this.$('input#title').is(":focus"), true);
+  assert.equal(document.activeElement.id, 'title');
 });
 
 test('does not set focus on the title field when filled', function(assert) {
@@ -19,5 +19,5 @@ test('does not set focus on the title field when filled', function(assert) {
 
   assert.equal(this.get('bookmark.title'), 'foo bar');
   assert.equal(this.$('input#title').val(), 'foo bar');
-  assert.equal(this.$('input#title').is(":focus"), false);
+  assert.notEqual(document.activeElement.id, 'title');
 });
