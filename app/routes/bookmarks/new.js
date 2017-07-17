@@ -5,6 +5,7 @@ import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 export default Ember.Route.extend(RequireRSConnection, {
 
   storage: Ember.inject.service(),
+  i18n: Ember.inject.service(),
 
   model: function(params) {
     var bookmark = {};
