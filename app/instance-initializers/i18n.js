@@ -5,7 +5,9 @@ export default {
 
   initialize: application => {
     let i18n = application.lookup('service:i18n');
-    i18n.set('locale', determineLocale(i18n.get('locales')));
+    const locale = determineLocale(i18n.get('locales'));
+    i18n.set('locale', locale);
+    moment.locale(locale);
     i18n.on('missing', (locale, key, context) => {
       Ember.Logger.warn("Missing translation: " + key);
     });
