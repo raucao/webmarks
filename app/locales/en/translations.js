@@ -7,6 +7,14 @@ export default {
     upcoming_relase_note: '(This will not be necessary for the upcoming release version of Webmarks.)'
   },
   bookmark: {
+    new: {
+      header: 'Add a new bookmark',
+      bookmarklet: {
+        use_text: 'Use the bookmarklet',
+        drag_text: 'Drag this to your bookmarks toolbar:',
+        create_webmark: 'Create Webmark'
+      }
+    },
     index: {
       updated: 'updated',
       you_have_not_stored_any_bookmarks_yet: 'You haven&#39;t stored any bookmarks yet.',

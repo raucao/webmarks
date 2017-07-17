@@ -1,6 +1,6 @@
 <section id="bookmark-new">
   <header>
-    <h2>Add a new bookmark</h2>
+    <h2>{{t 'bookmark.new.header'}}</h2>
   </header>
 
   {{bookmark-form bookmark=model availableTags=availableTags
@@ -9,8 +9,8 @@
 
 {{#unless bookmarkletUsed}}
 <section id="bookmarklet">
-  <h3>Use the bookmarklet</h3>
-  <p class="hint">Drag this to your bookmarks toolbar:</p>
-  <p><a href={{bookmarkletLink}} class="button">Create Webmark</a></p>
+  <h3>{{t 'bookmark.new.bookmarklet.use_text'}}</h3>
+  <p class="hint">{{t 'bookmark.new.bookmarklet.drag_text'}}</p>
+  <p><a href={{bookmarkletLink}} class="button">{{t 'bookmark.new.bookmarklet.create_webmark'}}</a></p>
 </section>
 {{/unless}}
