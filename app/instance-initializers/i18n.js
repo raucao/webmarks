@@ -19,7 +19,7 @@ function determineLocale(availableLocales) {
   userLanguages.push(navigator.language, navigator.userLanguage, 'en');
 
   return userLanguages.compact().find( language => {
-    return availableLocales.indexOf(language) > -1 ||
-           availableLocales.indexOf(language.split('-')[0]) > -1;
+    return availableLocales.includes(language) ||
+           availableLocales.includes(language.split('-')[0]);
   });
 }
