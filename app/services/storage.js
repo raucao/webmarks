@@ -11,7 +11,8 @@ const {
   computed,
   Logger,
   run,
-  isPresent
+  isPresent,
+  isEmpty,
 } = Ember;
 
 export default Service.extend(Evented, {
@@ -224,12 +225,14 @@ export default Service.extend(Evented, {
   },
 
   createTagListCache() {
-    let tagList = this.get('archiveBookmarks')
-                      .mapBy('tags')
-                      .compact()
-                      .reduce((a, b) => a.concat(b))
-                      .uniq()
-                      .sort();
+    let bookmarks = this.get('archiveBookmarks');
+    if (isEmpty(bookmarks)) { return; }
+
+    let tagList = bookmarks.mapBy('tags')
+                           .compact()
+                           .reduce((a, b) => a.concat(b))
+                           .uniq()
+                           .sort();
 
     Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
 
