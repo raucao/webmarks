@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import config from 'webmarks/config/environment';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'npm:remotestoragejs';
 import Widget from 'npm:remotestorage-widget';
@@ -132,11 +133,18 @@ export default Service.extend(Evented, {
   },
 
   setupRemoteStorage() {
-    let remoteStorage = new RemoteStorage({modules: [Bookmarks.default]});
+    const remoteStorage = new RemoteStorage({modules: [Bookmarks.default]});
     this.set('remoteStorage', remoteStorage);
 
     remoteStorage.access.claim('bookmarks', 'rw');
     remoteStorage.caching.enable('/bookmarks/archive/');
+
+    if (config.dropboxAppKey) {
+      remoteStorage.setApiKeys('dropbox', { appKey: config.dropboxAppKey });
+    }
+    if (config.gdriveClientId) {
+      remoteStorage.setApiKeys('googledrive', { clientId: config.gdriveClientId });
+    }
 
     new Widget(remoteStorage, {
       domID: 'remotestorage-connect',
