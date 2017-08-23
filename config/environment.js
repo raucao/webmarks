@@ -29,6 +29,8 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.dropboxAppKey  = 'ab7ipym2z9knns7';
+    ENV.gdriveClientId = '626692989184-4qj0epv5gcra69l8kvv3aj6nnahq7rrk.apps.googleusercontent.com';
   }
 
   if (environment === 'test') {
