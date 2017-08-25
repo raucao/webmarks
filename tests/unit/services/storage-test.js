@@ -39,8 +39,25 @@ test('#createTagListCache writes correct list to localStorage', function(assert)
   assert.equal(tags, 'app,no-backend,unhosted');
 });
 
-test('#createTagListCache writes empty list to localStorage when there are no tags', function(assert) {
+test('#createTagListCache writes empty list to localStorage when there are no bookmarks', function(assert) {
   let service = this.subject();
+
+  service.createTagListCache();
+
+  let tags = localStorage.getItem('webmarks:tags');
+  assert.equal(tags, '');
+});
+
+test('#createTagListCache writes empty list to localStorage when there are only bookmarks with no tags', function(assert) {
+  let service = this.subject();
+  let bookmarks = service.get('archiveBookmarks');
+
+  bookmarks.pushObject(Bookmark.create({
+    id: '1',
+    url: 'https://webmarks.5apps.com',
+    title: 'Webmarks',
+    tags: null
+  }));
 
   service.createTagListCache();
 
