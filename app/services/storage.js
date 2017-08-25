@@ -233,13 +233,10 @@ export default Service.extend(Evented, {
   },
 
   createTagListCache() {
-    let bookmarks = this.get('archiveBookmarks');
-    if (isEmpty(bookmarks)) { return; }
-
-    let tagList = bookmarks.mapBy('tags')
+    let tagList = this.get('archiveBookmarks').mapBy('tags')
                            .compact()
-                           .reduce((a, b) => a.concat(b))
-                           .reject((a) => Ember.isEmpty(a))
+                           .reduce((a, b) => a.concat(b), [''])
+                           .reject((a) => isEmpty(a))
                            .uniq()
                            .sort();
 
