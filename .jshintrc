@@ -3,8 +3,7 @@
     "document",
     "window",
     "-Promise",
-    "moment",
-    "remoteStorage"
+    "moment"
   ],
   "browser": true,
   "boss": true,

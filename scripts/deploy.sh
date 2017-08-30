@@ -17,7 +17,7 @@ else
   # Commit build files
   git commit -m "Update build - `date -u`"
   # Push to remote
-  git push 5apps_staging build-production:master
+  git push -f 5apps_staging build-production:master
 fi
 # Go back to master branch
 git checkout master
