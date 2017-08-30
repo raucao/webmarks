@@ -16,8 +16,7 @@ export default {
 
 function determineLocale(availableLocales) {
   let userLanguages = navigator.languages || [];
-  userLanguages.push(navigator.language, navigator.userLanguage, 'en');
-
+  userLanguages.concat([navigator.language, navigator.userLanguage, 'en']);
   return userLanguages.compact().find( language => {
     return availableLocales.includes(language) ||
            availableLocales.includes(language.split('-')[0]);
