@@ -8,7 +8,7 @@ export default {
     const locale = determineLocale(i18n.get('locales'));
     i18n.set('locale', locale);
     moment.locale(locale);
-    i18n.on('missing', (locale, key, context) => {
+    i18n.on('missing', (locale, key/*, context*/) => {
       Ember.Logger.warn("Missing translation: " + key);
     });
   }
