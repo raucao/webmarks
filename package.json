@@ -50,6 +50,6 @@
     "moment": "^2.18.1",
     "remotestorage-module-bookmarks": "github:lesion/remotestorage-module-bookmarks#eabb785f6",
     "remotestorage-widget": "github:remotestorage/remotestorage-widget#e9a6f254bd",
-    "remotestoragejs": "github:remotestorage/remotestorage.js#1.0.0-alpha6"
+    "remotestoragejs": "github:remotestorage/remotestorage.js#1.0.0-alpha7"
   }
 }
