@@ -26,14 +26,16 @@ module.exports = function(environment) {
     }
   };
 
+  // OAuth credentials
+  ENV.dropboxAppKey  = '85bw3t102y9c017';
+  ENV.gdriveClientId = '640728552949-ev77jd4a8im0bqkhr6hd06ir9cs8inao.apps.googleusercontent.com';
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
-    ENV.dropboxAppKey  = '85bw3t102y9c017';
-    ENV.gdriveClientId = '626692989184-4qj0epv5gcra69l8kvv3aj6nnahq7rrk.apps.googleusercontent.com';
   }
 
   if (environment === 'test') {
