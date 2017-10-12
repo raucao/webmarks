@@ -19,6 +19,7 @@ const {
 export default Service.extend(Evented, {
 
   remoteStorage: null,
+  widget: null,
   connecting: true,
   connected: computed.alias('remoteStorage.connected'),
   archiveBookmarks: null,
@@ -31,6 +32,7 @@ export default Service.extend(Evented, {
     this.set('archiveBookmarks', []);
 
     this.setupRemoteStorage();
+    this.setupConnectWidget();
     this.setupEventHandlers();
   },
 
@@ -145,11 +147,18 @@ export default Service.extend(Evented, {
     if (config.gdriveClientId) {
       remoteStorage.setApiKeys('googledrive', { clientId: config.gdriveClientId });
     }
+  },
 
-    new Widget(remoteStorage, {
+  setupConnectWidget() {
+    const widget = new Widget(this.get('remoteStorage'), {
       domID: 'remotestorage-connect',
       redirectUri: window.location.href
     });
+
+    // Attach widget to DOM
+    widget.attach();
+
+    this.set('widget', widget);
   },
 
   setupChangeHandler() {
