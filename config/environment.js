@@ -27,7 +27,7 @@ module.exports = function(environment) {
   };
 
   // OAuth credentials
-  ENV.dropboxAppKey  = '85bw3t102y9c017';
+  ENV.dropboxAppKey  = 'ab7ipym2z9knns7';
   ENV.gdriveClientId = '640728552949-ev77jd4a8im0bqkhr6hd06ir9cs8inao.apps.googleusercontent.com';
 
   if (environment === 'development') {
