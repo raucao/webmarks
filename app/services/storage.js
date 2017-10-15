@@ -141,12 +141,10 @@ export default Service.extend(Evented, {
     remoteStorage.access.claim('bookmarks', 'rw');
     remoteStorage.caching.enable('/bookmarks/archive/');
 
-    if (config.dropboxAppKey) {
-      remoteStorage.setApiKeys('dropbox', { appKey: config.dropboxAppKey });
-    }
-    if (config.gdriveClientId) {
-      remoteStorage.setApiKeys('googledrive', { clientId: config.gdriveClientId });
-    }
+    remoteStorage.setApiKeys({
+      dropbox: config.dropboxAppKey,
+      googledrive: config.gdriveClientId
+    });
   },
 
   setupConnectWidget() {
