@@ -50,7 +50,7 @@
     "loader.js": "^4.0.10",
     "moment": "^2.18.1",
     "remotestorage-module-bookmarks": "github:lesion/remotestorage-module-bookmarks#eabb785f6",
-    "remotestorage-widget": "1.0.0-rc1",
-    "remotestoragejs": "github:remotestorage/remotestorage.js#v1.0.0-rc1"
+    "remotestorage-widget": "1.0.0-rc2",
+    "remotestoragejs": "1.0.0-rc4"
   }
 }
