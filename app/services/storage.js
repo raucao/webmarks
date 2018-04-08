@@ -90,6 +90,11 @@ export default Service.extend(Evented, {
       let archiveBookmarks = this.get('archiveBookmarks');
 
       bookmarks.forEach((bookmark) => {
+        if (isEmpty(bookmark.title) || isEmpty(bookmark.url)) {
+          console.warn('Encountered an invalid bookmark object', bookmark);
+          return;
+        }
+
         let item = Bookmark.create({
           id: bookmark.id,
           url: bookmark.url,
