@@ -1,13 +1,14 @@
-import Ember from 'ember';
+import { scheduleOnce } from '@ember/runloop';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
 
   tagName: 'div',
   classNames: ['search-input'],
 
   focusSearchField() {
     if (!document.invisible) {
-      Ember.run.scheduleOnce('afterRender', () => {
+      scheduleOnce('afterRender', () => {
         this.$('input[type=text]')[0].focus();
       });
     }

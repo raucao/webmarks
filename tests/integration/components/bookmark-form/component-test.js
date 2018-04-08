@@ -1,23 +1,25 @@
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('bookmark-form', 'Integration | Component | bookmark form', {
-  integration: true
-});
+module('Integration | Component | bookmark form', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it sets focus on the title field when empty', function(assert) {
-  this.set('bookmark', {title: null});
-  this.render(hbs`{{bookmark-form bookmark=bookmark}}`);
+  test('it sets focus on the title field when empty', async function(assert) {
+    this.set('bookmark', {title: null});
+    await render(hbs`{{bookmark-form bookmark=bookmark}}`);
 
-  assert.equal(this.$('input#title').val(), '');
-  assert.equal(document.activeElement.id, 'title');
-});
+    assert.equal(this.$('input#title').val(), '');
+    assert.equal(document.activeElement.id, 'title');
+  });
 
-test('does not set focus on the title field when filled', function(assert) {
-  this.set('bookmark', {title: 'foo bar'});
-  this.render(hbs`{{bookmark-form bookmark=bookmark}}`);
+  test('does not set focus on the title field when filled', async function(assert) {
+    this.set('bookmark', {title: 'foo bar'});
+    await render(hbs`{{bookmark-form bookmark=bookmark}}`);
 
-  assert.equal(this.get('bookmark.title'), 'foo bar');
-  assert.equal(this.$('input#title').val(), 'foo bar');
-  assert.notEqual(document.activeElement.id, 'title');
+    assert.equal(this.get('bookmark.title'), 'foo bar');
+    assert.equal(this.$('input#title').val(), 'foo bar');
+    assert.notEqual(document.activeElement.id, 'title');
+  });
 });

@@ -1,17 +1,13 @@
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
+import Bookmark from 'webmarks/models/bookmark';
 
-moduleFor('model:bookmark', 'Unit | Model | bookmark', {
-  // Specify the other units that are required for this test.
-  needs: []
-});
+module('Unit | Model | bookmark', function(hooks) {
+  setupTest(hooks);
 
-test('it exists', function(assert) {
-  let model = this.subject();
-  assert.ok(!!model);
-});
-
-test('#domain returns the host/domain of the URL', function(assert) {
-  let model = this.subject();
-  model.set('url', 'http://www.letour.com');
-  assert.equal(model.get('domain'), 'www.letour.com');
+  test('#domain returns the host/domain of the URL', function(assert) {
+    let model = Bookmark.create();
+    model.set('url', 'http://www.letour.com');
+    assert.equal(model.get('domain'), 'www.letour.com');
+  });
 });

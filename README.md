@@ -14,11 +14,10 @@ issue](https://github.com/skddc/webmarks/issues).
 
 You will need the following things properly installed on your computer.
 
-* [Git](http://git-scm.com/)
-* [Node.js](http://nodejs.org/) (with NPM)
-* [Bower](http://bower.io/)
-* [Ember CLI](http://ember-cli.com/)
-* [PhantomJS](http://phantomjs.org/)
+* [Git](https://git-scm.com/)
+* [Node.js](https://nodejs.org/) (with npm)
+* [Ember CLI](https://ember-cli.com/)
+* [Google Chrome](https://google.com/chrome/)
 
 ## Installation
 
@@ -30,6 +29,7 @@ You will need the following things properly installed on your computer.
 
 * `npm start`
 * Visit your app at [http://localhost:4200](http://localhost:4200).
+* Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
 
 ### Code Generators
 
@@ -39,6 +39,11 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 * `npm test`
 * `ember test --server`
+
+### Linting
+
+* `npm run lint:js`
+* `npm run lint:js -- --fix`
 
 ### Building
 
@@ -59,8 +64,8 @@ Deploy current production branch to [production](https://webmarks-dev.5apps.com)
 
 * [remoteStorage](https://remotestorage.io/)
 * [remoteStorage.js API docs](https://remotestorage.github.io/remotestorage.js/)
-* [ember.js](http://emberjs.com/)
-* [ember-cli](http://ember-cli.com/)
+* [ember.js](https://emberjs.com/)
+* [ember-cli](https://ember-cli.com/)
 * Development Browser Extensions
   * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
   * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)

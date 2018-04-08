@@ -1,12 +1,14 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import { isEmpty } from '@ember/utils';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
 
   autofocusTitleField: function() {
-    if (Ember.isEmpty(this.get('bookmark.title'))) {
+    if (isEmpty(this.get('bookmark.title'))) {
       this.$('input#title').focus();
     }
-  }.on('didInsertElement'),
+  },
 
   autocompleteTags: function() {
     let availableTags = this.get('availableTags');
@@ -17,8 +19,8 @@ export default Ember.Component.extend({
       return split(term).pop();
     };
     this.$("input#tags").bind("keydown", function(event) {
-      if (event.keyCode === Ember.$.ui.keyCode.TAB &&
-          Ember.$(this).data("uiAutocomplete").menu.active) {
+      if (event.keyCode === $.ui.keyCode.TAB &&
+          $(this).data("uiAutocomplete").menu.active) {
         event.preventDefault();
       }
     }).autocomplete({
@@ -30,7 +32,7 @@ export default Ember.Component.extend({
         collision: "none"
       },
       source: function(request, response) {
-        return response(Ember.$.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+        return response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
       },
       focus: function() {
         return false;
@@ -45,16 +47,23 @@ export default Ember.Component.extend({
         return false;
       }
     });
-  }.on('didInsertElement'),
+  },
+
+  didInsertElement: function() {
+    this._super(...arguments);
+
+    this.autofocusTitleField();
+    this.autocompleteTags();
+  },
 
   actions: {
 
     commit() {
-      this.sendAction('commit');
+      this.get('commit')();
     },
 
     cancel() {
-      this.sendAction('cancel');
+      this.get('cancel')();
     }
 
   }

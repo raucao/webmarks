@@ -1,8 +1,9 @@
-import Ember from "ember";
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
 
-  storage: Ember.inject.service(),
+  storage: service(),
 
   init: function() {
     this._super(...arguments);
@@ -13,7 +14,7 @@ export default Ember.Controller.extend({
   handleStorageDisconnect: function() {
     this.get('storage').deleteTagListCache();
 
-    Ember.Logger.debug('RS disconnected, transition to welcome');
+    console.debug('RS disconnected, transition to welcome');
     this.transitionToRoute('welcome');
   }
 

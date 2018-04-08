@@ -1,10 +1,11 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 
-export default Ember.Route.extend(RequireRSConnection, {
+export default Route.extend(RequireRSConnection, {
 
-  storage: Ember.inject.service(),
-  i18n: Ember.inject.service(),
+  storage: service(),
+  i18n: service(),
 
   model() {
     return this.get('storage').getBookmarks();

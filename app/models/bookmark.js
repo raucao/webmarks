@@ -1,32 +1,38 @@
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import $ from 'jquery';
+import EmberObject, { computed } from '@ember/object';
 
-export default Ember.Object.extend({
+export default EmberObject.extend({
 
   id: '',
   url: '',
   title: '',
   description: '',
-  tags: [],
+  tags: null,
   createdAt: null,
   updatedAt: null,
 
-  createdAtTimeAgo: function() {
+  init() {
+    this._super(...arguments);
+  },
+
+  createdAtTimeAgo: computed('createdAt', function() {
     return moment(this.get('createdAt')).fromNow();
-  }.property('createdAt'),
+  }),
 
-  updatedAtTimeAgo: function() {
+  updatedAtTimeAgo: computed('updatedAt', function() {
     return moment(this.get('updatedAt')).fromNow();
-  }.property('updatedAt'),
+  }),
 
-  domain: function() {
+  domain: computed('url', function() {
     var a = document.createElement('a');
     a.href = this.get('url');
     return a.hostname;
-  }.property('url'),
+  }),
 
-  serialize: function() {
+  serialize: computed('url', 'title', 'description', 'tags', 'createdAt', function() {
     var serialized = this.getProperties('url', 'title', 'description');
-    var tags = this.get('tags');
+    var tags = this.get('tags') || [];
 
     var createdAt = this.get('createdAt');
     if (createdAt !== null) {
@@ -36,11 +42,11 @@ export default Ember.Object.extend({
     if (tags && tags.length > 0) {
       if ((typeof tags) === 'string') { tags = tags.split(','); }
 
-      serialized.tags = tags.map(Ember.$.trim)
-                            .reject(t => Ember.isEmpty(t));
+      serialized.tags = tags.map($.trim)
+                            .reject(t => isEmpty(t));
     }
 
     return serialized;
-  }.property('url', 'title', 'description', 'tags', 'createdAt')
+  })
 
 });
