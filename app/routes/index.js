@@ -1,8 +1,9 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
 
-  storage: Ember.inject.service(),
+  storage: service(),
 
   redirect: function() {
     if (!this.get('storage.connected')) {

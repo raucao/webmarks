@@ -1,9 +1,9 @@
-/*jshint node:true*/
-/* global require, module */
-var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+'use strict';
+
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
+  let app = new EmberApp(defaults, {
     // Add options here
   });
 
@@ -21,9 +21,8 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/es6-promise.auto.min.js');
-  app.import('bower_components/moment/moment.js');
-  app.import('bower_components/moment/locale/de.js');
-  // app.import('bower_components/moment/locale/en.js');
+  app.import('node_modules/moment/min/moment.min.js');
+  app.import('node_modules/moment/locale/de.js');
   app.import('vendor/jquery-ui/jquery-ui.min.js');
   app.import('vendor/jquery-ui/jquery-ui.min.css');
 

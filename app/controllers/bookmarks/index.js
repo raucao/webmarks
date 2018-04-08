@@ -1,31 +1,36 @@
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
+import { sort } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
+import { computed } from '@ember/object';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
 
-  storage: Ember.inject.service(),
+  storage: service(),
 
   filterText: '',
 
-  sortProperties: ['createdAt:desc'],
-  sortedBookmarks: Ember.computed.sort('model', 'sortProperties'),
+  sortProperties: Object.freeze(['createdAt:desc']),
+  sortedBookmarks: sort('model', 'sortProperties'),
 
-  filteredContent: function() {
+  filteredContent: computed('filterText', 'sortedBookmarks', function() {
     var filterText = this.get('filterText').toLowerCase();
-    if (Ember.isEmpty(filterText) || filterText.length < 3) {
+    if (isEmpty(filterText) || filterText.length < 3) {
       return this.get('sortedBookmarks');
     } else {
       return this.get('sortedBookmarks').filter(function(item) {
-        var match = ( (!Ember.isEmpty(item.description) &&
+        var match = ( (!isEmpty(item.description) &&
                        item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
                       item.url.toLowerCase().indexOf(filterText) !== -1 ||
-                      (!Ember.isEmpty(item.tags) && item.tags.indexOf(filterText) !== -1) );
+                      (!isEmpty(item.tags) && item.tags.indexOf(filterText) !== -1) );
         return match;
       });
     }
-  }.property('filterText', 'sortedBookmarks'),
+  }),
 
   actions: {
+
     remove: function(item) {
       this.get('storage').removeBookmark(item.id).catch((error) => {
         alert('Something went wrong.');
@@ -33,6 +38,7 @@ export default Ember.Controller.extend({
         console.log(error);
       });
     }
+
   }
 
 });

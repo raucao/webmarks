@@ -2,9 +2,9 @@
 
 export default {
   welcome_page: {
-	  welcome_to_webmarks: 'Willkommen bei Webmarks!',
-	  please_connect_your_remote_storage_first: '<p>Mit Webmarks kannst du Bookmarks in deinem eigenen Datenspeicher ablegen und synchronisieren.</p><p>Bitte verbinde nun deinen Datenspeicher (rechts oben).',
-	  upcoming_relase_note: '(Dies ist für die kommende Release-Version von Webmarks nicht erforderlich.)'
+    welcome_to_webmarks: 'Willkommen bei Webmarks!',
+    please_connect_your_remote_storage_first: '<p>Mit Webmarks kannst du Bookmarks in deinem eigenen Datenspeicher ablegen und synchronisieren.</p><p>Bitte verbinde nun deinen Datenspeicher (rechts oben).',
+    upcoming_relase_note: '(Dies ist für die kommende Release-Version von Webmarks nicht erforderlich.)'
   },
   bookmark: {
     new: {

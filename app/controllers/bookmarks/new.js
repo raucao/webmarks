@@ -1,8 +1,11 @@
-import Ember from 'ember';
+import { htmlSafe } from '@ember/template';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
 
-  storage: Ember.inject.service(),
+  storage: service(),
 
   queryParams: ['title', 'url'],
   title: null,
@@ -10,8 +13,8 @@ export default Ember.Controller.extend({
 
   bookmarkletUsed: false,
 
-  bookmarkletLink: Ember.computed(() => {
-    return Ember.String.htmlSafe(`javascript:void(location.href="${window.location.origin}/bookmarks/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
+  bookmarkletLink: computed(() => {
+    return htmlSafe(`javascript:void(location.href="${window.location.origin}/bookmarks/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
   }),
 
   actions: {

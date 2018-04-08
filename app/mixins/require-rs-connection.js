@@ -1,8 +1,9 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Mixin from '@ember/object/mixin';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
 
-  storage: Ember.inject.service(),
+  storage: service(),
 
   beforeModel: function(transition) {
     this._super(...arguments);

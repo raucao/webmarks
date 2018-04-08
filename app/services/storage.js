@@ -1,27 +1,21 @@
-import Ember from 'ember';
+import { alias } from '@ember/object/computed';
+import { Promise } from 'rsvp';
+import Service from '@ember/service';
+import Evented from '@ember/object/evented';
+import { run } from '@ember/runloop';
+import { isEmpty, isPresent } from '@ember/utils';
 import config from 'webmarks/config/environment';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'npm:remotestoragejs';
 import Widget from 'npm:remotestorage-widget';
 import Bookmarks from 'npm:remotestorage-module-bookmarks';
 
-const {
-  RSVP: { Promise },
-  Service,
-  Evented,
-  computed,
-  Logger,
-  run,
-  isPresent,
-  isEmpty,
-} = Ember;
-
 export default Service.extend(Evented, {
 
   remoteStorage: null,
   widget: null,
   connecting: true,
-  connected: computed.alias('remoteStorage.connected'),
+  connected: alias('remoteStorage.connected'),
   archiveBookmarks: null,
   bookmarksLoaded: false,
   tags: null,
@@ -73,7 +67,7 @@ export default Service.extend(Evented, {
 
       // TODO implement options for getAll in bookmarks module so we can set maxAge to false
       // setTimeout(() => {
-      //   Logger.debug('Timed out (10s) fetching bookmarks from remote, using local cache');
+      //   console.debug('Timed out (10s) fetching bookmarks from remote, using local cache');
       //   archive.getAll({maxAge: false}).then(resolve));
       //   // TODO if nothing in local cache, communicate to the user what happened
       // }, 10000);
@@ -177,7 +171,7 @@ export default Service.extend(Evented, {
           item = Bookmark.create(event.newValue);
           let oldItem = archiveBookmarks.findBy('id', item.id);
           if (oldItem) {
-            Logger.warn('Received change event for a new item that was already cached', oldItem, event);
+            console.warn('Received change event for a new item that was already cached', oldItem, event);
             archiveBookmarks.removeObject(oldItem);
           }
           archiveBookmarks.pushObject(item);
@@ -204,25 +198,25 @@ export default Service.extend(Evented, {
     let rs = this.get('remoteStorage');
 
     rs.on('ready', () => {
-      Logger.debug('rs.on ready');
+      console.debug('rs.on ready');
       // this.set('connecting', false);
     });
 
     rs.on('connected', () => {
-      Logger.debug('rs.on connected');
+      console.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
     });
 
     rs.on('not-connected', () => {
-      Logger.debug('rs.on not-connected');
+      console.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
     });
 
     rs.on('disconnected', () => {
-      Logger.debug('rs.on disconnected');
+      console.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
 
@@ -232,13 +226,13 @@ export default Service.extend(Evented, {
     });
 
     rs.on('connecting', () => {
-      Logger.debug('rs.on connecting');
+      console.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
     rs.on('authing', () => {
-      Logger.debug('rs.on authing');
+      console.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
     });
@@ -252,13 +246,13 @@ export default Service.extend(Evented, {
                            .uniq()
                            .sort();
 
-    Logger.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
+    console.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
 
     try {
       localStorage.setItem('webmarks:tags', tagList);
     }
     catch(e) {
-      Logger.warn('[storage] Error writing tag list to localStorage', e);
+      console.warn('[storage] Error writing tag list to localStorage', e);
     }
   },
 
@@ -268,7 +262,7 @@ export default Service.extend(Evented, {
     if (isPresent(tagList)) {
       return tagList.split(',');
     } else {
-      Logger.warn('[storage] Tag list from cache was empty');
+      console.warn('[storage] Tag list from cache was empty');
       return [];
     }
   },
@@ -278,7 +272,7 @@ export default Service.extend(Evented, {
       return localStorage.removeItem('webmarks:tags');
     }
     catch(e) {
-      Logger.warn('[storage] Error deleting tag list from localStorage', e);
+      console.warn('[storage] Error deleting tag list from localStorage', e);
       return false;
     }
   }
