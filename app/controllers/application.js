@@ -8,11 +8,11 @@ export default Controller.extend({
   init: function() {
     this._super(...arguments);
 
-    this.get('storage').on('disconnected', this.handleStorageDisconnect.bind(this));
+    this.storage.on('disconnected', this.handleStorageDisconnect.bind(this));
   },
 
   handleStorageDisconnect: function() {
-    this.get('storage').deleteTagListCache();
+    this.storage.deleteTagListCache();
 
     console.debug('RS disconnected, transition to welcome');
     this.transitionToRoute('welcome');

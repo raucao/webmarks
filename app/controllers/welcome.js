@@ -13,13 +13,13 @@ export default Controller.extend({
   init: function() {
     this._super(...arguments);
 
-    this.get('storage').on('connected', this.handleStorageConnect.bind(this));
+    this.storage.on('connected', this.handleStorageConnect.bind(this));
   },
 
   handleStorageConnect: function() {
     console.log('rs connected, transition to index');
-    if (isPresent(this.get('attemptedTransition'))) {
-      this.get('attemptedTransition').retry();
+    if (isPresent(this.attemptedTransition)) {
+      this.attemptedTransition.retry();
       this.set('attemptedTransition', null);
     } else {
       this.transitionToRoute('bookmarks.index');

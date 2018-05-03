@@ -18,12 +18,12 @@ export default Component.extend({
     this._super(...arguments);
     this.focusSearchField();
     this.set('visibilityHandler', this.focusSearchField.bind(this));
-    document.addEventListener("visibilitychange", this.get('visibilityHandler'), false);
+    document.addEventListener("visibilitychange", this.visibilityHandler, false);
   },
 
   willDestroyElement() {
     this._super(...arguments);
-    document.removeEventListener("visibilitychange", this.get('visibilityHandler'));
+    document.removeEventListener("visibilitychange", this.visibilityHandler);
   }
 
 });

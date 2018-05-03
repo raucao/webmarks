@@ -17,24 +17,24 @@ export default EmberObject.extend({
   },
 
   createdAtTimeAgo: computed('createdAt', function() {
-    return moment(this.get('createdAt')).fromNow();
+    return moment(this.createdAt).fromNow();
   }),
 
   updatedAtTimeAgo: computed('updatedAt', function() {
-    return moment(this.get('updatedAt')).fromNow();
+    return moment(this.updatedAt).fromNow();
   }),
 
   domain: computed('url', function() {
     var a = document.createElement('a');
-    a.href = this.get('url');
+    a.href = this.url;
     return a.hostname;
   }),
 
   serialize: computed('url', 'title', 'description', 'tags', 'createdAt', function() {
     var serialized = this.getProperties('url', 'title', 'description');
-    var tags = this.get('tags') || [];
+    var tags = this.tags || [];
 
-    var createdAt = this.get('createdAt');
+    var createdAt = this.createdAt;
     if (createdAt !== null) {
       serialized.createdAt = createdAt;
     }

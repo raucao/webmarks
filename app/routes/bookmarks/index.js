@@ -8,7 +8,7 @@ export default Route.extend(RequireRSConnection, {
   i18n: service(),
 
   model() {
-    return this.get('storage').getBookmarks();
+    return this.storage.getBookmarks();
   }
 
 });

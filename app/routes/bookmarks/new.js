@@ -22,14 +22,14 @@ export default Route.extend(RequireRSConnection, {
       controller.set('bookmarkletUsed', true);
     }
 
-    let tags = this.get('storage').getTagListCache();
+    let tags = this.storage.getTagListCache();
     controller.set('availableTags', tags);
 
     this._super(controller, bookmark);
   },
 
   resetController: function(controller) {
-    let queryParams = controller.get('queryParams');
+    let queryParams = controller.queryParams;
     queryParams.forEach((param) => {
       controller.set(param, null);
     });

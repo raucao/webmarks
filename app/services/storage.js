@@ -32,8 +32,8 @@ export default Service.extend(Evented, {
 
   getBookmarks() {
     return new Promise((resolve, reject) => {
-      if (this.get('bookmarksLoaded')) {
-        resolve(this.get('archiveBookmarks'));
+      if (this.bookmarksLoaded) {
+        resolve(this.archiveBookmarks);
       } else {
         this.loadBookmarks().then((bookmarks) => {
           resolve(bookmarks);
@@ -44,8 +44,8 @@ export default Service.extend(Evented, {
 
   getBookmark(id) {
     return new Promise((resolve, reject) => {
-      if (this.get('bookmarksLoaded')) {
-        resolve(this.get('archiveBookmarks').findBy('id', id));
+      if (this.bookmarksLoaded) {
+        resolve(this.archiveBookmarks.findBy('id', id));
       } else {
         this.loadBookmarks().then((bookmarks) => {
           resolve(bookmarks.findBy('id', id));
@@ -60,7 +60,7 @@ export default Service.extend(Evented, {
    * @protected
    */
   fetchBookmarks() {
-    let archive = this.get('remoteStorage').bookmarks.archive;
+    let archive = this.remoteStorage.bookmarks.archive;
 
     return new Promise((resolve/*, reject */) => {
       archive.getAll().then(resolve);
@@ -81,7 +81,7 @@ export default Service.extend(Evented, {
    */
   loadBookmarks() {
     return this.fetchBookmarks().then((bookmarks) => {
-      let archiveBookmarks = this.get('archiveBookmarks');
+      let archiveBookmarks = this.archiveBookmarks;
 
       bookmarks.forEach((bookmark) => {
         if (isEmpty(bookmark.title) || isEmpty(bookmark.url)) {
@@ -114,22 +114,22 @@ export default Service.extend(Evented, {
   },
 
   removeBookmark(id) {
-    let bookmark = this.get('archiveBookmarks').findBy('id', id);
+    let bookmark = this.archiveBookmarks.findBy('id', id);
 
-    return this.get('remoteStorage').bookmarks.archive.remove(id).then(() => {
-      this.get('archiveBookmarks').removeObject(bookmark);
+    return this.remoteStorage.bookmarks.archive.remove(id).then(() => {
+      this.archiveBookmarks.removeObject(bookmark);
     });
   },
 
   storeBookmark(item) {
-    return this.get('remoteStorage').bookmarks.archive.store(item).then((bookmark) => {
+    return this.remoteStorage.bookmarks.archive.store(item).then((bookmark) => {
       // Remove existing item from collection if exists
-      let oldItem = this.get('archiveBookmarks').findBy('id', bookmark.id);
-      if (oldItem) { this.get('archiveBookmarks').removeObject(oldItem); }
+      let oldItem = this.archiveBookmarks.findBy('id', bookmark.id);
+      if (oldItem) { this.archiveBookmarks.removeObject(oldItem); }
 
       // Add new item to collection
       let newItem = Bookmark.create(bookmark);
-      this.get('archiveBookmarks').pushObject(newItem);
+      this.archiveBookmarks.pushObject(newItem);
     });
   },
 
@@ -147,7 +147,7 @@ export default Service.extend(Evented, {
   },
 
   setupConnectWidget() {
-    const widget = new Widget(this.get('remoteStorage'), {
+    const widget = new Widget(this.remoteStorage, {
       domID: 'remotestorage-connect',
       redirectUri: window.location.href
     });
@@ -159,9 +159,9 @@ export default Service.extend(Evented, {
   },
 
   setupChangeHandler() {
-    this.get('remoteStorage').bookmarks.client.scope('archive/').on('change', (event) => {
+    this.remoteStorage.bookmarks.client.scope('archive/').on('change', (event) => {
       run(() => {
-        let archiveBookmarks = this.get('archiveBookmarks');
+        let archiveBookmarks = this.archiveBookmarks;
 
         if (!event.origin.match(/remote/)) { return; }
         let item;
@@ -195,7 +195,7 @@ export default Service.extend(Evented, {
   },
 
   setupEventHandlers() {
-    let rs = this.get('remoteStorage');
+    let rs = this.remoteStorage;
 
     rs.on('ready', () => {
       console.debug('rs.on ready');
@@ -239,7 +239,7 @@ export default Service.extend(Evented, {
   },
 
   createTagListCache() {
-    let tagList = this.get('archiveBookmarks').mapBy('tags')
+    let tagList = this.archiveBookmarks.mapBy('tags')
                            .compact()
                            .reduce((a, b) => a.concat(b), [''])
                            .reject((a) => isEmpty(a))

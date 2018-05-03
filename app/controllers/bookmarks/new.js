@@ -20,7 +20,7 @@ export default Controller.extend({
   actions: {
 
     commit: function() {
-      this.get('storage').storeBookmark(this.get('model.serialize')).then(() => {
+      this.storage.storeBookmark(this.get('model.serialize')).then(() => {
         this.transitionToRoute('index');
       }).catch((error) => {
         alert('Something went wrong.');

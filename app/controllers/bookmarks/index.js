@@ -14,11 +14,11 @@ export default Controller.extend({
   sortedBookmarks: sort('model', 'sortProperties'),
 
   filteredContent: computed('filterText', 'sortedBookmarks', function() {
-    var filterText = this.get('filterText').toLowerCase();
+    var filterText = this.filterText.toLowerCase();
     if (isEmpty(filterText) || filterText.length < 3) {
-      return this.get('sortedBookmarks');
+      return this.sortedBookmarks;
     } else {
-      return this.get('sortedBookmarks').filter(function(item) {
+      return this.sortedBookmarks.filter(function(item) {
         var match = ( (!isEmpty(item.description) &&
                        item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
@@ -32,7 +32,7 @@ export default Controller.extend({
   actions: {
 
     remove: function(item) {
-      this.get('storage').removeBookmark(item.id).catch((error) => {
+      this.storage.removeBookmark(item.id).catch((error) => {
         alert('Something went wrong.');
         console.log('ERROR:');
         console.log(error);

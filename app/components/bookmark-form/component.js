@@ -11,7 +11,7 @@ export default Component.extend({
   },
 
   autocompleteTags: function() {
-    let availableTags = this.get('availableTags');
+    let availableTags = this.availableTags;
     let split = function(val) {
       return val.split(/,\s*/);
     };
@@ -59,11 +59,11 @@ export default Component.extend({
   actions: {
 
     commit() {
-      this.get('commit')();
+      this.commit();
     },
 
     cancel() {
-      this.get('cancel')();
+      this.cancel();
     }
 
   }
