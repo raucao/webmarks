@@ -125,8 +125,13 @@ section#search {
     border-radius: 2px;
     font-size: 1rem;
     font-family: $baseFontFamily;
-    background: #fff;
+    background: #ebebeb;
     width: 50%;
+    transition: background-color 0.1s linear;
+
+    &:focus {
+      background: #fff;
+    }
   }
 }
 
