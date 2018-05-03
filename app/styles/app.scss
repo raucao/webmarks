@@ -59,8 +59,9 @@ aside {
       a {
         text-decoration: none;
         display: block;
-        height: 5rem;
         padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+        line-height: 1rem;
         text-align: center;
         border-bottom: 1px solid lighten($darkGrey, 5%);
         @include transition(all 0.1s linear);
@@ -78,10 +79,10 @@ aside {
     }
   }
   nav.main {
-    margin-top: 1.5rem;
     li {
       a {
         display: block;
+        padding: 1.5rem 0;
         text-decoration: none;
         color: #888;
         white-space: nowrap;
@@ -89,7 +90,7 @@ aside {
         font-weight: normal;
         i::before {
           display: inline-block;
-          padding: 0.5rem 1rem;
+          padding: 0 1rem;
           width: 2rem;
           height: 2rem;
           font-size: 2rem;
@@ -112,16 +113,19 @@ main {
 section#search {
   position: fixed;
   background: #f4f4f4;
-  padding: 24px 32px;
+  padding-left: 32px;
+  padding-top: 16px;
   width: 100%;
   z-index: 2342;
+
   input[type=text] {
+    height: 1rem;
+    padding: 1rem 1rem;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 2px;
+    font-size: 1rem;
     font-family: $baseFontFamily;
     background: #fff;
-    padding: 6px;
     width: 50%;
   }
 }
