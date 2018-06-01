@@ -6,13 +6,16 @@ import hbs from 'htmlbars-inline-precompile';
 module('Integration | Component | bookmark search', function(hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders', async function(assert) {
+  test('clear-search button', async function(assert) {
+    this.set('filterText', '');
+    await render(hbs`{{bookmark-search filterText=filterText}}`);
 
-    // Set any properties with this.set('myProperty', 'value');
-    // Handle any actions with this.on('myAction', function(val) { ... });
+    assert.ok(this.$('#clear-search')[0].classList.contains('hidden'), 'is hidden when search field is empty');
 
-    await render(hbs`{{bookmark-search}}`);
+    this.set('filterText', 'foo');
+    assert.notOk(this.$('#clear-search')[0].classList.contains('hidden'), 'is visible when search field is not empty');
 
-    assert.equal(this.$().text().trim(), '');
+    await this.$('#clear-search').click();
+    assert.ok(this.$('#clear-search')[0].classList.contains('hidden'), 'clears search input when clicked');
   });
 });

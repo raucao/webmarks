@@ -1,2 +1,2 @@
-{{input value=filterText placeholder= (t 'inputs.text_fields.search.placeholder') }}
-{{#button}}{{partial "icons/x"}}{{/button}}
+{{input id="search-input" value=filterText placeholder= (t 'inputs.text_fields.search.placeholder') }}
+<button {{action 'clearSearchInput'}} id="clear-search" class={{if hideClearButton "hidden"}}>{{partial "icons/x"}}</button>
