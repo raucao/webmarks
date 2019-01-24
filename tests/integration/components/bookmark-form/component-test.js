@@ -10,7 +10,7 @@ module('Integration | Component | bookmark form', function(hooks) {
     this.set('bookmark', {title: null});
     await render(hbs`{{bookmark-form bookmark=bookmark}}`);
 
-    assert.equal(this.$('input#title').val(), '');
+    assert.dom('input#title').hasValue('');
     assert.equal(document.activeElement.id, 'title');
   });
 
@@ -19,7 +19,7 @@ module('Integration | Component | bookmark form', function(hooks) {
     await render(hbs`{{bookmark-form bookmark=bookmark}}`);
 
     assert.equal(this.get('bookmark.title'), 'foo bar');
-    assert.equal(this.$('input#title').val(), 'foo bar');
+    assert.dom('input#title').hasValue('foo bar');
     assert.notEqual(document.activeElement.id, 'title');
   });
 });

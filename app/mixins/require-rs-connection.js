@@ -8,7 +8,7 @@ export default Mixin.create({
   beforeModel: function(transition) {
     this._super(...arguments);
 
-    if (!this.get('storage.connected')) {
+    if (!this.storage.connected) {
       this.controllerFor('application').set('attemptedTransition', transition);
       this.transitionTo('welcome');
     }

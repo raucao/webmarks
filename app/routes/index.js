@@ -6,7 +6,7 @@ export default Route.extend({
   storage: service(),
 
   redirect: function() {
-    if (!this.get('storage.connected')) {
+    if (!this.storage.connected) {
       this.transitionTo('welcome');
     } else {
       this.transitionTo('bookmarks.index');

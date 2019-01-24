@@ -15,7 +15,7 @@ export default Service.extend(Evented, {
   remoteStorage: null,
   widget: null,
   connecting: true,
-  connected: alias('remoteStorage.connected'),
+  connected: false,
   archiveBookmarks: null,
   bookmarksLoaded: false,
   tags: null,

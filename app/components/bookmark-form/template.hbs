@@ -1,24 +1,24 @@
 <form {{action "commit" on="submit"}}>
   <fieldset>
     <div class="control-group">
-      <label for="title">{{t 'bookmark.edit.form.title'}}</label>
+      <label for="title">{{t "bookmark.edit.form.title"}}</label>
       {{input value=bookmark.title id="title" required="required"}}
     </div>
     <div class="control-group">
-      <label for="url">{{t 'bookmark.edit.form.url'}}</label>
+      <label for="url">{{t "bookmark.edit.form.url"}}</label>
       {{input value=bookmark.url id="url" required="required"}}
     </div>
     <div class="control-group">
-      <label for="description">{{t 'bookmark.edit.form.description'}}</label>
+      <label for="description">{{t "bookmark.edit.form.description"}}</label>
       {{input value=bookmark.description id="description"}}
     </div>
     <div class="control-group">
-      <label for="tags">{{t 'bookmark.edit.form.tags'}}</label>
+      <label for="tags">{{t "bookmark.edit.form.tags"}}</label>
       {{input value=bookmark.tags id="tags"}}
     </div>
   </fieldset>
   <div class="controls">
-    <button type="submit" class="button button-primary">{{t 'bookmark.edit.form.save'}}</button>
-    <button {{action 'cancel'}} class="button button-secondary">{{t 'bookmark.edit.form.cancel'}}</button>
+    <button type="submit" class="button button-primary">{{t "bookmark.edit.form.save"}}</button>
+    <button {{action "cancel"}} class="button button-secondary">{{t "bookmark.edit.form.cancel"}}</button>
   </div>
 </form>

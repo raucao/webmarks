@@ -7,14 +7,14 @@
     {{#each filteredContent as |item|}}
       <li class="bookmark">
         <h4 class="heading">
-          <a href={{item.url}} target="_blank">{{item.title}}</a>
+          <a href={{item.url}} target="_blank" rel="noopener">{{item.title}}</a>
         </h4>
         <p class="meta">
           <span class="domain">{{item.domain}}</span>
           &middot;
           <span class="date">{{item.createdAtTimeAgo}}</span>
           {{#if item.updatedAt}}
-            ({{t 'bookmark.index.updated'}} <span class="date">{{item.updatedAtTimeAgo}})</span>
+            ({{t "bookmark.index.updated"}} <span class="date">{{item.updatedAtTimeAgo}})</span>
           {{/if}}
           {{#if item.tags}}
             &middot;
@@ -25,7 +25,7 @@
         </p>
         <div class="actions">
           {{#link-to "bookmarks.edit" item}}<i class="icon-pencil"></i>{{/link-to}}
-          <a {{action 'remove' item}}><i class="icon-trash"></i></a>
+          <a {{action "remove" item}} role="button"><i class="icon-trash"></i></a>
         </div>
         {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
       </li>
@@ -33,7 +33,7 @@
   </ul>
 {{else}}
   <div class="no-bookmarks">
-    <p>{{t 'bookmark.index.you_have_not_stored_any_bookmarks_yet'}}</p>
-    <p>{{#link-to "bookmarks.new"}}{{t 'bookmark.index.add_the_first_one'}}{{/link-to}}</p>
+    <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
+    <p>{{#link-to "bookmarks.new"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
   </div>
 {{/if}}

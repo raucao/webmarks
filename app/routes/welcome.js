@@ -7,7 +7,7 @@ export default Route.extend({
   storage: service(),
 
   beforeModel: function() {
-    if (this.get('storage.connected')) {
+    if (this.storage.connected) {
       console.log('ohai');
       this.transitionTo('index');
     }
