@@ -1,4 +1,3 @@
-import { alias } from '@ember/object/computed';
 import { Promise } from 'rsvp';
 import Service from '@ember/service';
 import Evented from '@ember/object/evented';
@@ -63,14 +62,8 @@ export default Service.extend(Evented, {
     let archive = this.remoteStorage.bookmarks.archive;
 
     return new Promise((resolve/*, reject */) => {
-      archive.getAll().then(resolve);
-
-      // TODO implement options for getAll in bookmarks module so we can set maxAge to false
-      // setTimeout(() => {
-      //   console.debug('Timed out (10s) fetching bookmarks from remote, using local cache');
-      //   archive.getAll({maxAge: false}).then(resolve));
-      //   // TODO if nothing in local cache, communicate to the user what happened
-      // }, 10000);
+      archive.getAll(false).then(resolve);
+      // TODO add sync error handling
     });
   },
 
