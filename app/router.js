@@ -9,9 +9,13 @@ const Router = EmberRouter.extend({
 Router.map(function() {
   this.route('welcome', { path: "/welcome" });
 
-  this.route('bookmarks', function() {
+  this.route('archive', function() {
     this.route('new', { queryParams: ['title', 'url'] });
     this.route('edit', { path: 'edit/:bookmark_id' });
+  });
+
+  this.route('bookmarks', function() {
+    this.route('new', { queryParams: ['title', 'url'] });
   });
 });
 

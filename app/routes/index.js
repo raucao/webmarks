@@ -9,7 +9,7 @@ export default Route.extend({
     if (!this.storage.connected) {
       this.transitionTo('welcome');
     } else {
-      this.transitionTo('bookmarks.index');
+      this.transitionTo('archive.index');
     }
   }
 

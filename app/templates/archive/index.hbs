@@ -24,7 +24,7 @@
           {{/if}}
         </p>
         <div class="actions">
-          {{#link-to "bookmarks.edit" item title=(t "links.edit")}}{{icon-edit}}{{/link-to}}
+          {{#link-to "archive.edit" item title=(t "links.edit")}}{{icon-edit}}{{/link-to}}
           <a {{action "remove" item}} title={{t "links.delete"}} role="button">{{icon-trash}}</a>
         </div>
         {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
@@ -34,6 +34,6 @@
 {{else}}
   <div class="no-bookmarks">
     <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
-    <p>{{#link-to "bookmarks.new"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
+    <p>{{#link-to "archive.new"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
   </div>
 {{/if}}

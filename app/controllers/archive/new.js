@@ -14,7 +14,7 @@ export default Controller.extend({
   bookmarkletUsed: false,
 
   bookmarkletLink: computed(() => {
-    return htmlSafe(`javascript:void(location.href="${window.location.origin}/bookmarks/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
+    return htmlSafe(`javascript:void(location.href="${window.location.origin}/archive/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
   }),
 
   actions: {
