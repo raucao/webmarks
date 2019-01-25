@@ -24,9 +24,11 @@ export default Service.extend(Evented, {
 
     this.set('archiveBookmarks', []);
 
-    this.setupRemoteStorage();
-    this.setupConnectWidget();
-    this.setupEventHandlers();
+    if (config.environment !== 'test') {
+      this.setupRemoteStorage();
+      this.setupConnectWidget();
+      this.setupEventHandlers();
+    }
   },
 
   getBookmarks() {
