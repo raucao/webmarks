@@ -6,11 +6,6 @@ import Bookmark from 'webmarks/models/bookmark';
 module('Unit | Service | storage', function(hooks) {
   setupTest(hooks);
 
-  test('it exists', function(assert) {
-    let service = this.owner.lookup('service:storage');
-    assert.ok(service);
-  });
-
   test('#createTagListCache writes correct list to localStorage', function(assert) {
     let service = this.owner.lookup('service:storage');
     let bookmarks = service.get('archiveBookmarks');
