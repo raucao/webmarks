@@ -24,8 +24,8 @@
           {{/if}}
         </p>
         <div class="actions">
-          {{#link-to "bookmarks.edit" item}}<i class="icon-pencil"></i>{{/link-to}}
-          <a {{action "remove" item}} role="button"><i class="icon-trash"></i></a>
+          {{#link-to "bookmarks.edit" item title=(t "links.edit")}}{{icon-edit}}{{/link-to}}
+          <a {{action "remove" item}} title={{t "links.delete"}} role="button">{{icon-trash}}</a>
         </div>
         {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
       </li>

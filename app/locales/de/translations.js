@@ -33,7 +33,9 @@ export default {
     }
   },
   links: {
-    add_new: 'Neue hinzufügen'
+    add_new: 'Neu hinzufügen',
+    edit: 'Editieren',
+    delete: 'Löschen'
   },
   inputs: {
     text_fields: {

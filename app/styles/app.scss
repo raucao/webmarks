@@ -6,7 +6,6 @@ $linkColorHover: darken($linkColor, 5%);
 $darkGrey: #232323;
 
 @import "bourbon/bourbon";
-@import "iconfont";
 @import "loading";
 @import "jquery-ui-overrides";
 
@@ -18,12 +17,13 @@ $darkGrey: #232323;
   outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
-}
-*:hover, *:active, *:focus {
-  -moz-outline: none;
-  outline: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  -webkit-tap-highlight-color: transparent;
+
+  &:hover, &:active, &:focus {
+    -moz-outline: none;
+    outline: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 html, body {
@@ -54,6 +54,7 @@ aside {
   bottom: 0px;
   z-index: 23;
   background: $darkGrey;
+
   header {
     h1 {
       a {
@@ -65,11 +66,13 @@ aside {
         text-align: center;
         border-bottom: 1px solid lighten($darkGrey, 5%);
         @include transition(all 0.1s linear);
+
         &:hover {
           background: lighten($darkGrey, 5%);
           color: $bodyBgColor;
           @include transition(all 0.1s linear);
         }
+
         img {
           border: none;
           width: 2.5rem;
@@ -78,16 +81,30 @@ aside {
       }
     }
   }
+
   nav.main {
     li {
       a {
         display: block;
-        padding: 1.5rem 0;
-        text-decoration: none;
-        color: #888;
-        white-space: nowrap;
-        overflow: hidden;
-        font-weight: normal;
+        width: 4rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @include transition(all 0.1s linear);
+
+        svg {
+          flex: 1;
+          width: 24px;
+          height: 24px;
+          margin-left: auto;
+          margin-right: auto;
+
+          path {
+            fill: #888;
+          }
+        }
+
         i::before {
           display: inline-block;
           padding: 0 1rem;
@@ -95,7 +112,7 @@ aside {
           height: 2rem;
           font-size: 2rem;
         }
-        @include transition(all 0.1s linear);
+
         &:hover {
           background: lighten($darkGrey, 5%);
           color: $bodyBgColor;
@@ -184,37 +201,68 @@ li.bookmark {
   border-bottom: 1px solid #efefef;
   padding: 1rem 2rem;
   position: relative;
+
   h4 {
     font-size: 1.5rem;
     font-weight: 500;
     margin-bottom: 6px;
   }
+
   .meta {
     color: #888;
     font-size: 0.8rem;
+
     .tag {
       padding: 0 6px;
       background: #efefef;
       border-radius: 3px;
     }
   }
+
   .description {
     margin-top: 8px;
   }
+
   .actions {
     position: absolute;
-    top: 1.5rem;
+    top: 1rem;
     right: 2rem;
+
     a {
-      padding: 0.25rem 0.5rem;
-      color: #888;
-      line-height: 1.4rem;
-      text-decoration: none;
+      display: inline-block;
+      padding: 3px;
       border: 1px solid #f4f4f4;
       border-radius: 0.25rem;
+      // height: 22px;
+      // width: 22px;
+
+      svg {
+        display: block;
+        position: relative;
+        width: 20px;
+        height: 20px;
+        margin: 0;
+
+        path {
+          fill: #888;
+          transition: all 0.1s linear;
+        }
+      }
+
       &:hover {
         color: $linkColorHover;
         cursor: pointer;
+
+        svg {
+          path {
+            fill: $linkColorHover;
+            transition: all 0.1s linear;
+          }
+
+          &.icon-trash {
+            path { fill: #b61f1f; }
+          }
+        }
       }
     }
   }
@@ -224,23 +272,28 @@ li.bookmark {
   header {
     background: #f4f4f4;
     padding: 1.5rem 2rem;
+
     h2 {
       line-height: 2rem;
       font-size: 1.5rem;
       font-weight: bold;
     }
   }
+
   form {
     display: block;
     background: #fff;
     padding: 2rem 2rem;
+
     fieldset {
       border: none;
     }
+
     .control-group {
       display: block;
       position: relative;
       margin-bottom: 1.5rem;
+
       label {
         display: block;
         width: 7rem;
@@ -254,6 +307,7 @@ li.bookmark {
         text-transform: uppercase;
         // background: #ccc;
       }
+
       input[type=text] {
         display: inline-block;
         width: 50%;
@@ -270,6 +324,7 @@ li.bookmark {
         }
       }
     }
+
     .controls {
       padding-top: 0.5rem;
     }
@@ -278,11 +333,13 @@ li.bookmark {
 
 section#bookmarklet {
   padding: 1.5rem 2rem;
+
   h3 {
     font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 1rem;
   }
+
   p.hint {
     margin-bottom: 1.5rem;
   }
@@ -301,23 +358,28 @@ section#bookmarklet {
   letter-spacing: 0.02em;
   cursor: default;
   border-radius: 0.3rem;
+
   &:hover, &:focus {
     cursor: default;
     color: #ccc;
     background-color: lighten($darkGrey, 10%);
     @include transition(background-color 0.2s linear);
   }
+
   &.button-primary {
     background: $linkColor;
     color: #fff;
+
     &:hover, &:focus {
       color: #fff;
       background-color: lighten($linkColor, 10%);
     }
   }
+
   &.button-secondary {
     background: darken($bodyBgColor, 5%);
     color: $bodyTextColor;
+
     &:hover, &:focus {
       background-color: darken($bodyBgColor, 15%);
     }
@@ -328,15 +390,18 @@ section#bookmarklet {
 
 section#welcome {
   margin: 4rem;
+
   h2 {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 2rem;
   }
+
   p {
     font-size: 1.3rem;
     font-weight: normal;
     margin-bottom: 1rem;
+
     &.hint {
       font-size: 1rem;
       color: #888;
