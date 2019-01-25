@@ -28,8 +28,8 @@ You will need the following things properly installed on your computer.
 ## Running / Development
 
 * `npm start`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
-* Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
+* Visit the app at [http://localhost:4200](http://localhost:4200).
+* Visit the tests at [http://localhost:4200/tests](http://localhost:4200/tests).
 
 ### Code Generators
 
@@ -70,3 +70,4 @@ Deploy current production branch to [production](https://webmarks-dev.5apps.com)
 * Development Browser Extensions
   * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
   * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+* [Material UI icons](https://material.io/tools/icons/)
