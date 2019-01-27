@@ -42,16 +42,27 @@ a:hover {
   color: $linkColorHover;
 }
 
-nav, main, aside {
+body > .ember-view {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+nav {
   display: block;
 }
 
 aside {
-  position: fixed;
+  flex: 0 0 4rem;
+  overflow: auto;
   height: auto;
-  width: 4rem;
-  top: 0px;
-  bottom: 0px;
   z-index: 23;
   background: $darkGrey;
 
@@ -124,7 +135,8 @@ aside {
 }
 
 main {
-  padding-left: 4rem;
+  flex: 1;
+  overflow: auto;
 }
 
 section#search {
