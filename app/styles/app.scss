@@ -61,10 +61,9 @@ nav {
 
 aside {
   flex: 0 0 4rem;
-  overflow: auto;
-  height: auto;
   z-index: 23;
   background: $darkGrey;
+  overflow: hidden;
 
   header {
     h1 {
@@ -93,7 +92,7 @@ aside {
     }
   }
 
-  nav.main {
+  nav {
     li {
       a {
         display: block;
@@ -116,18 +115,18 @@ aside {
           }
         }
 
-        i::before {
-          display: inline-block;
-          padding: 0 1rem;
-          width: 2rem;
-          height: 2rem;
-          font-size: 2rem;
-        }
-
         &:hover {
           background: lighten($darkGrey, 5%);
           color: $bodyBgColor;
           @include transition(all 0.1s linear);
+        }
+
+        &.active {
+          svg {
+            path {
+              fill: #ccc;
+            }
+          }
         }
       }
     }
@@ -137,20 +136,19 @@ aside {
 main {
   flex: 1;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 section#search {
   position: fixed;
   background: #f4f4f4;
-  padding-left: 2rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
   width: 100%;
   z-index: 2342;
 
   .search-input {
     position: relative;
     display: block;
+    padding: 1rem 2rem;
     width: 50%;
 
     input[type=text] {
@@ -174,8 +172,8 @@ section#search {
       display: inline-block;
       height: 3rem;
       width: 3rem;
-      top: 0;
-      right: 0;
+      top: 1rem;
+      right: 2rem;
       padding: 0.75rem;
       border: none;
       background: transparent;
@@ -435,4 +433,83 @@ section#welcome {
   position: fixed;
   top: 0;
   right: 0;
+}
+
+// Small screens
+
+@media screen and (max-width : 420px) {
+  $paddingHorizontal: 1rem;
+  $navbarWidth: 48px;
+
+  body > .ember-view {
+    flex-direction: column;
+    // justify-content: flex-start;
+    // align-items: stretch;
+  }
+
+  aside {
+    flex: 0 $navbarWidth;
+    display: flex;
+    flex-direction: row;
+
+    header {
+      flex: 0 4rem;
+
+      h1 {
+        a {
+          display: inline-block;
+          padding: 8px;
+
+          img {
+            width: 32px;
+            height: 32px;
+          }
+        }
+      }
+    }
+
+    nav {
+      flex: 1;
+
+      ul {
+        float: right;
+      }
+
+      li {
+        a {
+          width: $navbarWidth;
+          height: $navbarWidth;
+        }
+      }
+    }
+  }
+
+  main {
+
+  }
+
+  section#search {
+    .search-input {
+      width: 100%;
+      padding: 1rem $paddingHorizontal;
+    }
+  }
+
+  li.bookmark {
+    padding: 1rem $paddingHorizontal;
+
+    .actions {
+      right: $paddingHorizontal;
+    }
+  }
+
+  #remotestorage-widget {
+    bottom: 0;
+    top: auto;
+
+    .rs-widget {
+      margin: 0 !important;
+      border-radius: 0;
+    }
+  }
 }
