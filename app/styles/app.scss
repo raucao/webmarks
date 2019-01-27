@@ -492,6 +492,10 @@ section#welcome {
     .search-input {
       width: 100%;
       padding: 1rem $paddingHorizontal;
+
+      button#clear-search {
+        right: $paddingHorizontal;
+      }
     }
   }
 
