@@ -5,6 +5,8 @@ $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
 $darkGrey: #232323;
 
+$paddingHorizontal: 2rem;
+
 @import "bourbon/bourbon";
 @import "loading";
 @import "jquery-ui-overrides";
@@ -137,6 +139,7 @@ main {
   flex: 1;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  background-color: #fff;
 }
 
 section#search {
@@ -283,7 +286,7 @@ li.bookmark {
 #bookmark-new, #bookmark-edit {
   header {
     background: #f4f4f4;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem $paddingHorizontal;
 
     h2 {
       line-height: 2rem;
@@ -294,8 +297,10 @@ li.bookmark {
 
   form {
     display: block;
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem $paddingHorizontal;
     background: #fff;
-    padding: 2rem 2rem;
 
     fieldset {
       border: none;
@@ -312,7 +317,7 @@ li.bookmark {
         position: absolute;
         bottom: 0;
         left: 0;
-        padding: 0.3rem 0.5rem;
+        padding: 0.5rem 0.5rem;
         font-size: 0.7rem;
         line-height: 1rem;
         color: #888;
@@ -321,9 +326,9 @@ li.bookmark {
       }
 
       input[type=text] {
-        display: inline-block;
-        width: 50%;
-        padding: 0.3rem 0.5rem 0.3rem 7rem;
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.5rem 0.5rem 7rem;
         font-family: $baseFontFamily;
         font-size: 1rem;
         line-height: 1rem;
@@ -359,7 +364,7 @@ section#bookmarklet {
 
 .button {
   background: #ccc;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   background-color: $darkGrey;
   color: #ccc;
@@ -484,10 +489,6 @@ section#welcome {
     }
   }
 
-  main {
-
-  }
-
   section#search {
     .search-input {
       width: 100%;
@@ -504,6 +505,16 @@ section#welcome {
 
     .actions {
       right: $paddingHorizontal;
+    }
+  }
+
+  #bookmark-new, #bookmark-edit {
+    header {
+      padding: 1.5rem $paddingHorizontal;
+    }
+
+    form {
+      padding: 2rem $paddingHorizontal;
     }
   }
 
