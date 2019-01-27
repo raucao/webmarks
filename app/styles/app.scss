@@ -349,7 +349,7 @@ li.bookmark {
 }
 
 section#bookmarklet {
-  padding: 1.5rem 2rem;
+  padding: 1.5rem $paddingHorizontal;
 
   h3 {
     font-size: 1.3rem;
@@ -418,6 +418,7 @@ section#welcome {
     font-size: 1.3rem;
     font-weight: normal;
     margin-bottom: 1rem;
+    line-height: 1.6em;
 
     &.hint {
       font-size: 1rem;
@@ -515,6 +516,22 @@ section#welcome {
 
     form {
       padding: 2rem $paddingHorizontal;
+    }
+  }
+
+  section#bookmarklet {
+    padding: 1.5rem $paddingHorizontal;
+  }
+
+  section#welcome {
+    margin: 2rem;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
     }
   }
 
