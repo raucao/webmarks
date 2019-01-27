@@ -144,7 +144,8 @@ export default Service.extend(Evented, {
   setupConnectWidget() {
     const widget = new Widget(this.remoteStorage, {
       domID: 'remotestorage-connect',
-      redirectUri: window.location.href
+      redirectUri: window.location.href,
+      modalBackdrop: true
     });
 
     // Attach widget to DOM
