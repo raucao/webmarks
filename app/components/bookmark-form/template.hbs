@@ -2,19 +2,19 @@
   <fieldset>
     <div class="control-group">
       <label for="title">{{t "bookmark.edit.form.title"}}</label>
-      {{input value=bookmark.title id="title" required="required"}}
+      {{input value=bookmark.title id="title" required="required" autocomplete="off"}}
     </div>
     <div class="control-group">
       <label for="url">{{t "bookmark.edit.form.url"}}</label>
-      {{input value=bookmark.url id="url" required="required"}}
+      {{input value=bookmark.url id="url" required="required" autocomplete="off"}}
     </div>
     <div class="control-group">
       <label for="description">{{t "bookmark.edit.form.description"}}</label>
-      {{input value=bookmark.description id="description"}}
+      {{input value=bookmark.description id="description" autocomplete="off"}}
     </div>
     <div class="control-group">
       <label for="tags">{{t "bookmark.edit.form.tags"}}</label>
-      {{input value=bookmark.tags id="tags"}}
+      {{input value=bookmark.tags id="tags" autocomplete="off"}}
     </div>
   </fieldset>
   <div class="controls">

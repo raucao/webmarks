@@ -1,2 +1,5 @@
-{{input id="search-input" value=filterText placeholder= (t "inputs.text_fields.search.placeholder") }}
+{{input id="search-input"
+        value=filterText
+        placeholder= (t "inputs.text_fields.search.placeholder")
+        autocomplete="off"}}
 <button {{action "clearSearchInput"}} id="clear-search" class={{if hideClearButton "hidden"}}>{{icon-clear}}</button>
