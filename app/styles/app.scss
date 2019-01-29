@@ -137,13 +137,14 @@ aside {
 
 main {
   flex: 1;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 section#search {
-  position: fixed;
+  flex: 0 80px;
   background: #f4f4f4;
   width: 100%;
   z-index: 2342;
@@ -204,10 +205,15 @@ section#search {
   }
 }
 
+#content {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 ul.bookmark-list {
   list-style: none;
   margin-bottom: 2rem;
-  padding-top: 80px;
 }
 
 li.bookmark {

@@ -1,8 +1,10 @@
-<section id="bookmark-edit">
-  <header>
-    <h2>{{t "bookmark.edit.header"}}</h2>
-  </header>
+<div id="content">
+  <section id="bookmark-edit">
+    <header>
+      <h2>{{t "bookmark.edit.header"}}</h2>
+    </header>
 
-  {{bookmark-form bookmark=model availableTags=availableTags
-                  commit=(action "commit") cancel=(action "cancel") }}
-</section>
+    {{bookmark-form bookmark=model availableTags=availableTags
+                    commit=(action "commit") cancel=(action "cancel") }}
+  </section>
+</div>
