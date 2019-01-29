@@ -27,18 +27,6 @@ export default Controller.extend({
         return match;
       });
     }
-  }),
-
-  actions: {
-
-    remove: function(item) {
-      this.storage.removeBookmark(item.id).catch((error) => {
-        alert('Something went wrong.');
-        console.log('ERROR:');
-        console.log(error);
-      });
-    }
-
-  }
+  })
 
 });

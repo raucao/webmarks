@@ -64,6 +64,10 @@ export default Component.extend({
 
     cancel() {
       this.cancel();
+    },
+
+    remove(bookmark) {
+      this.remove(bookmark);
     }
 
   }

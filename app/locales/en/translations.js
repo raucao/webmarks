@@ -28,7 +28,9 @@ export default {
         description: 'Description',
         tags: 'Tags',
         save: 'Save',
-        cancel: 'Cancel'
+        cancel: 'Cancel',
+        delete: 'Remove',
+        confirmDeletion: 'Delete forever?'
       }
     }
   },

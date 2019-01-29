@@ -4,25 +4,27 @@ $baseFontFamily: 'Helvetica Neue', sans-serif;
 $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
 $darkGrey: #232323;
+$darkRed: #c52f2f;
 
 $paddingHorizontal: 2rem;
 
 @import "bourbon/bourbon";
 @import "loading";
+@import "buttons";
 @import "jquery-ui-overrides";
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -moz-outline: none;
   outline: none;
+  -moz-outline: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
 
   &:hover, &:active, &:focus {
-    -moz-outline: none;
     outline: none;
+    -moz-outline: none;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     -webkit-tap-highlight-color: transparent;
   }
@@ -365,47 +367,6 @@ section#bookmarklet {
 
   p.hint {
     margin-bottom: 1.5rem;
-  }
-}
-
-.button {
-  background: #ccc;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  background-color: $darkGrey;
-  color: #ccc;
-  font-size: 0.7rem;
-  font-weight: normal;
-  text-transform: uppercase;
-  text-decoration: none;
-  letter-spacing: 0.02em;
-  cursor: default;
-  border-radius: 0.3rem;
-
-  &:hover, &:focus {
-    cursor: default;
-    color: #ccc;
-    background-color: lighten($darkGrey, 10%);
-    @include transition(background-color 0.2s linear);
-  }
-
-  &.button-primary {
-    background: $linkColor;
-    color: #fff;
-
-    &:hover, &:focus {
-      color: #fff;
-      background-color: lighten($linkColor, 10%);
-    }
-  }
-
-  &.button-secondary {
-    background: darken($bodyBgColor, 5%);
-    color: $bodyTextColor;
-
-    &:hover, &:focus {
-      background-color: darken($bodyBgColor, 15%);
-    }
   }
 }
 

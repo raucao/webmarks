@@ -9,7 +9,7 @@ export default Route.extend(RequireRSConnection, {
   i18n: service(),
 
   model: function(params) {
-    var bookmark = {};
+    var bookmark = { isNew: true };
     if (params.title && params.url) {
       bookmark.title = params.title;
       bookmark.url = params.url;

@@ -11,6 +11,7 @@ export default EmberObject.extend({
   tags: null,
   createdAt: null,
   updatedAt: null,
+  isNew: false,
 
   init() {
     this._super(...arguments);

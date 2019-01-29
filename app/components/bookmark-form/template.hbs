@@ -20,5 +20,8 @@
   <div class="controls">
     <button type="submit" class="button button-primary">{{t "bookmark.edit.form.save"}}</button>
     <button {{action "cancel"}} class="button button-secondary">{{t "bookmark.edit.form.cancel"}}</button>
+    {{#unless bookmark.isNew}}
+      <button {{action "remove" bookmark}} class="button button-danger">{{t "bookmark.edit.form.delete"}}</button>
+    {{/unless}}
   </div>
 </form>
