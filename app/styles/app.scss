@@ -413,7 +413,7 @@ section#welcome {
 
 @media screen and (max-width : 420px) {
   $paddingHorizontal: 1rem;
-  $navbarWidth: 48px;
+  $navbarWidth: 3rem;
 
   body > .ember-view {
     flex-direction: column;
@@ -459,12 +459,23 @@ section#welcome {
   }
 
   section#search {
+    flex: 0 3rem;
+
     .search-input {
       width: 100%;
-      padding: 1rem $paddingHorizontal;
+      padding: 0;
+
+      input[type=text] {
+        background: #ebebeb;
+
+        &:focus {
+          background: #ebebeb;
+        }
+      }
 
       button#clear-search {
-        right: $paddingHorizontal;
+        top: 0;
+        right: 0;
       }
     }
   }
