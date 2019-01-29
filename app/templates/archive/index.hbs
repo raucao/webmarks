@@ -1,5 +1,6 @@
-<section id="search">
-  {{bookmark-search filterText=filterText}}
+<section id="search" class={{if showSearchOnSmallScreen "visible" "hidden"}}>
+  {{bookmark-search filterText=filterText
+                    showSearch=showSearchOnSmallScreen}}
 </section>
 <div id="content">
   {{#if model}}

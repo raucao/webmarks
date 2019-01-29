@@ -1,14 +1,16 @@
 import { isEmpty } from '@ember/utils';
-import { sort } from '@ember/object/computed';
+import { alias, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
+import Controller, { inject as controller } from '@ember/controller';
 import { computed } from '@ember/object';
 
 export default Controller.extend({
 
   storage: service(),
+  application: controller(),
 
   filterText: '',
+  showSearchOnSmallScreen: alias('application.showSearchOnSmallScreen'),
 
   sortProperties: Object.freeze(['createdAt:desc']),
   sortedBookmarks: sort('model', 'sortProperties'),

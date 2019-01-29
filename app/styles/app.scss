@@ -98,6 +98,10 @@ aside {
 
   nav {
     li {
+      &#nav-search {
+        display: none;
+      }
+
       a {
         display: block;
         width: 4rem;
@@ -434,6 +438,10 @@ section#welcome {
           display: inline-block;
           padding: 8px;
 
+          &:hover {
+            background: transparent;
+          }
+
           img {
             width: 32px;
             height: 32px;
@@ -446,13 +454,23 @@ section#welcome {
       flex: 1;
 
       ul {
-        float: right;
+        width: 100%;
       }
 
       li {
+        float: right;
+
+        &#nav-search {
+          display: inline-block;
+        }
+
         a {
           width: $navbarWidth;
           height: $navbarWidth;
+
+          &:hover {
+            background: transparent;
+          }
         }
       }
     }
@@ -460,6 +478,7 @@ section#welcome {
 
   section#search {
     flex: 0 3rem;
+    transition: margin-top 0.15s linear;
 
     .search-input {
       width: 100%;
@@ -478,6 +497,14 @@ section#welcome {
         right: 0;
       }
     }
+
+    &.hidden {
+      margin-top: -$navbarWidth;
+      transition: margin-top 0.15s linear;
+    }
+  }
+
+  #content {
   }
 
   li.bookmark {

@@ -8,7 +8,7 @@ export default Route.extend(RequireRSConnection, {
   storage: service(),
   i18n: service(),
 
-  model: function(params) {
+  model (params) {
     var bookmark = { isNew: true };
     if (params.title && params.url) {
       bookmark.title = params.title;
@@ -17,7 +17,7 @@ export default Route.extend(RequireRSConnection, {
     return Bookmark.create(bookmark);
   },
 
-  setupController: function(controller, bookmark) {
+  setupController (controller, bookmark) {
     if (bookmark.title.length > 0) {
       controller.set('bookmarkletUsed', true);
     }
@@ -28,11 +28,9 @@ export default Route.extend(RequireRSConnection, {
     this._super(controller, bookmark);
   },
 
-  resetController: function(controller) {
+  resetController (controller) {
     let queryParams = controller.queryParams;
-    queryParams.forEach((param) => {
-      controller.set(param, null);
-    });
+    queryParams.forEach(param => controller.set(param, null));
   }
 
 });

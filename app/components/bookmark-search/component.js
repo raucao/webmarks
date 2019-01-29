@@ -1,11 +1,16 @@
 import { scheduleOnce } from '@ember/runloop';
 import Component from '@ember/component';
 import { empty } from '@ember/object/computed';
+import { observer } from '@ember/object';
 
 export default Component.extend({
 
   tagName: 'div',
   classNames: ['search-input'],
+
+  searchToggled: observer('showSearch', function() {
+    if (this.showSearch) { this.focusSearchField(); }
+  }),
 
   hideClearButton: empty('filterText'),
 

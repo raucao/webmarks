@@ -4,7 +4,14 @@
   </header>
   <nav>
     <ul>
-      <li>{{#link-to "archive.new" title=(t "links.add_new")}}{{icon-add}}{{/link-to}}</li>
+      <li id="nav-new">
+        {{#link-to "archive.new" title=(t "links.add_new")}}{{icon-add}}{{/link-to}}
+      </li>
+      {{#if showSearchButton}}
+        <li id="nav-search">
+          <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}>{{icon-search}}</a>
+        </li>
+      {{/if}}
     </ul>
   </nav>
 </aside>
