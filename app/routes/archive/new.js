@@ -31,6 +31,7 @@ export default Route.extend(RequireRSConnection, {
   resetController (controller) {
     let queryParams = controller.queryParams;
     queryParams.forEach(param => controller.set(param, null));
+    controller.set('showConfirmation', false);
   }
 
 });

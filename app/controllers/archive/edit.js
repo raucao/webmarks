@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
 var ArchiveEditController = ArchiveNewController.extend({
 
   i18n: service(),
+  showConfirmation: false,
 
   actions: {
 
@@ -12,10 +13,9 @@ var ArchiveEditController = ArchiveNewController.extend({
 
       this.storage.removeBookmark(item.id)
         .then(() => {
-          this.transitionToRoute('index');
+          this.set('showConfirmation', true);
         })
-        .catch((error) => {
-          alert('Something went wrong.');
+        .catch(error => {
           console.log('ERROR:');
           console.log(error);
         });

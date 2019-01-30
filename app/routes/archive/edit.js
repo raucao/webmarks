@@ -18,6 +18,10 @@ export default Route.extend(RequireRSConnection, {
     // clone the bookmark for editing so it's only persisted when
     // submitting the form
     this._super(controller, Bookmark.create(model));
+  },
+
+  resetController (controller) {
+    controller.set('showConfirmation', false);
   }
 
 });

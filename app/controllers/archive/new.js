@@ -10,6 +10,7 @@ export default Controller.extend({
   queryParams: ['title', 'url'],
   title: null,
   url: null,
+  showConfirmation: false,
 
   bookmarkletUsed: false,
 
@@ -19,17 +20,16 @@ export default Controller.extend({
 
   actions: {
 
-    commit: function() {
+    commit () {
       this.storage.storeBookmark(this.get('model.serialize')).then(() => {
-        this.transitionToRoute('index');
+        this.set('showConfirmation', true);
       }).catch((error) => {
-        alert('Something went wrong.');
         console.log('ERROR:');
         console.log(error);
       });
     },
 
-    cancel: function() {
+    cancel () {
       this.transitionToRoute('index');
     }
 

@@ -5,6 +5,8 @@ $linkColor: #259C66;
 $linkColorHover: darken($linkColor, 5%);
 $darkGrey: #232323;
 $darkRed: #c52f2f;
+$white: #fff;
+$green: #259C66;
 
 $paddingHorizontal: 2rem;
 
@@ -358,6 +360,71 @@ li.bookmark {
 
     .controls {
       padding-top: 0.5rem;
+    }
+  }
+}
+
+$curve: cubic-bezier(0.650, 0.000, 0.450, 1.000);
+
+section#bookmark-saved {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .controls {
+    margin-top: 5rem;
+  }
+
+  .checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: $white;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px $green;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+  }
+
+  .checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: $green;
+    fill: none;
+    animation: stroke .6s $curve forwards;
+  }
+
+  .checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke .3s $curve .8s forwards;
+  }
+
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes scale {
+    0%, 100% {
+      transform: none;
+    }
+    50% {
+      transform: scale3d(1.1, 1.1, 1);
+    }
+  }
+
+  @keyframes fill {
+    100% {
+      box-shadow: inset 0px 0px 0px 30px $green;
     }
   }
 }
