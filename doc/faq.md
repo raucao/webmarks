@@ -16,7 +16,7 @@ to stop user scripts like bookmarklets from executing:
 Unfortunately, most browsers do not adhere to that part of the specification
 and thus make bookmarklets fail, when strict CSP rules are set.
 
-Thus, the sorry answer is that there is nothing we can do in Webmarks to fix
+Hence, the sorry answer is that there is nothing we can do in Webmarks to fix
 this issue.
 
 [1]: https://www.w3.org/TR/CSP/#processing-model
