@@ -3,6 +3,8 @@ import { alias, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Controller, { inject as controller } from '@ember/controller';
 import { computed } from '@ember/object';
+import { scheduleOnce } from '@ember/runloop';
+import { isPresent } from '@ember/utils';
 
 export default Controller.extend({
 
@@ -13,16 +15,27 @@ export default Controller.extend({
   showSearchOnSmallScreen: alias('application.showSearchOnSmallScreen'),
   isLargeScreen: alias('application.isLargeScreen'),
 
+  paginationItemsPerPage: 30,
+  paginationItemsToLoad: 0,
+  paginationItemObserved: null,
+
   sortProperties: Object.freeze(['createdAt:desc']),
   sortedBookmarks: sort('model', 'sortProperties'),
 
+  init() {
+    this._super(...arguments);
+    scheduleOnce('afterRender', this, 'createIntersectionObserver');
+  },
+
   filteredContent: computed('filterText', 'sortedBookmarks', function() {
-    var filterText = this.filterText.toLowerCase();
+    this.setInitialPaginationItemCount();
+    let filterText = this.filterText.toLowerCase();
+
     if (isEmpty(filterText) || filterText.length < 3) {
       return this.sortedBookmarks;
     } else {
       return this.sortedBookmarks.filter(function(item) {
-        var match = ( (!isEmpty(item.description) &&
+        let match = ( (!isEmpty(item.description) &&
                        item.description.toLowerCase().indexOf(filterText) !== -1) ||
                       item.title.toLowerCase().indexOf(filterText) !== -1 ||
                       item.url.toLowerCase().indexOf(filterText) !== -1 ||
@@ -30,6 +43,46 @@ export default Controller.extend({
         return match;
       });
     }
-  })
+  }),
+
+  paginationActive: computed('paginationItemsPerPage.[]', 'filteredContent', function() {
+    return this.filteredContent.length > this.paginationItemsPerPage;
+  }),
+
+  paginatedContent: computed('filteredContent', 'paginationItemsToLoad', function() {
+    let items = this.filteredContent.slice(0, this.paginationItemsToLoad);
+
+    if (isPresent(this.paginationItemObserved)) {
+      this.paginationObserver.unobserve(this.paginationItemObserved);
+    }
+    items.lastObject.set('isObservingItem', true);
+
+    return items;
+  }),
+
+  setInitialPaginationItemCount () {
+    this.set('paginationItemsToLoad', this.paginationItemsPerPage);
+  },
+
+  createIntersectionObserver () {
+    const config = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0
+    };
+
+    let observer = new IntersectionObserver((entries, self) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // render more items
+          let newItemCount = this.paginatedContent.length + this.paginationItemsPerPage;
+          this.set('paginationItemsToLoad', newItemCount);
+          self.unobserve(entry.target);
+        }
+      });
+    }, config);
+
+    this.set('paginationObserver', observer);
+  }
 
 });

@@ -6,31 +6,17 @@
 <div id="content">
   {{#if model}}
     <ul class="bookmark-list">
-      {{#each filteredContent as |item|}}
-        <li class="bookmark">
-          <h4 class="heading">
-            <a href={{item.url}} target="_blank" rel="noopener">{{item.title}}</a>
-          </h4>
-          <p class="meta">
-            <span class="domain">{{item.domain}}</span>
-            &middot;
-            <span class="date">{{item.createdAtTimeAgo}}</span>
-            {{#if item.updatedAt}}
-              ({{t "bookmark.index.updated"}} <span class="date">{{item.updatedAtTimeAgo}})</span>
-            {{/if}}
-            {{#if item.tags}}
-              &middot;
-              {{#each item.tags as |tag|}}
-                <span class="tag">{{tag}}</span>
-              {{/each}}
-            {{/if}}
-          </p>
-          <div class="actions">
-            {{#link-to "archive.edit" item title=(t "links.edit")}}{{icon-edit}}{{/link-to}}
-          </div>
-          {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
-        </li>
-      {{/each}}
+      {{#if paginationActive}}
+        {{#each paginatedContent as |bookmark|}}
+          {{bookmark-item item=bookmark
+                          paginationObserver=paginationObserver
+                          paginationItemObserved=paginationItemObserved }}
+        {{/each}}
+      {{else}}
+        {{#each filteredContent as |bookmark|}}
+          {{bookmark-item item=bookmark}}
+        {{/each}}
+      {{/if}}
     </ul>
   {{else}}
     <div class="no-bookmarks">

@@ -12,6 +12,11 @@ export default Route.extend(RequireRSConnection, {
     return this.storage.getBookmarks();
   },
 
+  setupController (controller, model) {
+    controller.setInitialPaginationItemCount();
+    this._super(controller, model)
+  },
+
   resetController: function(controller) {
     if (isEmpty(controller.filterText)) {
       controller.set('showSearchOnSmallScreen', false);
