@@ -24,6 +24,10 @@ export default Controller.extend({
     return this.currentRouteName === 'archive.index';
   }),
 
+  isLargeScreen: computed(function() {
+    return window.innerWidth > 420;
+  }).volatile(),
+
   actions: {
 
     toggleSearch () {

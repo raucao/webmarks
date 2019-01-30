@@ -11,6 +11,7 @@ export default Controller.extend({
 
   filterText: '',
   showSearchOnSmallScreen: alias('application.showSearchOnSmallScreen'),
+  isLargeScreen: alias('application.isLargeScreen'),
 
   sortProperties: Object.freeze(['createdAt:desc']),
   sortedBookmarks: sort('model', 'sortProperties'),

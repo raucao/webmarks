@@ -17,14 +17,14 @@ export default Component.extend({
   focusSearchField() {
     if (!document.invisible) {
       scheduleOnce('afterRender', () => {
-        this.$('#search-input')[0].focus();
+        document.getElementById('search-input').focus();
       });
     }
   },
 
   didInsertElement() {
     this._super(...arguments);
-    this.focusSearchField();
+    if (this.autoFocusInput) { this.focusSearchField(); }
     this.set('visibilityHandler', this.focusSearchField.bind(this));
     document.addEventListener("visibilitychange", this.visibilityHandler, false);
   },

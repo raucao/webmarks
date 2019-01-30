@@ -1,6 +1,7 @@
 <section id="search" class={{if showSearchOnSmallScreen "visible" "hidden"}}>
   {{bookmark-search filterText=filterText
-                    showSearch=showSearchOnSmallScreen}}
+                    showSearch=showSearchOnSmallScreen
+                    autoFocusInput=isLargeScreen}}
 </section>
 <div id="content">
   {{#if model}}
