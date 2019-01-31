@@ -10,7 +10,13 @@ module.exports = function(defaults) {
         'icon_x128.png',
         'icon_x144.png',
         'icon_x256.png'
-      ]
+      ],
+    },
+    'asset-cache': {
+      include: [
+        'assets/**/*',
+        '*.png'
+      ],
     }
   });
 
