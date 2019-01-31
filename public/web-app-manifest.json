@@ -1,0 +1,45 @@
+{
+  "name": "Webmarks",
+  "short_name": "Webmarks",
+  "description": "A bookmarking app that lets you sync your data with a storage account of your choice",
+  "display": "standalone",
+  "start_url": "/",
+  "lang": "en",
+  "theme_color": "#259c66",
+  "background_color": "#f4f4f4",
+  "icons": [
+    {
+      "src": "/icon_x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon_x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon_x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon_x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon_x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "share_target": {
+    "action": "/archive/new",
+    "params": {
+      "title": "title",
+      "text": "description",
+      "url": "url"
+    }
+  }
+}
