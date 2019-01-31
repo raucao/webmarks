@@ -7,9 +7,10 @@ export default Controller.extend({
 
   storage: service(),
 
-  queryParams: ['title', 'url'],
+  queryParams: ['title', 'url', 'description'],
   title: null,
   url: null,
+  description: null,
   showConfirmation: false,
 
   bookmarkletUsed: false,
