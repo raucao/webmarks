@@ -605,6 +605,14 @@ section#welcome {
     }
   }
 
+  section#no-bookmarks {
+    .illustration {
+      svg {
+        height: 8rem;
+      }
+    }
+  }
+
   #bookmark-new, #bookmark-edit {
     header {
       padding: 1.5rem $paddingHorizontal;
