@@ -299,6 +299,30 @@ li.bookmark {
   }
 }
 
+section#no-bookmarks {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .illustration {
+    margin-bottom: 5rem;
+
+    svg {
+      height: 12rem;
+    }
+  }
+
+  .text {
+    p {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+  }
+}
+
 #bookmark-new, #bookmark-edit {
   header {
     background: #f4f4f4;
@@ -573,9 +597,6 @@ section#welcome {
     }
   }
 
-  #content {
-  }
-
   li.bookmark {
     padding: 1rem $paddingHorizontal;
 
@@ -615,8 +636,10 @@ section#welcome {
     top: auto;
 
     .rs-widget {
-      margin: 0 !important;
-      border-radius: 0;
+      &.rs-state-connected {
+        margin: 0 !important;
+        border-radius: 0;
+      }
     }
   }
 }

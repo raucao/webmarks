@@ -1,9 +1,8 @@
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import Bookmark from 'webmarks/models/bookmark';
-import RequireRSConnection from 'webmarks/mixins/require-rs-connection';
 
-export default Route.extend(RequireRSConnection, {
+export default Route.extend({
 
   storage: service(),
   i18n: service(),

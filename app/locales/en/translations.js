@@ -17,7 +17,7 @@ export default {
     },
     index: {
       updated: 'updated',
-      you_have_not_stored_any_bookmarks_yet: 'You haven&#39;t stored any bookmarks yet.',
+      you_have_not_stored_any_bookmarks_yet: 'You haven&#39;t saved any bookmarks yet.',
       add_the_first_one: 'Add the first one'
     },
     edit: {

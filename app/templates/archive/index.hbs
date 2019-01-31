@@ -19,9 +19,14 @@
       {{/if}}
     </ul>
   {{else}}
-    <div class="no-bookmarks">
-      <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
-      <p>{{#link-to "archive.new"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
-    </div>
+    <section id="no-bookmarks">
+      <div class="illustration">
+        {{illustration-empty}}
+      </div>
+      <div class="text">
+        <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
+        <p>{{#link-to "archive.new" class="button button-secondary"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
+      </div>
+    </section>
   {{/if}}
 </div>

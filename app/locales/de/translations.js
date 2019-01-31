@@ -17,7 +17,7 @@ export default {
     },
     index: {
       updated: 'aktualisiert',
-      you_have_not_stored_any_bookmarks_yet: 'Du hast noch keine Lesezeichen gespeichert.',
+      you_have_not_stored_any_bookmarks_yet: 'Du hast noch keine Web-Lesezeichen gespeichert.',
       add_the_first_one: 'Füge das erste hinzu'
     },
     edit: {

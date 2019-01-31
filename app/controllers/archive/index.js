@@ -25,6 +25,11 @@ export default Controller.extend({
   init() {
     this._super(...arguments);
     scheduleOnce('afterRender', this, 'createIntersectionObserver');
+    this.storage.on('disconnected', this.handleStorageDisconnect.bind(this));
+  },
+
+  handleStorageDisconnect: function() {
+    this.set('model', []);
   },
 
   filteredContent: computed('filterText', 'sortedBookmarks', function() {

@@ -219,6 +219,7 @@ export default Service.extend(Evented, {
       this.trigger('disconnected');
 
       this.set('archiveBookmarks', []);
+      this.deleteTagListCache();
     });
 
     rs.on('connecting', () => {

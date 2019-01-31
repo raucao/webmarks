@@ -9,15 +9,11 @@ export default Controller.extend({
 
   init: function() {
     this._super(...arguments);
-
     this.storage.on('disconnected', this.handleStorageDisconnect.bind(this));
   },
 
   handleStorageDisconnect: function() {
-    this.storage.deleteTagListCache();
-
-    console.debug('RS disconnected, transition to welcome');
-    this.transitionToRoute('welcome');
+    this.transitionToRoute('archive.index');
   },
 
   showSearchButton: computed('currentRouteName', function() {

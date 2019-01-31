@@ -10,7 +10,7 @@ export default Mixin.create({
 
     if (!this.storage.connected) {
       this.controllerFor('application').set('attemptedTransition', transition);
-      this.transitionTo('welcome');
+      this.transitionTo('index');
     }
   }
 
