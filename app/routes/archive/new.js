@@ -11,7 +11,7 @@ function processQueryParams (bookmark, params) {
   if (params.url) {
     // url param is usually from the bookmarklet
     bookmark.url = params.url;
-    bookmark.description = params.description;
+    bookmark.description = params.description || '';
   } else if (params.description) {
     // Android puts the URL in the text param (which is mapped to the
     // description param), but also adds text to it sometimes (usually same as
