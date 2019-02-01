@@ -13,7 +13,8 @@ export default {
     index: {
       updated: 'modifié',
       you_have_not_stored_any_bookmarks_yet: 'Tu n\'as pas encore enregistré de favoris',
-      add_the_first_one: 'Ajouter le premier'
+      add_the_first_one: 'Ajouter le premier',
+      learn_more: 'En savoir plus sur cette application'
     },
     edit: {
       header: 'Modifier le favori',
@@ -42,7 +43,10 @@ export default {
       'search.placeholder': 'Chercher'
     }
   },
-  privacy: {
-    header: 'Politique de respect de la vie privée'
+  app_info: {
+    nav: {
+      about: 'App Info',
+      privacy:  'Vos données'
+    }
   }
 };

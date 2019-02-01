@@ -19,6 +19,7 @@ Router.map(function() {
     this.route('new', { queryParams: ['title', 'url'] });
   });
   this.route('privacy');
+  this.route('about');
 });
 
 export default Router;

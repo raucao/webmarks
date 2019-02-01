@@ -13,7 +13,8 @@ export default {
     index: {
       updated: 'aktualisiert',
       you_have_not_stored_any_bookmarks_yet: 'Du hast noch keine Web-Lesezeichen gespeichert.',
-      add_the_first_one: 'Füge das erste hinzu'
+      add_the_first_one: 'Füge das erste hinzu',
+      learn_more: 'Erfahre mehr über diese App'
     },
     edit: {
       header: 'Bookmark aktualisieren',
@@ -42,7 +43,10 @@ export default {
       'search.placeholder': 'Suche'
     }
   },
-  privacy: {
-    header: 'Datenschutzerklärung'
+  app_info: {
+    nav: {
+      about: 'App-Info',
+      privacy: 'Datenschutz'
+    }
   }
 };

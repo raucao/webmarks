@@ -3,7 +3,7 @@
     <h1>{{#link-to "index" class="pure-menu-heading"}}<img src="/icon_x128.png" alt="Webmarks">{{/link-to}}</h1>
   </header>
   <nav>
-    <ul>
+    <ul class="primary">
       <li id="nav-new">
         {{#link-to "archive.new" title=(t "links.add_new")}}{{icon-add}}{{/link-to}}
       </li>
@@ -12,6 +12,11 @@
           <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}>{{icon-search}}</a>
         </li>
       {{/if}}
+    </ul>
+    <ul class="secondary">
+      <li id="nav-info">
+        {{#link-to "about" title=(t "nav.app_info.about")}}{{icon-info}}{{/link-to}}
+      </li>
     </ul>
   </nav>
 </aside>

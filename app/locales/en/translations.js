@@ -13,7 +13,8 @@ export default {
     index: {
       updated: 'updated',
       you_have_not_stored_any_bookmarks_yet: 'You haven&#39;t saved any bookmarks yet.',
-      add_the_first_one: 'Add the first one'
+      add_the_first_one: 'Add the first one',
+      learn_more: 'Learn more about this app'
     },
     edit: {
       header: 'Update bookmark',
@@ -42,7 +43,10 @@ export default {
       'search.placeholder': 'Search'
     }
   },
-  privacy: {
-    header: 'Privacy policy'
+  app_info: {
+    nav: {
+      about: 'App Info',
+      privacy: 'Privacy Policy'
+    }
   }
 };

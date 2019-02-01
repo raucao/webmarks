@@ -61,4 +61,18 @@
       background-color: $darkRed;
     }
   }
+
+  &.button-naked {
+    background-color: transparent;
+    color: $linkColor;
+
+    &:hover, &:focus {
+      background: darken($bodyBgColor, 5%);
+    }
+
+    &:active {
+      background: $linkColor;
+      color: #fff;
+    }
+  }
 }

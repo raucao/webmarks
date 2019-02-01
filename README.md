@@ -3,7 +3,7 @@
 Webmarks is a bookmarking app, which lets you choose your server or provider
 for storing all data. It is a user-first, open-source alternative to
 proprietary, hosted bookmarking services like e.g. Delicious, Pinboard, et
-cetera.
+cetera. [Learn more](https://webmarks.5apps.com/about).
 
 Every contribution and all feedback are much appreciated and will be responded
 to timely. The rest of this README concerns only developers and potential
@@ -30,7 +30,9 @@ Translating the app to a new language is simple:
    instructions) and open it in a browser that is set to the language you
    added.
 
-## Prerequisites
+## Development
+
+### Prerequisites
 
 You will need the following things properly installed on your computer.
 
@@ -39,37 +41,37 @@ You will need the following things properly installed on your computer.
 * [Ember CLI](https://ember-cli.com/)
 * [Google Chrome](https://google.com/chrome/)
 
-## Installation
+### Installation
 
 * `git clone <repository-url>` this repository
 * change into the new directory
 * `npm install`
 
-## Running / Development
+### Running / Development
 
 * `npm start`
 * Visit the app at [http://localhost:4200](http://localhost:4200).
 * Visit the tests at [http://localhost:4200/tests](http://localhost:4200/tests).
 
-### Code Generators
+#### Code Generators
 
 Make use of the many generators for code, try `ember help generate` for more details
 
-### Running Tests
+#### Running Tests
 
 * `npm test`
-* `ember test --server`
+* `ember test --server` (recommended)
 
-### Linting
+#### Linting
 
 * `npm run lint:hbs`
 * `npm run lint:js`
 * `npm run lint:js -- --fix`
 
-### Building
+#### Building
 
-* `ember build` (development)
-* `ember build --environment production` (production)
+* `npm run build` (development)
+* `npm run build-prod` (production)
 
 ### Deploying
 
@@ -81,7 +83,7 @@ Deploy current production branch to [production](https://webmarks-dev.5apps.com)
 
     npm run deploy-prod
 
-## Further Reading / Useful Links
+### Further Reading / Useful Links
 
 * [remoteStorage](https://remotestorage.io/)
 * [remoteStorage.js API docs](https://remotestoragejs.readthedocs.io/)
