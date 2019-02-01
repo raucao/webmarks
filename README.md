@@ -10,6 +10,25 @@ to timely. The rest of this README concerns only developers and potential
 contributors. For general support requests, please [open an
 issue](https://github.com/skddc/webmarks/issues).
 
+## Translations
+
+The app is currently available in the following languages:
+
+* English
+* German
+
+Webmarks will use your browser language settings to determine which language is
+shown.
+
+Translating the app to a new language is simple:
+
+1. Copy a language folder in `app/locales/` to a new one, using the two-letter
+   ISO code of the language
+2. Edit `app/locales/[language]/translations.js`.
+3. If you want to test the translations, run the app locally (see below for
+   instructions) and open it in a browser that is set to the language you
+   added.
+
 ## Prerequisites
 
 You will need the following things properly installed on your computer.

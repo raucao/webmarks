@@ -1,11 +1,6 @@
 // Do not forget to import moment locale at ember-cli-build.js
 
 export default {
-  welcome_page: {
-    welcome_to_webmarks: 'Welcome to Webmarks!',
-    please_connect_your_remote_storage_first: '<p>With Webmarks, you can save and synchronize bookmarks in a storage of your choice.</p><p>Please connect your remote storage first.</p>',
-    upcoming_relase_note: '(This will not be necessary for the upcoming release version of Webmarks.)'
-  },
   bookmark: {
     new: {
       header: 'Add a new bookmark',
@@ -32,6 +27,9 @@ export default {
         delete: 'Remove',
         confirmDeletion: 'Delete forever?'
       }
+    },
+    saved: {
+      backToList: 'Back to list'
     }
   },
   links: {
