@@ -13,7 +13,6 @@ export default Component.extend({
 
   updateFilterText: observer('searchInput', function() {
     debounce(this, () => {
-      console.debug('filterText updated', this.searchInput);
       this.set('filterText', this.searchInput);
     }, 500);
   }),
