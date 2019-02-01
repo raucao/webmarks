@@ -27,6 +27,9 @@ export default {
         delete: 'Löschen',
         confirmDeletion: 'Für immer löschen?'
       }
+    },
+    saved: {
+      backToList: 'Zurück zur Übersicht'
     }
   },
   links: {
