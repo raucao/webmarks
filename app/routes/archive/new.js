@@ -39,7 +39,7 @@ export default Route.extend({
 
   model (params) {
     var bookmark = { isNew: true };
-    if (params.title || params.description) {
+    if (params.title || params.url || params.description) {
       processQueryParams(bookmark, params);
     }
     return Bookmark.create(bookmark);
