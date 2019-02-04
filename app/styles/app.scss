@@ -620,6 +620,45 @@ section#welcome {
 
     form {
       padding: 2rem $paddingHorizontal;
+
+      .control-group {
+        label {
+          position: relative;
+          padding: 0 0.5rem;
+        }
+
+        input[type=text] {
+          padding: 0.5rem;
+        }
+      }
+
+      .controls {
+        overflow: auto;
+
+        .button {
+          width: 100%;
+        }
+
+        .button-primary {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+  }
+
+  #bookmark-edit {
+    form {
+      .controls {
+        .button:nth-child(2) {
+          float: left;
+          width: 48%;
+        }
+
+        .button:nth-child(3) {
+          float: right;
+          width: 48%;
+        }
+      }
     }
   }
 
