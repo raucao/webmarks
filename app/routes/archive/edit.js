@@ -12,6 +12,10 @@ export default Route.extend({
   },
 
   setupController(controller, model) {
+    if (model.tags instanceof Array) {
+      model.set('tags', model.tags.join(', '));
+    }
+
     let tags = this.storage.getTagListCache();
     controller.set('availableTags', tags);
     // clone the bookmark for editing so it's only persisted when
