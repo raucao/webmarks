@@ -117,15 +117,25 @@ export default Service.extend(Evented, {
   },
 
   storeBookmark(item) {
-    return this.remoteStorage.bookmarks.archive.store(item).then((bookmark) => {
-      // Remove existing item from collection if exists
-      let oldItem = this.archiveBookmarks.findBy('id', bookmark.id);
-      if (oldItem) { this.archiveBookmarks.removeObject(oldItem); }
+    let oldId = null;
+    if (item.urlChanged) { oldId = item.id; }
 
-      // Add new item to collection
-      let newItem = Bookmark.create(bookmark);
-      this.archiveBookmarks.pushObject(newItem);
-    });
+    return this.remoteStorage.bookmarks.archive.store(item.serialize)
+      .then(bookmark => {
+        // Remove existing item from collection if exists
+        let oldItem = this.archiveBookmarks.findBy('id', bookmark.id) ||
+                      this.archiveBookmarks.findBy('id', oldId);
+        if (oldItem) { this.archiveBookmarks.removeObject(oldItem); }
+
+        // Add new item to collection
+        let newItem = Bookmark.create(bookmark);
+        this.archiveBookmarks.pushObject(newItem);
+      })
+      .then(() => {
+        // If the URL (and thus ID) was changed, delete the old document
+        return oldId ? this.remoteStorage.bookmarks.archive.remove(oldId)
+                     : Promise.resolve();
+      })
   },
 
   setupRemoteStorage() {

@@ -1,6 +1,7 @@
 import $ from 'jquery';
-import { isEmpty } from '@ember/utils';
 import Component from '@ember/component';
+import { observer } from '@ember/object';
+import { isEmpty } from '@ember/utils';
 
 export default Component.extend({
 
@@ -55,6 +56,10 @@ export default Component.extend({
     this.autofocusTitleField();
     this.autocompleteTags();
   },
+
+  onUrlChange: observer('bookmark.url', function() {
+    this.bookmark.set('urlChanged', true);
+  }),
 
   actions: {
 

@@ -12,6 +12,7 @@ export default EmberObject.extend({
   createdAt: null,
   updatedAt: null,
   isNew: false,
+  urlChanged: false,
 
   init() {
     this._super(...arguments);

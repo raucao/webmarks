@@ -22,12 +22,14 @@ export default Controller.extend({
   actions: {
 
     commit () {
-      this.storage.storeBookmark(this.get('model.serialize')).then(() => {
-        this.set('showConfirmation', true);
-      }).catch((error) => {
-        console.log('ERROR:');
-        console.log(error);
-      });
+      this.storage.storeBookmark(this.model)
+        .then(() => {
+          this.set('showConfirmation', true);
+        })
+        .catch(error => {
+          console.log('ERROR:');
+          console.log(error);
+        });
     },
 
     cancel () {
