@@ -37,6 +37,7 @@ module.exports = function(defaults) {
   app.import('vendor/es6-promise.auto.min.js');
   app.import('node_modules/moment/min/moment.min.js');
   app.import('node_modules/moment/locale/de.js');
+  app.import('node_modules/moment/locale/fr.js');
   app.import('vendor/jquery-ui/jquery-ui.min.js');
   app.import('vendor/jquery-ui/jquery-ui.min.css');
 
