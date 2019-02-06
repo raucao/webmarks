@@ -55,7 +55,7 @@
     "moment": "^2.18.1",
     "qunit-dom": "^0.8.0",
     "remotestorage-module-bookmarks": "github:skddc/remotestorage-module-bookmarks#feature/getall_max_age",
-    "remotestorage-widget": "github:remotestorage/remotestorage-widget#feature/modal_backdrop",
+    "remotestorage-widget": "1.4.0",
     "remotestoragejs": "1.2.1"
   },
   "engines": {
