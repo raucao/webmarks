@@ -213,12 +213,15 @@ export default Service.extend(Evented, {
       this.set('connecting', false);
       this.set('connected', true);
       this.trigger('connected');
+      this.trigger('connectionStateReady');
     });
 
     rs.on('not-connected', () => {
       console.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
+      this.trigger('not-connected');
+      this.trigger('connectionStateReady');
     });
 
     rs.on('disconnected', () => {
