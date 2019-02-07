@@ -18,6 +18,7 @@ Router.map(function() {
   this.route('bookmarks', function() {
     this.route('new', { queryParams: ['title', 'url'] });
   });
+  this.route('privacy');
 });
 
 export default Router;

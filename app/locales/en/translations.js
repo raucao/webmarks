@@ -41,5 +41,8 @@ export default {
     text_fields: {
       'search.placeholder': 'Search'
     }
+  },
+  privacy: {
+    header: 'Privacy policy'
   }
 };

@@ -4,6 +4,7 @@ import { computed } from '@ember/object';
 
 export default Controller.extend({
 
+  i18n: service(),
   storage: service(),
   showSearchOnSmallScreen: false,
 
@@ -18,6 +19,10 @@ export default Controller.extend({
 
   showSearchButton: computed('currentRouteName', function() {
     return this.currentRouteName === 'archive.index';
+  }),
+
+  currentLocale: computed('i18n.locale', function() {
+    return this.i18n.locale.substr(0, 2);
   }),
 
   isLargeScreen: computed(function() {
