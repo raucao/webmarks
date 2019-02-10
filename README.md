@@ -16,6 +16,7 @@ The app is currently available in the following languages:
 
 * English
 * German
+* French
 
 Webmarks will use your browser language settings to determine which language is
 shown.
