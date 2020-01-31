@@ -4,7 +4,8 @@
   "description": "remoteStorage-enabled bookmarking app",
   "repository": "https://github.com/skddc/webmarks",
   "license": "MIT",
-  "author": "",
+  "author": "Sebastian Kippe <sebastian@kip.pe>",
+  "private": true,
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -60,6 +61,6 @@
     "remotestoragejs": "1.2.3"
   },
   "engines": {
-    "node": "6.* || 8.* || >= 10.*"
+    "node": ">= 12.*"
   }
 }
