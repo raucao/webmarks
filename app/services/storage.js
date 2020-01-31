@@ -5,9 +5,9 @@ import { run } from '@ember/runloop';
 import { isEmpty, isPresent } from '@ember/utils';
 import config from 'webmarks/config/environment';
 import Bookmark from 'webmarks/models/bookmark';
-import RemoteStorage from 'npm:remotestoragejs';
-import Widget from 'npm:remotestorage-widget';
-import Bookmarks from 'npm:remotestorage-module-bookmarks';
+import RemoteStorage from 'remotestoragejs';
+import Widget from 'remotestorage-widget';
+import Bookmarks from 'remotestorage-module-bookmarks';
 
 export default Service.extend(Evented, {
 
@@ -139,7 +139,7 @@ export default Service.extend(Evented, {
   },
 
   setupRemoteStorage() {
-    const remoteStorage = new RemoteStorage({modules: [Bookmarks.default]});
+    const remoteStorage = new RemoteStorage({modules: [Bookmarks]});
     this.set('remoteStorage', remoteStorage);
 
     remoteStorage.access.claim('bookmarks', 'rw');

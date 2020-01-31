@@ -1,16 +1,13 @@
 <div id="content">
   {{#if showConfirmation}}
-    {{bookmark-saved}}
+    <BookmarkSaved />
   {{else}}
     <section id="bookmark-new">
       <header>
         <h2>{{t "bookmark.new.header"}}</h2>
       </header>
 
-      {{bookmark-form bookmark=model
-                      availableTags=availableTags
-                      commit=(action "commit")
-                      cancel=(action "cancel") }}
+      <BookmarkForm @bookmark={{model}} @availableTags={{availableTags}} @commit={{action "commit"}} @cancel={{action "cancel"}} />
     </section>
 
     {{#unless bookmarkletUsed}}
