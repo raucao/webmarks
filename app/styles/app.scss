@@ -49,7 +49,7 @@ a {
   }
 }
 
-body > .ember-view {
+.app-container {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -590,14 +590,12 @@ body.about {
 
 // Small screens
 
-@media screen and (max-width : 420px) {
+@media screen and (max-width : 600px) {
   $paddingHorizontal: 1rem;
   $navbarWidth: 3rem;
 
-  body > .ember-view {
+  .app-container {
     flex-direction: column;
-    // justify-content: flex-start;
-    // align-items: stretch;
   }
 
   aside {

@@ -1,32 +1,28 @@
 <section id="search" class={{if showSearchOnSmallScreen "visible" "hidden"}}>
-  {{bookmark-search filterText=filterText
-                    showSearch=showSearchOnSmallScreen
-                    autoFocusInput=isLargeScreen}}
+  <BookmarkSearch @filterText={{filterText}} @showSearch={{showSearchOnSmallScreen}} @autoFocusInput={{isLargeScreen}} />
 </section>
 <div id="content">
   {{#if model}}
     <ul class="bookmark-list">
       {{#if paginationActive}}
         {{#each paginatedContent as |bookmark|}}
-          {{bookmark-item item=bookmark
-                          paginationObserver=paginationObserver
-                          paginationItemObserved=paginationItemObserved }}
+          <BookmarkItem @item={{bookmark}} @paginationObserver={{paginationObserver}} @paginationItemObserved={{paginationItemObserved}} />
         {{/each}}
       {{else}}
         {{#each filteredContent as |bookmark|}}
-          {{bookmark-item item=bookmark}}
+          <BookmarkItem @item={{bookmark}} />
         {{/each}}
       {{/if}}
     </ul>
   {{else}}
     <section id="no-bookmarks">
       <div class="illustration">
-        {{illustration-empty}}
+        <IllustrationEmpty />
       </div>
       <div class="text">
         <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
-        <p>{{#link-to "archive.new" class="button button-secondary"}}{{t "bookmark.index.add_the_first_one"}}{{/link-to}}</p>
-        <p class="learn_more">{{#link-to "about" class="button button-naked"}}{{t "bookmark.index.learn_more"}}{{/link-to}}</p>
+        <p><LinkTo @route="archive.new" class="button button-secondary">{{t "bookmark.index.add_the_first_one"}}</LinkTo></p>
+        <p class="learn_more"><LinkTo @route="about" class="button button-naked">{{t "bookmark.index.learn_more"}}</LinkTo></p>
       </div>
     </section>
   {{/if}}

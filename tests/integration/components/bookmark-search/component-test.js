@@ -10,7 +10,7 @@ module('Integration | Component | bookmark search', function(hooks) {
     this.set('filterText', 'unhosted');
     await render(hbs`{{bookmark-search filterText=filterText}}`);
 
-    assert.equal(this.$('#search-input').val(), 'unhosted', 'pre-fills the input value when filterText is set');
+    assert.dom('#search-input').hasValue('unhosted', 'pre-fills the input value when filterText is set');
   });
 
   test('clear-search button', async function(assert) {

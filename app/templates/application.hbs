@@ -1,25 +1,27 @@
-<aside>
-  <header>
-    <h1>{{#link-to "index" class="pure-menu-heading"}}<img src="/icon_x128.png" alt="Webmarks">{{/link-to}}</h1>
-  </header>
-  <nav>
-    <ul class="primary">
-      <li id="nav-new">
-        {{#link-to "archive.new" title=(t "links.add_new")}}{{icon-add}}{{/link-to}}
-      </li>
-      {{#if showSearchButton}}
-        <li id="nav-search">
-          <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}>{{icon-search}}</a>
+<div class="app-container">
+  <aside>
+    <header>
+      <h1><LinkTo @route="index" class="pure-menu-heading"><img src="/icon_x128.png" alt="Webmarks"></LinkTo></h1>
+    </header>
+    <nav>
+      <ul class="primary">
+        <li id="nav-new">
+          <LinkTo @route="archive.new" @title={{t "links.add_new"}}><IconAdd /></LinkTo>
         </li>
-      {{/if}}
-    </ul>
-    <ul class="secondary">
-      <li id="nav-info">
-        {{#link-to "about" title=(t "nav.app_info.about")}}{{icon-info}}{{/link-to}}
-      </li>
-    </ul>
-  </nav>
-</aside>
-<main>
-  {{outlet}}
-</main>
+        {{#if showSearchButton}}
+          <li id="nav-search">
+            <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}><IconSearch /></a>
+          </li>
+        {{/if}}
+      </ul>
+      <ul class="secondary">
+        <li id="nav-info">
+          <LinkTo @route="about" @title={{t "app_info.nav.about"}}><IconInfo /></LinkTo>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <main>
+    {{outlet}}
+  </main>
+</div>
