@@ -16,10 +16,10 @@
     "start": "SW_DISABLED=true ember serve",
     "test": "SW_DISABLED=true ember test",
     "build": "SW_DISABLED=true ember build",
-    "build-prod": "ember build --environment production && npm run update-version-file",
-    "deploy": "npm run build-prod && bash scripts/deploy.sh",
-    "deploy-prod": "bash scripts/deploy.sh production",
-    "update-version-file": "bash scripts/update-version-file.sh"
+    "build-prod": "rm -rf release/* && ember build -prod --output-path release",
+    "version": "npm run build-prod && git add release/",
+    "deploy": "git push 5apps_staging master",
+    "deploy-prod": "git push 5apps master"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.1.0",
