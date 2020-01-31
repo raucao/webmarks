@@ -57,7 +57,7 @@
     "qunit-dom": "^0.8.0",
     "remotestorage-module-bookmarks": "github:skddc/remotestorage-module-bookmarks#feature/getall_max_age",
     "remotestorage-widget": "1.4.0",
-    "remotestoragejs": "1.2.2"
+    "remotestoragejs": "1.2.3"
   },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"
