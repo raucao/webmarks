@@ -26,12 +26,6 @@ module.exports = {
       ]
     },
     {
-      "moduleId": "webmarks/components/bookmark-saved/template",
-      "only": [
-        "no-curly-component-invocation"
-      ]
-    },
-    {
       "moduleId": "webmarks/components/bookmark-search/template",
       "only": [
         "no-action",
