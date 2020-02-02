@@ -1,6 +1,6 @@
 {
   "name": "webmarks",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "remoteStorage-enabled bookmarking app",
   "repository": "https://github.com/skddc/webmarks",
   "license": "MIT",
