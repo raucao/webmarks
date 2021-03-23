@@ -142,10 +142,10 @@ export default Service.extend(Evented, {
     const remoteStorage = new RemoteStorage({modules: [Bookmarks]});
     this.set('remoteStorage', remoteStorage);
 
-    remoteStorage.access.claim('bookmarks', 'rw');
-    remoteStorage.caching.enable('/bookmarks/archive/');
+    this.remoteStorage.access.claim('bookmarks', 'rw');
+    this.remoteStorage.caching.enable('/bookmarks/archive/');
 
-    remoteStorage.setApiKeys({
+    this.remoteStorage.setApiKeys({
       dropbox: config.dropboxAppKey,
       googledrive: config.gdriveClientId
     });
@@ -201,14 +201,14 @@ export default Service.extend(Evented, {
   },
 
   setupEventHandlers() {
-    let rs = this.remoteStorage;
+    console.debug('Setting up RS event handlers');
 
-    rs.on('ready', () => {
+    this.remoteStorage.on('ready', () => {
       console.debug('rs.on ready');
       // this.set('connecting', false);
     });
 
-    rs.on('connected', () => {
+    this.remoteStorage.on('connected', () => {
       console.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
@@ -216,7 +216,7 @@ export default Service.extend(Evented, {
       this.trigger('connectionStateReady');
     });
 
-    rs.on('not-connected', () => {
+    this.remoteStorage.on('not-connected', () => {
       console.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
@@ -224,7 +224,7 @@ export default Service.extend(Evented, {
       this.trigger('connectionStateReady');
     });
 
-    rs.on('disconnected', () => {
+    this.remoteStorage.on('disconnected', () => {
       console.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
@@ -235,13 +235,13 @@ export default Service.extend(Evented, {
       this.deleteTagListCache();
     });
 
-    rs.on('connecting', () => {
+    this.remoteStorage.on('connecting', () => {
       console.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
-    rs.on('authing', () => {
+    this.remoteStorage.on('authing', () => {
       console.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
