@@ -137,6 +137,7 @@ aside {
         display: flex;
         align-items: center;
         justify-content: center;
+        text-decoration: none;
         @include transition(all 0.1s linear);
 
         svg {
@@ -158,6 +159,8 @@ aside {
         }
 
         &.active {
+          font-size: 2rem;
+
           svg {
             path {
               fill: #ccc;

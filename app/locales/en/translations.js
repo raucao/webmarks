@@ -48,5 +48,9 @@ export default {
       about: 'App Info',
       privacy: 'Privacy Policy'
     }
+  },
+  folders: {
+    archive: 'Archive',
+    readlater: 'Saved for later'
   }
 };

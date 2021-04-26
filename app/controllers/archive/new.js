@@ -25,6 +25,7 @@ export default Controller.extend({
       this.storage.storeBookmark(this.model)
         .then(() => {
           this.set('showConfirmation', true);
+          // TODO add new tags to taglist cache
         })
         .catch(error => {
           console.log('ERROR:');

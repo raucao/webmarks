@@ -13,6 +13,18 @@
             <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}><IconSearch /></a>
           </li>
         {{/if}}
+        <li class="folder">
+          <LinkTo @route="archive.index" @title={{t "folders.archive"}}>📦</LinkTo>
+        </li>
+        <li class="folder">
+          <LinkTo @route="bookmarks" @title={{t "folders.readlater"}}>📌</LinkTo>
+        </li>
+        <li class="folder">
+          <LinkTo @route="bookmarks" @title="TODO user defined">📁</LinkTo>
+        </li>
+        <li class="folder">
+          <LinkTo @route="bookmarks" @title="TODO user defined">📂</LinkTo>
+        </li>
       </ul>
       <ul class="secondary">
         <li id="nav-info">
