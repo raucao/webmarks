@@ -14,11 +14,11 @@ export default Controller.extend({
   },
 
   handleStorageDisconnect: function() {
-    this.transitionToRoute('archive.index');
+    this.transitionToRoute('bookmarks.index');
   },
 
   showSearchButton: computed('router.currentRouteName', function() {
-    return this.router.currentRouteName === 'archive.index';
+    return this.router.currentRouteName === 'bookmarks.index';
   }),
 
   currentLocale: computed('i18n.locale', function() {

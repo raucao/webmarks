@@ -9,13 +9,13 @@ export default class Router extends EmberRouter {
 Router.map(function() {
   this.route('welcome');
 
-  this.route('archive', function() {
-    this.route('new', { queryParams: ['title', 'url', 'description'] });
+  this.route('bookmarks', function() {
+    this.route('new', { queryParams: [ 'title', 'url', 'description' ] });
     this.route('edit', { path: 'edit/:bookmark_id' });
     this.route('index', { path: '', queryParams: ['tags'] });
   });
 
-  this.route('bookmarks', function() {
+  this.route('archive', function() {
     this.route('new', { queryParams: ['title', 'url'] });
   });
   this.route('privacy');

@@ -1,7 +1,7 @@
-import ArchiveNewController from 'webmarks/controllers/archive/new';
+import BookmarksNewController from 'webmarks/controllers/bookmarks/new';
 import { inject as service } from '@ember/service';
 
-var ArchiveEditController = ArchiveNewController.extend({
+var BookmarksEditController = BookmarksNewController.extend({
 
   i18n: service(),
   showConfirmation: false,
@@ -25,4 +25,4 @@ var ArchiveEditController = ArchiveNewController.extend({
 
 });
 
-export default ArchiveEditController;
+export default BookmarksEditController;

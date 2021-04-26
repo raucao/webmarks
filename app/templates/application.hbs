@@ -6,7 +6,7 @@
     <nav>
       <ul class="primary">
         <li id="nav-new">
-          <LinkTo @route="archive.new" @title={{t "links.add_new"}}><IconAdd /></LinkTo>
+          <LinkTo @route="bookmarks.new" @title={{t "links.add_new"}}><IconAdd /></LinkTo>
         </li>
         {{#if showSearchButton}}
           <li id="nav-search">
@@ -14,16 +14,16 @@
           </li>
         {{/if}}
         <li class="folder">
-          <LinkTo @route="archive.index" @title={{t "folders.archive"}}>📦</LinkTo>
+          <LinkTo @route="bookmarks.index" @title={{t "folders.archive"}}>📦</LinkTo>
         </li>
         <li class="folder">
-          <LinkTo @route="bookmarks" @title={{t "folders.readlater"}}>📌</LinkTo>
+          <LinkTo @route="bookmarks.index" @title={{t "folders.readlater"}}>📌</LinkTo>
         </li>
         <li class="folder">
-          <LinkTo @route="bookmarks" @title="TODO user defined">📁</LinkTo>
+          <LinkTo @route="bookmarks.index" @title="TODO user defined">📁</LinkTo>
         </li>
         <li class="folder">
-          <LinkTo @route="bookmarks" @title="TODO user defined">📂</LinkTo>
+          <LinkTo @route="bookmarks.index" @title="TODO user defined">📂</LinkTo>
         </li>
       </ul>
       <ul class="secondary">

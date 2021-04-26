@@ -3,7 +3,7 @@ import Route from '@ember/routing/route';
 export default Route.extend({
 
   redirect: function() {
-    this.transitionTo('archive.index');
+    this.transitionTo('bookmarks.index');
   }
 
 });

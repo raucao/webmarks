@@ -144,6 +144,7 @@ export default Service.extend(Evented, {
 
     this.remoteStorage.access.claim('bookmarks', 'rw');
     this.remoteStorage.caching.enable('/bookmarks/archive/');
+    // TODO this.remoteStorage.caching.enable('/bookmarks/readlater/');
 
     this.remoteStorage.setApiKeys({
       dropbox: config.dropboxAppKey,

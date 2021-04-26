@@ -3,7 +3,7 @@ import Route from '@ember/routing/route';
 export default Route.extend({
 
   redirect() {
-    this.replaceWith('archive.index')
+    this.replaceWith('bookmarks.index')
   }
 
 });
