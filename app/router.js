@@ -12,7 +12,7 @@ Router.map(function() {
   this.route('bookmarks', function() {
     this.route('new', { queryParams: [ 'title', 'url', 'description' ] });
     this.route('edit', { path: 'edit/:bookmark_id' });
-    this.route('index', { path: '', queryParams: ['tags'] });
+    this.route('index', { path: '', queryParams: ['tags', 'folder'] });
   });
 
   this.route('archive', function() {

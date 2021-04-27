@@ -11,6 +11,10 @@ export default Controller.extend({
   storage: service(),
   application: controller(),
 
+  queryParams: ['tags', 'folder'],
+  tags: null,
+  folder: null,
+
   filterText: '',
   showSearchOnSmallScreen: alias('application.showSearchOnSmallScreen'),
   isLargeScreen: alias('application.isLargeScreen'),

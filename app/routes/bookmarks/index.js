@@ -1,5 +1,5 @@
 import { inject as service } from '@ember/service';
-import { isEmpty } from '@ember/utils';
+import { isEmpty, isPresent } from '@ember/utils';
 import Route from '@ember/routing/route';
 
 export default Route.extend({
@@ -7,7 +7,11 @@ export default Route.extend({
   storage: service(),
   i18n: service(),
 
-  model () {
+  model (params) {
+		if (isPresent(params.folder)) {
+			console.debug('folder:', params.folder);
+		}
+
     return this.storage.getBookmarks();
   },
 
@@ -16,7 +20,7 @@ export default Route.extend({
     this._super(controller, model)
   },
 
-  resetController: function(controller) {
+  resetController (controller) {
     if (isEmpty(controller.filterText)) {
       controller.set('showSearchOnSmallScreen', false);
     }
