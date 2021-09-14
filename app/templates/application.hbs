@@ -13,17 +13,13 @@
             <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}><IconSearch /></a>
           </li>
         {{/if}}
+      </ul>
+      <ul class="folders">
         <li class="folder">
           <LinkTo @route="bookmarks.index" @query={{hash folder="archive"}} @title={{t "folders.archive"}}>📦</LinkTo>
         </li>
         <li class="folder">
           <LinkTo @route="bookmarks.index" @query={{hash folder="readlater"}} @title={{t "folders.readlater"}}>📌</LinkTo>
-        </li>
-        <li class="folder">
-          <LinkTo @route="bookmarks.index" @query={{hash folder="custom-one"}} @title="TODO user defined">📁</LinkTo>
-        </li>
-        <li class="folder">
-          <LinkTo @route="bookmarks.index" @query={{hash folder="custom-two"}} @title="TODO user defined">📂</LinkTo>
         </li>
       </ul>
       <ul class="secondary">

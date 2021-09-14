@@ -109,16 +109,21 @@ aside {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     ul {
-      flex: 0;
-
       &.primary {
-        flex-basis: $navbarWidth*2;
+        flex: 0;
+        align-self: flex-start;
+      }
+
+      &.folders {
+        flex: 1;
+        align-self: stretch;
       }
 
       &.secondary {
+        flex: 0;
         align-self: flex-end;
       }
     }
@@ -159,7 +164,7 @@ aside {
         }
 
         &.active {
-          font-size: 2rem;
+          font-size: 1.75rem;
 
           svg {
             path {
@@ -636,25 +641,28 @@ body.about {
     }
 
     nav {
+      flex: 1;
       flex-direction: row;
 
       ul {
         &.primary {
-          flex-basis: $navbarWidth*2;
-          align-self: flex-end;
+          flex: 0;
           order: 2;
+          align-self: flex-end;
+        }
 
-          li {
-            float: right;
-          }
+        &.folders {
+          flex: 1;
+          order: 1;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
         }
 
         &.secondary {
-          order: 1;
-
-          li {
-            display: none;
-          }
+          display: none;
         }
       }
 
