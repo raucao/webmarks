@@ -2,7 +2,7 @@
   <BookmarkSearch @filterText={{filterText}} @showSearch={{showSearchOnSmallScreen}} @autoFocusInput={{isLargeScreen}} />
 </section>
 <div id="content">
-  {{#if model}}
+  {{#if bookmarks}}
     <ul class="bookmark-list">
       {{#if paginationActive}}
         {{#each paginatedContent as |bookmark|}}

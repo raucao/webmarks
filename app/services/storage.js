@@ -32,21 +32,6 @@ export default Service.extend(Evented, {
     }
   },
 
-  async getBookmarks(folderName='archive') {
-    let bookmarks = this.bookmarksLoaded.filterBy('folderName', folderName);
-
-    if (isPresent(bookmarks)) {
-      return bookmarks;
-    } else {
-      return this.loadBookmarks(folderName);
-    }
-  },
-
-  async getBookmark(folderName='archive', id) {
-    const bookmarks = await this.getBookmarks(folderName);
-    return bookmarks.findBy('id', id);
-  },
-
   /**
    * Find a bookmark in any folder by ID
    */
@@ -71,6 +56,9 @@ export default Service.extend(Evented, {
    */
   async loadBookmarks(folderName) {
     console.debug('Loading bookmarks in folder', folderName);
+    let bookmarks = this.bookmarksLoaded.filterBy('folderName', folderName);
+    if (isPresent(bookmarks)) return bookmarks;
+
     return this.fetchBookmarks(folderName).then(bookmarks => {
       bookmarks.forEach(bookmark => {
         if (isEmpty(bookmark.title) || isEmpty(bookmark.url)) {
@@ -164,10 +152,10 @@ export default Service.extend(Evented, {
     this.remoteStorage.access.claim('bookmarks', 'rw');
     this.remoteStorage.caching.enable('/bookmarks/');
 
-    this.remoteStorage.setApiKeys({
-      dropbox: config.dropboxAppKey,
-      googledrive: config.gdriveClientId
-    });
+    // this.remoteStorage.setApiKeys({
+    //   dropbox: config.dropboxAppKey,
+    //   googledrive: config.gdriveClientId
+    // });
   },
 
   setupConnectWidget() {
@@ -186,6 +174,7 @@ export default Service.extend(Evented, {
   setupRemoteChangeHandler() {
     this.remoteStorage.bookmarks.client.scope('').on('change', (event) => {
       run(() => {
+        console.log(`${event.origin} change for ${event.path}`);
         if (!event.origin.match(/remote/)) { return; }
 
         const folderName = event.path.match('/bookmarks/(.+)/')[1];

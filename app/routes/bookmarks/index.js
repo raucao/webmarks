@@ -13,17 +13,16 @@ export default Route.extend({
     }
   },
 
-  model (params) {
+  async model (params) {
     if (isEmpty(params.folder)) {
       this.transitionTo('bookmarks.index', { queryParams: { folder: 'archive' } });
-    } else {
-      return this.storage.getBookmarks(params.folder);
     }
+    await this.storage.loadBookmarks(params.folder);
   },
 
   setupController (controller, model) {
-    controller.setInitialPaginationItemCount();
     this._super(controller, model)
+    controller.setInitialPaginationItemCount();
   },
 
   resetController (controller) {
