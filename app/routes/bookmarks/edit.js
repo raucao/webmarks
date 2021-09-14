@@ -1,5 +1,6 @@
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
+import { isPresent } from '@ember/utils';
 import Bookmark from 'webmarks/models/bookmark';
 
 export default Route.extend({
@@ -7,8 +8,22 @@ export default Route.extend({
   storage: service(),
   i18n: service(),
 
-  model(params) {
-    return this.storage.getBookmark(params.bookmark_id);
+  async model(params) {
+    let bookmark = this.storage.findBookmark(params.bookmark_id);
+
+    if (isPresent(bookmark)) {
+      return bookmark;
+    } else {
+      await this.storage.loadAllBookmarks();
+      let bookmark = this.storage.findBookmark(params.bookmark_id);
+
+      if (isPresent(bookmark)) {
+        return bookmark;
+      } else {
+        console.warning('No bookmark found for ID', params.bookmark_id);
+        this.transitionTo('index');
+      }
+    }
   },
 
   setupController(controller, model) {

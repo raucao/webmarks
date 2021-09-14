@@ -1,5 +1,5 @@
 import { inject as service } from '@ember/service';
-import { isEmpty, isPresent } from '@ember/utils';
+import { isEmpty } from '@ember/utils';
 import Route from '@ember/routing/route';
 
 export default Route.extend({
@@ -7,12 +7,18 @@ export default Route.extend({
   storage: service(),
   i18n: service(),
 
-  model (params) {
-		if (isPresent(params.folder)) {
-			console.debug('folder:', params.folder);
-		}
+  queryParams: {
+    folder: {
+      refreshModel: true
+    }
+  },
 
-    return this.storage.getBookmarks();
+  model (params) {
+    if (isEmpty(params.folder)) {
+      this.transitionTo('bookmarks.index', { queryParams: { folder: 'archive' } });
+    } else {
+      return this.storage.getBookmarks(params.folder);
+    }
   },
 
   setupController (controller, model) {

@@ -9,10 +9,12 @@ export default EmberObject.extend({
   title: '',
   description: '',
   tags: null,
+  unread: null,
   createdAt: null,
   updatedAt: null,
   isNew: false,
   urlChanged: false,
+  folderName: null,
 
   init() {
     this._super(...arguments);
@@ -32,13 +34,17 @@ export default EmberObject.extend({
     return a.hostname;
   }),
 
-  serialize: computed('url', 'title', 'description', 'tags', 'createdAt', function() {
-    var serialized = this.getProperties('url', 'title', 'description');
-    var tags = this.tags || [];
+  serialize: computed('url', 'title', 'description', 'tags', 'createdAt', 'unread', function() {
+    const serialized = this.getProperties('url', 'title', 'description');
+    let tags = this.tags || [];
 
     var createdAt = this.createdAt;
     if (createdAt !== null) {
       serialized.createdAt = createdAt;
+    }
+
+    if (this.unread !== null) {
+      serialized.unread = this.unread;
     }
 
     if (tags && tags.length > 0) {

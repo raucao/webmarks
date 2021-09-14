@@ -11,7 +11,7 @@ var BookmarksEditController = BookmarksNewController.extend({
     remove: function(item) {
       if (!confirm(this.i18n.t('bookmark.edit.form.confirmDeletion'))) { return false; }
 
-      this.storage.removeBookmark(item.id)
+      this.storage.removeBookmark(item)
         .then(() => {
           this.set('showConfirmation', true);
         })

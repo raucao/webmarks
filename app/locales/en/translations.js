@@ -23,6 +23,7 @@ export default {
         url: 'URL',
         description: 'Description',
         tags: 'Tags',
+        saveForLater: 'Save for later (mark unread)',
         save: 'Save',
         cancel: 'Cancel',
         delete: 'Remove',

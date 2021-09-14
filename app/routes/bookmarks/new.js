@@ -37,7 +37,7 @@ export default Route.extend({
   i18n: service(),
 
   model (params) {
-    var bookmark = { isNew: true };
+    const bookmark = { isNew: true, saveForLater: false };
     if (params.title || params.url || params.description) {
       processQueryParams(bookmark, params);
     }
@@ -49,14 +49,14 @@ export default Route.extend({
       controller.set('bookmarkletUsed', true);
     }
 
-    let tags = this.storage.getTagListCache();
+    const tags = this.storage.getTagListCache();
     controller.set('availableTags', tags);
 
     this._super(controller, bookmark);
   },
 
   resetController (controller) {
-    let queryParams = controller.queryParams;
+    const queryParams = controller.queryParams;
     queryParams.forEach(param => controller.set(param, null));
     controller.set('showConfirmation', false);
   }

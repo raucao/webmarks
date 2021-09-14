@@ -34,7 +34,7 @@ export default Controller.extend({
     },
 
     cancel () {
-      this.transitionToRoute('index');
+      window.history.back();
     }
 
   }

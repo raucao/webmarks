@@ -426,7 +426,7 @@ section#no-bookmarks {
       position: relative;
       margin-bottom: 1.5rem;
 
-      label {
+      label:not(.checkbox) {
         display: block;
         width: 7rem;
         position: absolute;
@@ -438,6 +438,15 @@ section#no-bookmarks {
         color: #888;
         text-transform: uppercase;
         // background: #ccc;
+      }
+
+      label.checkbox {
+        font-size: 0.8rem;
+      }
+
+      input[type=checkbox] {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
       }
 
       input[type=text] {
@@ -728,7 +737,7 @@ body.about {
       padding: 2rem $paddingHorizontal;
 
       .control-group {
-        label {
+        label:not(.checkbox) {
           position: relative;
           padding: 0 0.5rem;
         }
