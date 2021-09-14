@@ -1,6 +1,6 @@
 <div id="content">
   {{#if showConfirmation}}
-    <BookmarkSaved />
+    <BookmarkSaved @folderName={{folderName}} />
   {{else}}
     <section id="bookmark-new">
       <header>

@@ -1,4 +1,3 @@
-import { Promise } from 'rsvp';
 import Service from '@ember/service';
 import Evented from '@ember/object/evented';
 import { run } from '@ember/runloop';
@@ -129,7 +128,7 @@ export default Service.extend(Evented, {
     }
 
     return folder.store(item.serialize)
-      .then(bookmark => {
+      .then(async (bookmark) => {
         // Remove existing item from collection if exists
         const oldItem = this.bookmarksLoaded.findBy('id', bookmark.id) ||
                         this.bookmarksLoaded.findBy('id', oldId);
@@ -141,8 +140,12 @@ export default Service.extend(Evented, {
         this.bookmarksLoaded.pushObject(newItem);
 
         // If the URL (and thus ID) was changed, delete the old document
-        return oldId ? folder.remove(oldId) : Promise.resolve();
-      })
+        if (oldId) {
+          await folder.remove(oldId);
+        }
+
+        return newItem;
+      });
   },
 
   setupRemoteStorage() {

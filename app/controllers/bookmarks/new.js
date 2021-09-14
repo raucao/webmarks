@@ -12,6 +12,7 @@ export default Controller.extend({
   url: null,
   description: null,
   showConfirmation: false,
+  folderName: null,
 
   bookmarkletUsed: false,
 
@@ -23,8 +24,9 @@ export default Controller.extend({
 
     commit () {
       this.storage.storeBookmark(this.model)
-        .then(() => {
+        .then(bookmark => {
           this.set('showConfirmation', true);
+          this.set('folderName', bookmark.folderName);
           // TODO add new tags to taglist cache
         })
         .catch(error => {

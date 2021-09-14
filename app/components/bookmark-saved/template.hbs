@@ -5,6 +5,7 @@
   </svg>
   <div class="controls">
     <LinkTo @route="bookmarks.index"
+            @query={{hash folder=folderName}}
             @replace={{true}}
             class="button button-secondary">
       {{t "bookmark.saved.backToList"}}
