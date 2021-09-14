@@ -13,10 +13,13 @@ export default Route.extend({
     }
   },
 
-  async model (params) {
-    if (isEmpty(params.folder)) {
-      this.transitionTo('bookmarks.index', { queryParams: { folder: 'archive' } });
+  async beforeModel (transition) {
+    if (isEmpty(transition.to.queryParams.folder)) {
+      await this.transitionTo('bookmarks.index', { queryParams: { folder: 'archive' } });
     }
+  },
+
+  async model (params) {
     await this.storage.loadBookmarks(params.folder);
   },
 
