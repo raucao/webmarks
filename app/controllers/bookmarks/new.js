@@ -23,16 +23,15 @@ export default Controller.extend({
   actions: {
 
     commit () {
-      this.storage.storeBookmark(this.model)
+      const commitMethod = this.model.markAsRead ? 'archiveBookmark' : 'storeBookmark';
+
+      this.storage[commitMethod](this.model)
         .then(bookmark => {
           this.set('showConfirmation', true);
           this.set('folderName', bookmark.folderName);
           // TODO add new tags to taglist cache
         })
-        .catch(error => {
-          console.log('ERROR:');
-          console.log(error);
-        });
+        .catch(error => { console.log('ERROR:', error); });
     },
 
     cancel () {

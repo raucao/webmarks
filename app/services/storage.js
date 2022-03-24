@@ -76,7 +76,7 @@ export default Service.extend(Evented, {
         });
 
         if (typeof bookmark.unread !== 'undefined') {
-          item.unread = bookmark.unread;
+          item.set('unread', bookmark.unread);
         }
 
         const oldItem = this.bookmarksLoaded.findBy('id', item.id);
@@ -106,7 +106,7 @@ export default Service.extend(Evented, {
   /**
    * Remove a bookmark from persistent storage and loaded collection
    */
-  removeBookmark(bookmark) {
+  removeBookmark (bookmark) {
     const folder = this.remoteStorage.bookmarks.openFolder(bookmark.folderName);
 
     return folder.remove(bookmark.id).then(() => {
@@ -116,12 +116,12 @@ export default Service.extend(Evented, {
     });
   },
 
-  storeBookmark(item) {
+  storeBookmark (item) {
     const oldId = item.urlChanged ? item.id : null;
 
     let folder;
     if (item.saveForLater || item.unread) {
-      item.unread = true;
+      item.set('unread', true);
       folder = this.remoteStorage.bookmarks.openFolder('readlater');
     } else {
       folder = this.remoteStorage.bookmarks.openFolder('archive');
@@ -143,6 +143,24 @@ export default Service.extend(Evented, {
         if (oldId) {
           await folder.remove(oldId);
         }
+
+        return newItem;
+      });
+  },
+
+  async archiveBookmark (item) {
+    item.set('unread', undefined);
+    const folder = this.remoteStorage.bookmarks.openFolder('archive');
+
+    return folder.store(item.serialize)
+      .then(async (bookmark) => {
+        // Remove the item from the readlater folder and collection
+        await this.removeBookmark(item);
+
+        // Add new item to collection
+        const newItem = Bookmark.create(bookmark);
+        newItem.set('folderName', folder.name);
+        this.bookmarksLoaded.pushObject(newItem);
 
         return newItem;
       });

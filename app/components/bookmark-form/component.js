@@ -7,7 +7,7 @@ export default Component.extend({
 
   autofocusTitleField: function() {
     if (isEmpty(this.get('bookmark.title'))) {
-      this.$('input#title').focus();
+      this.element.querySelector('input#title').focus();
     }
   },
 
@@ -38,7 +38,7 @@ export default Component.extend({
       focus: function() {
         return false;
       },
-      select: function(event, ui) {
+      select: function(_event, ui) {
         let terms;
         terms = split(this.value);
         terms.pop();
@@ -63,15 +63,15 @@ export default Component.extend({
 
   actions: {
 
-    commit() {
+    commit () {
       this.commit();
     },
 
-    cancel() {
+    cancel () {
       this.cancel();
     },
 
-    remove(bookmark) {
+    remove (bookmark) {
       this.remove(bookmark);
     }
 

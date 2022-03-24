@@ -23,7 +23,6 @@ export default {
         url: 'URL',
         description: 'Description',
         tags: 'Tags',
-        saveForLater: 'TODO translate',
         save: 'Enregistrer',
         cancel: 'Annuler',
         delete: 'Supprimer',
