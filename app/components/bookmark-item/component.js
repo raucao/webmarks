@@ -1,9 +1,12 @@
 import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 
 export default Component.extend({
 
   tagName: 'li',
   classNames: ['bookmarks'],
+
+  storage: service(),
 
   didInsertElement() {
     this._super(...arguments);
@@ -14,5 +17,17 @@ export default Component.extend({
       this.set('paginationItemObserved', domElement);
     }
   },
+
+  actions: {
+
+    markAsRead () {
+      this.item.markAsRead = true;
+
+      this.storage.archiveBookmark(this.item).then(() => {
+        // TODO Show some success indicator
+      });
+    }
+
+  }
 
 });
