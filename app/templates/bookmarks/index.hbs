@@ -1,15 +1,15 @@
-<section id="search" class={{if showSearchOnSmallScreen "visible" "hidden"}}>
-  <BookmarkSearch @filterText={{filterText}} @showSearch={{showSearchOnSmallScreen}} @autoFocusInput={{isLargeScreen}} />
+<section id="search" class={{if this.showSearchOnSmallScreen "visible" "hidden"}}>
+  <BookmarkSearch @filterText={{this.filterText}} @showSearch={{this.showSearchOnSmallScreen}} @autoFocusInput={{this.isLargeScreen}} />
 </section>
 <div id="content">
-  {{#if bookmarks}}
+  {{#if this.bookmarks}}
     <ul class="bookmark-list">
-      {{#if paginationActive}}
-        {{#each paginatedContent as |bookmark|}}
-          <BookmarkItem @item={{bookmark}} @paginationObserver={{paginationObserver}} @paginationItemObserved={{paginationItemObserved}} />
+      {{#if this.paginationActive}}
+        {{#each this.paginatedContent as |bookmark|}}
+          <BookmarkItem @item={{bookmark}} @paginationObserver={{this.paginationObserver}} @paginationItemObserved={{this.paginationItemObserved}} />
         {{/each}}
       {{else}}
-        {{#each filteredContent as |bookmark|}}
+        {{#each this.filteredContent as |bookmark|}}
           <BookmarkItem @item={{bookmark}} />
         {{/each}}
       {{/if}}

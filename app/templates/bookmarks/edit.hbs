@@ -7,7 +7,11 @@
         <h2>{{t "bookmark.edit.header"}}</h2>
       </header>
 
-      <BookmarkForm @bookmark={{this.model}} @availableTags={{availableTags}} @commit={{action "commit"}} @cancel={{action "cancel"}} @remove={{action "remove"}} />
+      <BookmarkForm @bookmark={{this.model}}
+                    @availableTags={{this.availableTags}}
+                    @commit={{action "commit"}}
+                    @cancel={{action "cancel"}}
+                    @remove={{action "remove"}} />
     </section>
   {{/if}}
 </div>

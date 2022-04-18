@@ -7,7 +7,7 @@ import config from 'webmarks/config/environment';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'remotestoragejs';
 import Widget from 'remotestorage-widget';
-import Bookmarks from 'remotestorage-module-bookmarks';
+import Bookmarks from '@remotestorage/module-bookmarks';
 
 export default Service.extend(Evented, {
 
@@ -195,7 +195,7 @@ export default Service.extend(Evented, {
   setupRemoteChangeHandler() {
     this.remoteStorage.bookmarks.client.scope('').on('change', (event) => {
       run(() => {
-        console.log(`${event.origin} change for ${event.path}`);
+        console.debug(`${event.origin} change for ${event.path}`);
         if (!event.origin.match(/remote/)) { return; }
 
         const folderName = event.path.match('/bookmarks/(.+)/')[1];
