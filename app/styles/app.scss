@@ -646,9 +646,11 @@ body.about {
 
       ul {
         &.primary {
-          flex: 0;
+          flex: 0 6rem;
           order: 2;
           align-self: flex-end;
+          display: flex;
+          justify-content: flex-end;
         }
 
         &.folders {
@@ -669,6 +671,11 @@ body.about {
       li {
         &#nav-search {
           display: inline-block;
+          order: 1;
+        }
+
+        &#nav-new {
+          order: 2;
         }
 
         a {
