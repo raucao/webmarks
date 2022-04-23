@@ -22,7 +22,7 @@ export default Controller.extend({
       this.attemptedTransition.retry();
       this.set('attemptedTransition', null);
     } else {
-      this.transitionToRoute('archive.index');
+      this.transitionToRoute('bookmarks.index');
     }
   }
 

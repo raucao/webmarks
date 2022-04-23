@@ -6,13 +6,21 @@
     <nav>
       <ul class="primary">
         <li id="nav-new">
-          <LinkTo @route="archive.new" @title={{t "links.add_new"}}><IconAdd /></LinkTo>
+          <LinkTo @route="bookmarks.new" @title={{t "links.add_new"}}><IconAdd /></LinkTo>
         </li>
         {{#if showSearchButton}}
           <li id="nav-search">
             <a {{action "toggleSearch"}} role="button" class={{if showSearchOnSmallScreen "active"}}><IconSearch /></a>
           </li>
         {{/if}}
+      </ul>
+      <ul class="folders">
+        <li class="folder">
+          <LinkTo @route="bookmarks.index" @query={{hash folder="archive"}} @title={{t "folders.archive"}}>📦</LinkTo>
+        </li>
+        <li class="folder">
+          <LinkTo @route="bookmarks.index" @query={{hash folder="readlater"}} @title={{t "folders.readlater"}}>📌</LinkTo>
+        </li>
       </ul>
       <ul class="secondary">
         <li id="nav-info">

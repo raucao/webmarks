@@ -1,0 +1,29 @@
+<section id="search" class={{if this.showSearchOnSmallScreen "visible" "hidden"}}>
+  <BookmarkSearch @filterText={{this.filterText}} @showSearch={{this.showSearchOnSmallScreen}} @autoFocusInput={{this.isLargeScreen}} />
+</section>
+<div id="content">
+  {{#if this.bookmarks}}
+    <ul class="bookmark-list">
+      {{#if this.paginationActive}}
+        {{#each this.paginatedContent as |bookmark|}}
+          <BookmarkItem @item={{bookmark}} @paginationObserver={{this.paginationObserver}} @paginationItemObserved={{this.paginationItemObserved}} />
+        {{/each}}
+      {{else}}
+        {{#each this.filteredContent as |bookmark|}}
+          <BookmarkItem @item={{bookmark}} />
+        {{/each}}
+      {{/if}}
+    </ul>
+  {{else}}
+    <section id="no-bookmarks">
+      <div class="illustration">
+        <IllustrationEmpty />
+      </div>
+      <div class="text">
+        <p>{{t "bookmark.index.you_have_not_stored_any_bookmarks_yet"}}</p>
+        <p><LinkTo @route="bookmarks.new" class="button button-secondary">{{t "bookmark.index.add_the_first_one"}}</LinkTo></p>
+        <p class="learn_more"><LinkTo @route="about" class="button button-naked">{{t "bookmark.index.learn_more"}}</LinkTo></p>
+      </div>
+    </section>
+  {{/if}}
+</div>

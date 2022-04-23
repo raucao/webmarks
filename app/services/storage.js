@@ -1,13 +1,13 @@
-import { Promise } from 'rsvp';
 import Service from '@ember/service';
 import Evented from '@ember/object/evented';
 import { run } from '@ember/runloop';
 import { isEmpty, isPresent } from '@ember/utils';
+import { A } from '@ember/array';
 import config from 'webmarks/config/environment';
 import Bookmark from 'webmarks/models/bookmark';
 import RemoteStorage from 'remotestoragejs';
 import Widget from 'remotestorage-widget';
-import Bookmarks from 'remotestorage-module-bookmarks';
+import Bookmarks from '@remotestorage/module-bookmarks';
 
 export default Service.extend(Evented, {
 
@@ -15,44 +15,27 @@ export default Service.extend(Evented, {
   widget: null,
   connecting: true,
   connected: false,
-  archiveBookmarks: null,
-  bookmarksLoaded: false,
+  bookmarksLoaded: null,
   tags: null,
 
   init() {
     this._super(...arguments);
 
-    this.set('archiveBookmarks', []);
+    this.set('bookmarksLoaded', A([]));
 
     if (config.environment !== 'test') {
       this.setupRemoteStorage();
       this.setupConnectWidget();
       this.setupEventHandlers();
+      this.setupRemoteChangeHandler();
     }
   },
 
-  getBookmarks() {
-    return new Promise((resolve, reject) => {
-      if (this.bookmarksLoaded) {
-        resolve(this.archiveBookmarks);
-      } else {
-        this.loadBookmarks().then((bookmarks) => {
-          resolve(bookmarks);
-        }).catch(reject);
-      }
-    });
-  },
-
-  getBookmark(id) {
-    return new Promise((resolve, reject) => {
-      if (this.bookmarksLoaded) {
-        resolve(this.archiveBookmarks.findBy('id', id));
-      } else {
-        this.loadBookmarks().then((bookmarks) => {
-          resolve(bookmarks.findBy('id', id));
-        }).catch(reject);
-      }
-    });
+  /**
+   * Find a bookmark in any folder by ID
+   */
+  findBookmark (id) {
+    return this.bookmarksLoaded.findBy('id', id);
   },
 
   /**
@@ -60,95 +43,140 @@ export default Service.extend(Evented, {
    *
    * @protected
    */
-  fetchBookmarks() {
-    let archive = this.remoteStorage.bookmarks.archive;
+  async fetchBookmarks(folderName='archive') {
+    const folder = this.remoteStorage.bookmarks.openFolder(folderName);
 
-    return new Promise((resolve/*, reject */) => {
-      archive.getAll(false).then(resolve);
-      // TODO add sync error handling
-    });
+    // TODO add sync error handling
+    return folder.getAll(false);
   },
 
   /**
-   * Load all bookmarks into archiveBookmarks collection as model instances
-   *
-   * @protected
+   * Load bookmarks into bookmarksLoaded collection as model instances
    */
-  loadBookmarks() {
-    return this.fetchBookmarks().then((bookmarks) => {
-      let archiveBookmarks = this.archiveBookmarks;
+  async loadBookmarks(folderName) {
+    console.debug('Loading bookmarks in folder', folderName);
+    let bookmarks = this.bookmarksLoaded.filterBy('folderName', folderName);
+    if (isPresent(bookmarks)) return bookmarks;
 
-      bookmarks.forEach((bookmark) => {
+    return this.fetchBookmarks(folderName).then(bookmarks => {
+      bookmarks.forEach(bookmark => {
         if (isEmpty(bookmark.title) || isEmpty(bookmark.url)) {
           console.warn('Encountered an invalid bookmark object', bookmark);
           return;
         }
 
-        let item = Bookmark.create({
+        const item = Bookmark.create({
           id: bookmark.id,
           url: bookmark.url,
           title: bookmark.title,
           description: bookmark.description,
           tags: bookmark.tags,
-          createdAt: bookmark.createdAt
+          createdAt: bookmark.createdAt,
+          folderName: folderName
         });
 
-        let oldItem = archiveBookmarks.findBy('id', item.id);
-        if (oldItem) {
-          archiveBookmarks.removeObject(oldItem);
+        if (typeof bookmark.unread !== 'undefined') {
+          item.set('unread', bookmark.unread);
         }
 
-        archiveBookmarks.pushObject(item);
+        const oldItem = this.bookmarksLoaded.findBy('id', item.id);
+        if (oldItem) {
+          this.bookmarksLoaded.removeObject(oldItem);
+        }
+
+        this.bookmarksLoaded.pushObject(item);
       });
-      this.set('bookmarksLoaded', true);
-      this.createTagListCache();
-      this.setupChangeHandler();
 
-      return archiveBookmarks;
+      if (bookmarks.length !== 0) { this.createTagListCache(); }
+
+      return this.bookmarksLoaded.filterBy('folderName', folderName);
     });
   },
 
-  removeBookmark(id) {
-    let bookmark = this.archiveBookmarks.findBy('id', id);
+  /**
+   * Load bookmarks from all folders into bookmarksLoaded collections
+   */
+  async loadAllBookmarks () {
+    // TODO look up folder names
+    await this.loadBookmarks('archive');
+    await this.loadBookmarks('readlater');
+    return;
+  },
 
-    return this.remoteStorage.bookmarks.archive.remove(id).then(() => {
-      this.archiveBookmarks.removeObject(bookmark);
+  /**
+   * Remove a bookmark from persistent storage and loaded collection
+   */
+  removeBookmark (bookmark) {
+    const folder = this.remoteStorage.bookmarks.openFolder(bookmark.folderName);
+
+    return folder.remove(bookmark.id).then(() => {
+      console.debug('Deleted bookmark from storage:', bookmark.id);
+      const item = this.bookmarksLoaded.findBy('id', bookmark.id);
+      this.bookmarksLoaded.removeObject(item);
     });
   },
 
-  storeBookmark(item) {
-    let oldId = null;
-    if (item.urlChanged) { oldId = item.id; }
+  storeBookmark (item) {
+    const oldId = item.urlChanged ? item.id : null;
 
-    return this.remoteStorage.bookmarks.archive.store(item.serialize)
-      .then(bookmark => {
+    let folder;
+    if (item.saveForLater || item.unread) {
+      item.set('unread', true);
+      folder = this.remoteStorage.bookmarks.openFolder('readlater');
+    } else {
+      folder = this.remoteStorage.bookmarks.openFolder('archive');
+    }
+
+    return folder.store(item.serialize)
+      .then(async (bookmark) => {
         // Remove existing item from collection if exists
-        let oldItem = this.archiveBookmarks.findBy('id', bookmark.id) ||
-                      this.archiveBookmarks.findBy('id', oldId);
-        if (oldItem) { this.archiveBookmarks.removeObject(oldItem); }
+        const oldItem = this.bookmarksLoaded.findBy('id', bookmark.id) ||
+                        this.bookmarksLoaded.findBy('id', oldId);
+        if (oldItem) { this.bookmarksLoaded.removeObject(oldItem); }
 
         // Add new item to collection
-        let newItem = Bookmark.create(bookmark);
-        this.archiveBookmarks.pushObject(newItem);
-      })
-      .then(() => {
+        const newItem = Bookmark.create(bookmark);
+        newItem.set('folderName', folder.name);
+        this.bookmarksLoaded.pushObject(newItem);
+
         // If the URL (and thus ID) was changed, delete the old document
-        return oldId ? this.remoteStorage.bookmarks.archive.remove(oldId)
-                     : Promise.resolve();
-      })
+        if (oldId) {
+          await folder.remove(oldId);
+        }
+
+        return newItem;
+      });
+  },
+
+  async archiveBookmark (item) {
+    item.set('unread', undefined);
+    const folder = this.remoteStorage.bookmarks.openFolder('archive');
+
+    return folder.store(item.serialize)
+      .then(async (bookmark) => {
+        // Remove the item from the readlater folder and collection
+        await this.removeBookmark(item);
+
+        // Add new item to collection
+        const newItem = Bookmark.create(bookmark);
+        newItem.set('folderName', folder.name);
+        this.bookmarksLoaded.pushObject(newItem);
+
+        return newItem;
+      });
   },
 
   setupRemoteStorage() {
     const remoteStorage = new RemoteStorage({modules: [Bookmarks]});
     this.set('remoteStorage', remoteStorage);
 
-    remoteStorage.access.claim('bookmarks', 'rw');
-    remoteStorage.caching.enable('/bookmarks/archive/');
+    this.remoteStorage.access.claim('bookmarks', 'rw');
+    this.remoteStorage.caching.enable('/bookmarks/');
 
-    remoteStorage.setApiKeys({
-      dropbox: config.dropboxAppKey,
-      googledrive: config.gdriveClientId
-    });
+    // this.remoteStorage.setApiKeys({
+    //   dropbox: config.dropboxAppKey,
+    //   googledrive: config.gdriveClientId
+    // });
   },
 
   setupConnectWidget() {
@@ -164,51 +192,54 @@ export default Service.extend(Evented, {
     this.set('widget', widget);
   },
 
-  setupChangeHandler() {
-    this.remoteStorage.bookmarks.client.scope('archive/').on('change', (event) => {
+  setupRemoteChangeHandler() {
+    this.remoteStorage.bookmarks.client.scope('').on('change', (event) => {
       run(() => {
-        let archiveBookmarks = this.archiveBookmarks;
-
+        console.debug(`${event.origin} change for ${event.path}`);
         if (!event.origin.match(/remote/)) { return; }
+
+        const folderName = event.path.match('/bookmarks/(.+)/')[1];
         let item;
 
         // New object coming in from remote
         if (!event.oldValue && event.newValue) {
           item = Bookmark.create(event.newValue);
-          let oldItem = archiveBookmarks.findBy('id', item.id);
+          item.folderName = folderName;
+          const oldItem = this.bookmarksLoaded.findBy('id', item.id);
           if (oldItem) {
             console.warn('Received change event for a new item that was already cached', oldItem, event);
-            archiveBookmarks.removeObject(oldItem);
+            this.bookmarksLoaded.removeObject(oldItem);
           }
-          archiveBookmarks.pushObject(item);
+          this.bookmarksLoaded.pushObject(item);
         }
 
         // Object deleted on remote
         if (event.oldValue && !event.newValue) {
-          item = archiveBookmarks.findBy('id', event.oldValue.id);
-          archiveBookmarks.removeObject(item);
+          item = this.bookmarksLoaded.findBy('id', event.oldValue.id);
+          this.bookmarksLoaded.removeObject(item);
         }
 
         // Object updated on remote
         if (event.oldValue && event.newValue) {
           item = Bookmark.create(event.newValue);
-          let oldItem = archiveBookmarks.findBy('id', item.id);
-          if (oldItem) { archiveBookmarks.removeObject(oldItem); }
-          archiveBookmarks.pushObject(item);
+          item.folderName = folderName;
+          const oldItem = this.bookmarksLoaded.findBy('id', item.id);
+          if (oldItem) { this.bookmarksLoaded.removeObject(oldItem); }
+          this.bookmarksLoaded.pushObject(item);
         }
       });
     });
   },
 
   setupEventHandlers() {
-    let rs = this.remoteStorage;
+    console.debug('Setting up RS event handlers');
 
-    rs.on('ready', () => {
+    this.remoteStorage.on('ready', () => {
       console.debug('rs.on ready');
       // this.set('connecting', false);
     });
 
-    rs.on('connected', () => {
+    this.remoteStorage.on('connected', () => {
       console.debug('rs.on connected');
       this.set('connecting', false);
       this.set('connected', true);
@@ -216,7 +247,7 @@ export default Service.extend(Evented, {
       this.trigger('connectionStateReady');
     });
 
-    rs.on('not-connected', () => {
+    this.remoteStorage.on('not-connected', () => {
       console.debug('rs.on not-connected');
       this.set('connecting', false);
       this.set('connected', false);
@@ -224,24 +255,24 @@ export default Service.extend(Evented, {
       this.trigger('connectionStateReady');
     });
 
-    rs.on('disconnected', () => {
+    this.remoteStorage.on('disconnected', () => {
       console.debug('rs.on disconnected');
       this.set('connecting', false);
       this.set('connected', false);
 
       this.trigger('disconnected');
 
-      this.set('archiveBookmarks', []);
+      this.set('bookmarksLoaded', A([]));
       this.deleteTagListCache();
     });
 
-    rs.on('connecting', () => {
+    this.remoteStorage.on('connecting', () => {
       console.debug('rs.on connecting');
       this.set('connecting', true);
       this.set('connected', false);
     });
 
-    rs.on('authing', () => {
+    this.remoteStorage.on('authing', () => {
       console.debug('rs.on authing');
       this.set('connecting', true);
       this.set('connected', false);
@@ -249,12 +280,12 @@ export default Service.extend(Evented, {
   },
 
   createTagListCache() {
-    let tagList = this.archiveBookmarks.mapBy('tags')
-                           .compact()
-                           .reduce((a, b) => a.concat(b), [''])
-                           .reject((a) => isEmpty(a))
-                           .uniq()
-                           .sort();
+    const tagList = this.bookmarksLoaded.mapBy('tags')
+                                        .compact()
+                                        .reduce((a, b) => a.concat(b), [''])
+                                        .reject((a) => isEmpty(a))
+                                        .uniq()
+                                        .sort();
 
     console.debug('[storage] Writing tag list to localStorage', JSON.stringify(tagList));
 
@@ -267,7 +298,7 @@ export default Service.extend(Evented, {
   },
 
   getTagListCache() {
-    let tagList = localStorage.getItem('webmarks:tags');
+    const tagList = localStorage.getItem('webmarks:tags');
 
     if (isPresent(tagList)) {
       return tagList.split(',');
@@ -293,4 +324,3 @@ export default Service.extend(Evented, {
   // }
 
 });
-

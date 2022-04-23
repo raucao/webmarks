@@ -16,6 +16,19 @@
       <label for="tags">{{t "bookmark.edit.form.tags"}}</label>
       {{input value=bookmark.tags id="tags" autocomplete="off"}}
     </div>
+    {{#if bookmark.isNew}}
+      <div class="control-group">
+        {{input type='checkbox' checked=bookmark.saveForLater id="readlater"}}
+        <label class="checkbox" for="readlater">{{t "bookmark.edit.form.saveForLater"}}</label>
+      </div>
+    {{else}}
+      {{#if bookmark.unread}}
+        <div class="control-group">
+          {{input type='checkbox' checked=bookmark.markAsRead id="markread"}}
+          <label class="checkbox" for="markread">{{t "bookmark.edit.form.markAsRead"}}</label>
+        </div>
+      {{/if}}
+    {{/if}}
   </fieldset>
   <div class="controls">
     <button type="submit" class="button button-primary">{{t "bookmark.edit.form.save"}}</button>

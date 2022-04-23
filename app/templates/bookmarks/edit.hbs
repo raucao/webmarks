@@ -1,0 +1,17 @@
+<div id="content">
+  {{#if this.showConfirmation}}
+    <BookmarkSaved @folderName={{this.folderName}} />
+  {{else}}
+    <section id="bookmark-edit">
+      <header>
+        <h2>{{t "bookmark.edit.header"}}</h2>
+      </header>
+
+      <BookmarkForm @bookmark={{this.model}}
+                    @availableTags={{this.availableTags}}
+                    @commit={{action "commit"}}
+                    @cancel={{action "cancel"}}
+                    @remove={{action "remove"}} />
+    </section>
+  {{/if}}
+</div>

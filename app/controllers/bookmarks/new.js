@@ -12,28 +12,30 @@ export default Controller.extend({
   url: null,
   description: null,
   showConfirmation: false,
+  folderName: null,
 
   bookmarkletUsed: false,
 
   bookmarkletLink: computed(function() {
-    return htmlSafe(`javascript:void(location.href="${window.location.origin}/archive/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
+    return htmlSafe(`javascript:void(location.href="${window.location.origin}/bookmarks/new/?url="+encodeURIComponent(location.href)+"&title="+encodeURIComponent(document.title))`);
   }),
 
   actions: {
 
     commit () {
-      this.storage.storeBookmark(this.model)
-        .then(() => {
+      const commitMethod = this.model.markAsRead ? 'archiveBookmark' : 'storeBookmark';
+
+      this.storage[commitMethod](this.model)
+        .then(bookmark => {
           this.set('showConfirmation', true);
+          this.set('folderName', bookmark.folderName);
+          // TODO add new tags to taglist cache
         })
-        .catch(error => {
-          console.log('ERROR:');
-          console.log(error);
-        });
+        .catch(error => { console.log('ERROR:', error); });
     },
 
     cancel () {
-      this.transitionToRoute('index');
+      window.history.back();
     }
 
   }

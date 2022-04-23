@@ -1,7 +1,7 @@
-import ArchiveNewController from 'webmarks/controllers/archive/new';
+import BookmarksNewController from 'webmarks/controllers/bookmarks/new';
 import { inject as service } from '@ember/service';
 
-var ArchiveEditController = ArchiveNewController.extend({
+var BookmarksEditController = BookmarksNewController.extend({
 
   i18n: service(),
   showConfirmation: false,
@@ -11,7 +11,7 @@ var ArchiveEditController = ArchiveNewController.extend({
     remove: function(item) {
       if (!confirm(this.i18n.t('bookmark.edit.form.confirmDeletion'))) { return false; }
 
-      this.storage.removeBookmark(item.id)
+      this.storage.removeBookmark(item)
         .then(() => {
           this.set('showConfirmation', true);
         })
@@ -25,4 +25,4 @@ var ArchiveEditController = ArchiveNewController.extend({
 
 });
 
-export default ArchiveEditController;
+export default BookmarksEditController;

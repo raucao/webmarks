@@ -23,6 +23,8 @@ export default {
         url: 'URL',
         description: 'Description',
         tags: 'Tags',
+        saveForLater: 'Save for later (mark as unread)',
+        markAsRead: 'Archive (mark as read)',
         save: 'Save',
         cancel: 'Cancel',
         delete: 'Remove',
@@ -48,5 +50,9 @@ export default {
       about: 'App Info',
       privacy: 'Privacy Policy'
     }
+  },
+  folders: {
+    archive: 'Archive',
+    readlater: 'Saved for later'
   }
 };

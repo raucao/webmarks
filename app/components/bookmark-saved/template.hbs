@@ -4,7 +4,8 @@
     <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
   </svg>
   <div class="controls">
-    <LinkTo @route="archive.index"
+    <LinkTo @route="bookmarks.index"
+            @query={{hash folder=@folderName}}
             @replace={{true}}
             class="button button-secondary">
       {{t "bookmark.saved.backToList"}}

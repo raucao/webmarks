@@ -11,6 +11,10 @@ export default Controller.extend({
   storage: service(),
   application: controller(),
 
+  queryParams: ['tags', 'folder'],
+  tags: null,
+  folder: null,
+
   filterText: '',
   showSearchOnSmallScreen: alias('application.showSearchOnSmallScreen'),
   isLargeScreen: alias('application.isLargeScreen'),
@@ -19,18 +23,22 @@ export default Controller.extend({
   paginationItemsToLoad: 0,
   paginationItemObserved: null,
 
+  bookmarks: computed('folder', 'storage.bookmarksLoaded.[]', function() {
+    return this.storage.bookmarksLoaded.filterBy('folderName', this.folder);
+  }),
+
   sortProperties: Object.freeze(['createdAt:desc']),
-  sortedBookmarks: sort('model', 'sortProperties'),
+  sortedBookmarks: sort('bookmarks', 'sortProperties'),
 
   init() {
     this._super(...arguments);
     scheduleOnce('afterRender', this, 'createIntersectionObserver');
-    this.storage.on('disconnected', this.handleStorageDisconnect.bind(this));
+    // this.storage.on('disconnected', this.handleStorageDisconnect.bind(this));
   },
 
-  handleStorageDisconnect: function() {
-    this.set('model', []);
-  },
+  // handleStorageDisconnect: function() {
+  //   this.set('model', []);
+  // },
 
   filteredContent: computed('filterText', 'sortedBookmarks', function() {
     this.setInitialPaginationItemCount();

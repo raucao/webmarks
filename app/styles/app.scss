@@ -109,16 +109,21 @@ aside {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     ul {
-      flex: 0;
-
       &.primary {
-        flex-basis: $navbarWidth*2;
+        flex: 0;
+        align-self: flex-start;
+      }
+
+      &.folders {
+        flex: 1;
+        align-self: stretch;
       }
 
       &.secondary {
+        flex: 0;
         align-self: flex-end;
       }
     }
@@ -137,6 +142,7 @@ aside {
         display: flex;
         align-items: center;
         justify-content: center;
+        text-decoration: none;
         @include transition(all 0.1s linear);
 
         svg {
@@ -158,6 +164,8 @@ aside {
         }
 
         &.active {
+          font-size: 1.75rem;
+
           svg {
             path {
               fill: #ccc;
@@ -336,7 +344,7 @@ li.bookmark {
     top: 1rem;
     right: 2rem;
 
-    a {
+    a, button {
       display: inline-block;
       padding: 3px;
       border: 1px solid #f4f4f4;
@@ -423,7 +431,7 @@ section#no-bookmarks {
       position: relative;
       margin-bottom: 1.5rem;
 
-      label {
+      label:not(.checkbox) {
         display: block;
         width: 7rem;
         position: absolute;
@@ -435,6 +443,15 @@ section#no-bookmarks {
         color: #888;
         text-transform: uppercase;
         // background: #ccc;
+      }
+
+      label.checkbox {
+        font-size: 0.8rem;
+      }
+
+      input[type=checkbox] {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
       }
 
       input[type=text] {
@@ -624,31 +641,41 @@ body.about {
     }
 
     nav {
+      flex: 1;
       flex-direction: row;
 
       ul {
         &.primary {
-          flex-basis: $navbarWidth*2;
-          align-self: flex-end;
+          flex: 0 6rem;
           order: 2;
+          align-self: flex-end;
+          display: flex;
+          justify-content: flex-end;
+        }
 
-          li {
-            float: right;
-          }
+        &.folders {
+          flex: 1;
+          order: 1;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
         }
 
         &.secondary {
-          order: 1;
-
-          li {
-            display: none;
-          }
+          display: none;
         }
       }
 
       li {
         &#nav-search {
           display: inline-block;
+          order: 1;
+        }
+
+        &#nav-new {
+          order: 2;
         }
 
         a {
@@ -725,7 +752,7 @@ body.about {
       padding: 2rem $paddingHorizontal;
 
       .control-group {
-        label {
+        label:not(.checkbox) {
           position: relative;
           padding: 0 0.5rem;
         }
