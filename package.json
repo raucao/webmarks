@@ -18,8 +18,7 @@
     "build": "SW_DISABLED=true ember build",
     "build-prod": "rm -rf release/* && ember build -prod --output-path release",
     "version": "npm run build-prod && git add release/",
-    "deploy": "git push 5apps_staging master",
-    "deploy-prod": "git push 5apps master"
+    "deploy": "git push 5apps master"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.1.0",
