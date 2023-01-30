@@ -17,7 +17,7 @@
     {{/if}}
   </p>
   <div class="actions">
-    {{#if item.unread}}<button type="button" {{on "click" this.markAsRead}}>Ar</button>{{/if}}
+    {{#if item.unread}}<button type="button" {{action "markAsRead"}}>Ar</button>{{/if}}
     {{#link-to "bookmarks.edit" item title=(t "links.edit")}}{{icon-edit}}{{/link-to}}
   </div>
   {{#if item.description}}<p class="description">{{item.description}}</p>{{/if}}
