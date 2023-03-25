@@ -1,5 +1,5 @@
 import { isEmpty } from '@ember/utils';
-import { alias, sort } from '@ember/object/computed';
+import { alias, and, sort } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Controller, { inject as controller } from '@ember/controller';
 import { computed } from '@ember/object';
@@ -29,6 +29,8 @@ export default Controller.extend({
 
   sortProperties: Object.freeze(['createdAt:desc']),
   sortedBookmarks: sort('bookmarks', 'sortProperties'),
+
+  showSyncProgress: and('storage.syncInProgress', 'storage.syncIsLarge'),
 
   init() {
     this._super(...arguments);

@@ -306,6 +306,16 @@ section#search {
   }
 }
 
+#sync-progress {
+  padding: 1.5rem $paddingHorizontal;
+  border-bottom: 1px solid #efefef;
+
+  .description {
+    color: #888;
+    font-size: 0.8rem;
+  }
+}
+
 ul.bookmark-list {
   list-style: none;
   margin-bottom: 2rem;
@@ -717,6 +727,10 @@ body.about {
       margin-top: -$navbarWidth;
       transition: margin-top 0.15s linear;
     }
+  }
+
+  #sync-progress {
+    padding: 1.5rem $paddingHorizontal;
   }
 
   li.bookmark {

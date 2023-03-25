@@ -2,6 +2,13 @@
   <BookmarkSearch @filterText={{this.filterText}} @showSearch={{this.showSearchOnSmallScreen}} @autoFocusInput={{this.isLargeScreen}} />
 </section>
 <div id="content">
+  {{#if this.showSyncProgress}}
+  <div id="sync-progress">
+    <div class="description">
+      Synchronizing bookmarks: <strong>{{this.storage.bookmarksLoaded.length}} / {{this.storage.syncItemsEstimate}}</strong>
+    </div>
+  </div>
+  {{/if}}
   {{#if this.bookmarks}}
     <ul class="bookmark-list">
       {{#if this.paginationActive}}

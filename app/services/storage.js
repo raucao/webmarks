@@ -12,9 +12,13 @@ import Bookmarks from '@remotestorage/module-bookmarks';
 export default Service.extend(Evented, {
 
   remoteStorage: null,
+  rsClient: null,
   widget: null,
   connecting: true,
   connected: false,
+  syncInProgress: false,
+  syncItemsEstimate: null,
+  syncIsLarge: false,
   bookmarksLoaded: null,
   tags: null,
 
@@ -169,6 +173,7 @@ export default Service.extend(Evented, {
   setupRemoteStorage() {
     const remoteStorage = new RemoteStorage({modules: [Bookmarks]});
     this.set('remoteStorage', remoteStorage);
+    this.set('rsClient', remoteStorage.bookmarks.client);
 
     this.remoteStorage.access.claim('bookmarks', 'rw');
     this.remoteStorage.caching.enable('/bookmarks/');
@@ -195,7 +200,7 @@ export default Service.extend(Evented, {
   setupRemoteChangeHandler() {
     this.remoteStorage.bookmarks.client.scope('').on('change', (event) => {
       run(() => {
-        console.debug(`${event.origin} change for ${event.path}`);
+        // console.debug(`${event.origin} change for ${event.path}`);
         if (!event.origin.match(/remote/)) { return; }
 
         const folderName = event.path.match('/bookmarks/(.+)/')[1];
@@ -263,6 +268,7 @@ export default Service.extend(Evented, {
       this.trigger('disconnected');
 
       this.set('bookmarksLoaded', A([]));
+      this.handleSyncDone({ completed: true })
       this.deleteTagListCache();
     });
 
@@ -277,6 +283,45 @@ export default Service.extend(Evented, {
       this.set('connecting', true);
       this.set('connected', false);
     });
+
+    this.remoteStorage.on('sync-req-done', evt => {
+      console.debug('rs.on sync-req-done', evt);
+      this.handleSyncRequestDone(evt);
+    });
+
+    this.remoteStorage.on('sync-done', evt => {
+      console.debug('rs.on sync-done', evt);
+      this.handleSyncDone(evt);
+    });
+  },
+
+  async handleSyncRequestDone (evt) {
+    if (this.syncInProgress) return;
+
+    this.set('syncInProgress', true);
+
+    let itemsAmount = 0;
+
+    const folders = await this.rsClient.getListing('')
+                              .then(l => Object.keys(l));
+
+    for (const folderName of folders) {
+      const items = await this.rsClient.getListing(folderName)
+                              .then(l => Object.keys(l).length);
+      itemsAmount += items;
+    }
+
+    this.set('syncItemsEstimate', itemsAmount);
+    console.warn('amount', itemsAmount);
+    const bookmarksToLoad = itemsAmount - this.bookmarksLoaded.length;
+    if (bookmarksToLoad > 10) this.set('syncIsLarge', true);
+  },
+
+  handleSyncDone (evt) {
+    if (!evt.completed) return;
+    this.set('syncInProgress', false);
+    this.set('syncItemsEstimate', 0);
+    this.set('syncIsLarge', false);
   },
 
   createTagListCache() {
