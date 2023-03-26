@@ -285,7 +285,6 @@ export default Service.extend(Evented, {
     });
 
     this.remoteStorage.on('sync-req-done', evt => {
-      console.debug('rs.on sync-req-done', evt);
       this.handleSyncRequestDone(evt);
     });
 
